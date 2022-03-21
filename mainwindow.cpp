@@ -431,7 +431,7 @@ void MainWindow::pushButtonApplyBiasVoltages(){
     QString command = "WR VBIASCTRL V 1100\r\n";
     this->sendCommand(command);
     command = "WR AFE ";
-    command = command + ui->comboBoxChannel->currentText();
+    command = command + ui->comboBoxAFE->currentText();
     command = command + " BIASSET V ";
     command = command + QString::number(ui->spinBoxBiasVoltage->value());
     command = command + "\r\n";

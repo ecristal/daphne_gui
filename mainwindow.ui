@@ -31,7 +31,7 @@
       <rect>
        <x>10</x>
        <y>40</y>
-       <width>131</width>
+       <width>181</width>
        <height>16</height>
       </rect>
      </property>
@@ -166,9 +166,9 @@
     <widget class="QLabel" name="labelChannel">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>33</y>
-       <width>51</width>
+       <x>18</x>
+       <y>34</y>
+       <width>60</width>
        <height>16</height>
       </rect>
      </property>
@@ -550,7 +550,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>12</pointsize>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="text">
@@ -625,7 +625,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>11</pointsize>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="text">
