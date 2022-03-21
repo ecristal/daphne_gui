@@ -327,6 +327,7 @@ void MainWindow::comboBoxAvailableSerialPortsValueChanged(){
 }
 
 void MainWindow::pushButtonRefreshPressed(){
+    ui->comboBoxAvailableSerialPort->clear();
     this->populateComboBoxAvailableSerialPorts();
 }
 
