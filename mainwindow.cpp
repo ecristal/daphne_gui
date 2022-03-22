@@ -49,7 +49,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(1842300);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE Test",0);
+    this->Message("DAPHNE GUI V1_00_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -327,6 +327,7 @@ void MainWindow::comboBoxAvailableSerialPortsValueChanged(){
 }
 
 void MainWindow::pushButtonRefreshPressed(){
+    ui->comboBoxAvailableSerialPort->clear();
     this->populateComboBoxAvailableSerialPorts();
 }
 
@@ -430,7 +431,7 @@ void MainWindow::pushButtonApplyBiasVoltages(){
     QString command = "WR VBIASCTRL V 1100\r\n";
     this->sendCommand(command);
     command = "WR AFE ";
-    command = command + ui->comboBoxChannel->currentText();
+    command = command + ui->comboBoxAFE->currentText();
     command = command + " BIASSET V ";
     command = command + QString::number(ui->spinBoxBiasVoltage->value());
     command = command + "\r\n";
