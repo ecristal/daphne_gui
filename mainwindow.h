@@ -130,5 +130,6 @@ private:
     int calculateVGainReferenceValue();
     void populateComboBoxPGAClampLevel();
     uint16_t getPGAClampLevelMask();
+    void readAndPlotData();
 };
 #endif // MAINWINDOW_H

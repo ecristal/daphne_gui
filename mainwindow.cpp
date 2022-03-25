@@ -50,7 +50,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(1842300);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_01_00\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_01_02\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -434,27 +434,40 @@ void MainWindow::pushButtonInitialPressed(){
     this->sendCommand(command);
 }
 
+void MainWindow::readAndPlotData(){
+    QString command = "RD FPGA\r\n";
+    if(this->sendCommand(command)){
+        this->dialogReadoutChannelWindow->show();
+        this->dialogReadoutChannelWindow->plotData(this->serialData, this->reg_4_value);
+    }
+}
+
 void MainWindow::pushButtonRDFPGAPressed(){
-    if(!ui->spinBoxMultipleWaveformsEnable->isChecked()){
-        QString command = "RD FPGA\r\n";
-        if(this->sendCommand(command)){
-            this->dialogReadoutChannelWindow->show();
-            this->dialogReadoutChannelWindow->plotData(this->serialData, this->reg_4_value);
+    if(ui->spinBoxMultipleWaveformsEnable->isChecked()){
+        int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
+        for(int i = 0; i< sampling_iterations; i++){
+            this->readAndPlotData();
+            this->dialogReadoutChannelWindow->saveContinousWaveform(this->mutliple_waveforms_folder_address,i);
         }
+     }else if(ui->checkBoxEnableChannelOffsetSweep->isChecked()){
+        int start_value = ui->spinBoxChannelOffsetSweepStartValue->value();
+        int end_value = ui->spinBoxChannelOffsetSweepEndValue->value();
+        int step = ui->spinBoxChannelOffsetSweepStep->value();
+        for(int i = start_value;i <= (end_value + step); i+= step){
+            if(i > end_value)
+                i = end_value;
+            ui->spinBoxOffsetVoltage->setValue(i);
+            this->pushButtonApplyOffsetPressed();
+            this->readAndPlotData();
+            this->readAndPlotData();
+            this->dialogReadoutChannelWindow->saveContinousWaveform(this->mutliple_waveforms_folder_address,i);
+        }
+     }else{
+        this->readAndPlotData();
         bool test = false;
         if(test){
             this->dialogReadoutChannelWindow->show();
             this->dialogReadoutChannelWindow->plotData(this->dialogReadoutChannelWindow->generateDaphneTestData(300), this->reg_4_value);
-        }
-     }else{
-        int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
-        for(int i = 0; i< sampling_iterations; i++){
-            QString command = "RD FPGA\r\n";
-            if(this->sendCommand(command)){
-                this->dialogReadoutChannelWindow->show();
-                this->dialogReadoutChannelWindow->plotData(this->serialData, this->reg_4_value);
-            }
-            this->dialogReadoutChannelWindow->saveContinousWaveform(this->mutliple_waveforms_folder_address,i);
         }
     }
 }
