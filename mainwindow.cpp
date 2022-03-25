@@ -36,6 +36,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::initializeWindow(){
     this->populateComboBoxAvailableSerialPorts();
+    this->populateComboBoxPGAClampLevel();
     this->populateComboBoxAFE();
     this->populateComboBoxChannel();
     this->populateComboBoxLNAGain();
@@ -49,7 +50,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(1842300);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_00_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_01_00\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -65,6 +66,12 @@ void MainWindow::populateComboBoxLNAGain(){
     ui->comboBoxLNAGain->addItem("12dB");
     ui->comboBoxLNAGain->addItem("18dB");
     ui->comboBoxLNAGain->addItem("24dB");
+}
+
+void MainWindow::populateComboBoxPGAClampLevel(){
+    ui->comboBoxPGAClampLevel->addItem("-2 dBFS");
+    ui->comboBoxPGAClampLevel->addItem("0 dBFS");
+    ui->comboBoxPGAClampLevel->addItem("DISABLED");
 }
 
 void MainWindow::populateComboBoxPGAGain(){
@@ -110,6 +117,10 @@ void MainWindow::setConfig(){
     uint16_t pga_integrator_mask = this->getCheckBoxPGAIntegratorMask();
     eraser = MASK_ERASER_PGA_INTEGRATOR_REG_51;
     this->reg_51_value = this->eraseAndApplyMask(this->reg_51_value,pga_integrator_mask,eraser);
+
+    uint16_t pga_clamp_level_mask = this->getPGAClampLevelMask();
+    eraser = MASK_ERASER_CLAMP_LEVEL_REG_51;
+    this->reg_51_value = this->eraseAndApplyMask(this->reg_51_value,pga_clamp_level_mask,eraser);
 
     uint16_t active_termination_mask = this->getCheckBoxActiveTerminationMask();
     eraser = MASK_ERASER_ACTIVE_TERMINATION_ENABLE_REG_52;
@@ -228,6 +239,27 @@ uint16_t MainWindow::getLNAGainMask(){
             break;
     }
     qDebug() << "LNA MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
+    return mask;
+}
+
+uint16_t MainWindow::getPGAClampLevelMask(){
+    int pos = ui->comboBoxPGAClampLevel->currentIndex();
+    uint16_t mask;
+    switch(pos){
+        case 0:
+            mask = MASK_PGA_CLAMP_LEVEL_N2DBFS_REG_51;
+            break;
+        case 1:
+            mask = MASK_PGA_CLAMP_LEVEL_0DBFS_REG_51;
+            break;
+        case 2:
+            mask = MASK_PGA_CLAMP_LEVEL_DISABLED_REG_51;
+            break;
+        default:
+            mask = 0;
+            break;
+    }
+    qDebug() << "PGA CLAMP MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
     return mask;
 }
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>801</width>
-    <height>720</height>
+    <height>769</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -157,7 +157,7 @@
       <x>240</x>
       <y>390</y>
       <width>551</width>
-      <height>281</height>
+      <height>331</height>
      </rect>
     </property>
     <property name="title">
@@ -675,9 +675,9 @@
      <property name="geometry">
       <rect>
        <x>330</x>
-       <y>150</y>
+       <y>144</y>
        <width>211</width>
-       <height>71</height>
+       <height>70</height>
       </rect>
      </property>
      <property name="title">
@@ -742,58 +742,6 @@
       </property>
      </widget>
     </widget>
-    <widget class="QGroupBox" name="groupBox_10">
-     <property name="geometry">
-      <rect>
-       <x>330</x>
-       <y>220</y>
-       <width>211</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>Take Multiple Waveforms</string>
-     </property>
-     <widget class="QCheckBox" name="spinBoxMultipleWaveformsEnable">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>20</y>
-        <width>70</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Enable</string>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="spinBoxMultipleWaveforms">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>20</y>
-        <width>61</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="maximum">
-       <number>10000</number>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButtonMultipleWaveformsDirectory">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>20</y>
-        <width>61</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Directory</string>
-      </property>
-     </widget>
-    </widget>
     <widget class="QLabel" name="labelAFE">
      <property name="geometry">
       <rect>
@@ -821,6 +769,42 @@
        <height>22</height>
       </rect>
      </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBoxPGAClamp">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>220</y>
+       <width>211</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>PGA Clamp</string>
+     </property>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>47</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Level:</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboBoxPGAClampLevel">
+      <property name="geometry">
+       <rect>
+        <x>45</x>
+        <y>17</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_9">
@@ -856,6 +840,58 @@
      </property>
      <property name="text">
       <string>Send</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_10">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>670</y>
+      <width>221</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Take Multiple Waveforms</string>
+    </property>
+    <widget class="QCheckBox" name="spinBoxMultipleWaveformsEnable">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>20</y>
+       <width>70</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinBoxMultipleWaveforms">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>61</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>10000</number>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButtonMultipleWaveformsDirectory">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>20</y>
+       <width>61</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Directory</string>
      </property>
     </widget>
    </widget>

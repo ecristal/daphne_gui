@@ -1,21 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QDebug>
-#include <QtSerialPort/QSerialPortInfo>
-#include <QtSerialPort/QSerialPort>
-#include <QMessageBox>
-#include <QTimer>
-#include <QEventLoop>
-#include <QTextCursor>
-#include <QTime>
-#include <QException>
-#include <QDir>
-#include <QFileDialog>
-
-#include "dialogreadoutchannel.h"
-
 #define MASK_ADC_OUTPUT_FORMAT_2COMP_REG_4 0x0
 #define MASK_ADC_OUTPUT_FORMAT_OFFSET_BIN_REG_4 0x8
 #define MASK_LSB_FIRST_REG_4 0x0
@@ -30,9 +15,14 @@
 #define MASK_LPF_20MHZ_PROGRAMABILITY_REG_51 0x4
 #define MASK_LPF_30MHZ_PROGRAMABILITY_REG_51 0x6
 #define MASK_LPF_10MHZ_PROGRAMABILITY_REG_51 0x8
+#define MASK_PGA_CLAMP_LEVEL_N2DBFS_REG_51 0x0
+#define MASK_PGA_CLAMP_LEVEL_0DBFS_REG_51 0x40
+#define MASK_PGA_CLAMP_LEVEL_DISABLED_REG_51 0x80
+#define MASK_ERASER_CLAMP_LEVEL_REG_51 0xe0
 #define MASK_ERASER_LPF_REG_51 0xe
 #define MASK_ERASER_PGA_INTEGRATOR_REG_51 0x10
 #define MASK_ERASER_PGA_GAIN_CONTROL_REG_51 0x2000
+
 
 #define MASK_LNA_INTEGRATOR_DIS_REG_52 0x1000
 #define MASK_LNA_INTEGRATOR_EN_REG_52 0x0
@@ -50,6 +40,21 @@
 #define MASK_ERASER_ACTIVE_TERMINATION_ENABLE_REG_52 0x100
 #define MASK_ERASER_LNA_INTEGRATOR_REG_52 0x1000
 #define MASK_ERASER_LNA_GAIN_CONTROL_REG_52 0x6000
+
+#include <QMainWindow>
+#include <QDebug>
+#include <QtSerialPort/QSerialPortInfo>
+#include <QtSerialPort/QSerialPort>
+#include <QMessageBox>
+#include <QTimer>
+#include <QEventLoop>
+#include <QTextCursor>
+#include <QTime>
+#include <QException>
+#include <QDir>
+#include <QFileDialog>
+
+#include "dialogreadoutchannel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -123,5 +128,7 @@ private:
     uint16_t getADCFormatMask();
     void populateComboBoxVGainValues();
     int calculateVGainReferenceValue();
+    void populateComboBoxPGAClampLevel();
+    uint16_t getPGAClampLevelMask();
 };
 #endif // MAINWINDOW_H
