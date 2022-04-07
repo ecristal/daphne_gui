@@ -50,7 +50,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(1842300);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_01_03\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_01_04\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -443,6 +443,7 @@ void MainWindow::readAndPlotData(){
 }
 
 void MainWindow::pushButtonRDFPGAPressed(){
+    this->dialogReadoutChannelWindow->setWindowStatus(true);
     if(ui->spinBoxMultipleWaveformsEnable->isChecked()){
         int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
         for(int i = 0; i< sampling_iterations; i++){
@@ -455,6 +456,7 @@ void MainWindow::pushButtonRDFPGAPressed(){
         int step = ui->spinBoxChannelOffsetSweepStep->value();
         bool break_flag = false;
         for(int i = start_value;i <= (end_value + step); i+= step){
+            //break_flag = !this->dialogReadoutChannelWindow->getWindowStatus();
             if(i > end_value){
                 i = end_value;
                 break_flag = true;

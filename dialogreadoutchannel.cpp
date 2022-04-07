@@ -10,8 +10,10 @@ DialogReadoutChannel::DialogReadoutChannel(QWidget *parent) :
     ui(new Ui::DialogReadoutChannel)
 {
     ui->setupUi(this);
+    this->window_status = true;
     ui->widgetDaphneDataGraph->addGraph();
     connect(ui->pushButtonTxt,SIGNAL(clicked(bool)),this,SLOT(pushButtonSaveToTxtPressed()));
+    connect(ui->buttonBox,SIGNAL(rejected(bool)),this,SLOT(cancelButtonPressed()));
 }
 
 DialogReadoutChannel::~DialogReadoutChannel()
@@ -40,6 +42,18 @@ void DialogReadoutChannel::plotData(const QByteArray &serial_data,const uint16_t
     ui->widgetDaphneDataGraph->xAxis->setRange(min_time_daphne_data,max_time_daphne_data);
     ui->widgetDaphneDataGraph->graph(0)->setData(this->daphneTime,this->daphneData);
     ui->widgetDaphneDataGraph->replot();
+}
+
+void DialogReadoutChannel::cancelButtonPressed(){
+    this->window_status = false;
+}
+
+bool DialogReadoutChannel::getWindowStatus(){
+    return this->window_status;
+}
+
+void DialogReadoutChannel::setWindowStatus(bool status){
+    this->window_status = status;
 }
 
 void DialogReadoutChannel::generateTimeVector(const int &length, double Tm){
