@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>801</width>
+    <width>810</width>
     <height>769</height>
    </rect>
   </property>
@@ -773,9 +773,9 @@
     <widget class="QGroupBox" name="groupBoxPGAClamp">
      <property name="geometry">
       <rect>
-       <x>330</x>
+       <x>430</x>
        <y>220</y>
-       <width>211</width>
+       <width>111</width>
        <height>51</height>
       </rect>
      </property>
@@ -800,7 +800,7 @@
        <rect>
         <x>45</x>
         <y>17</y>
-        <width>81</width>
+        <width>61</width>
         <height>22</height>
        </rect>
       </property>
@@ -910,6 +910,42 @@
       </property>
      </widget>
     </widget>
+    <widget class="QGroupBox" name="groupBoxLNAClamp">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>220</y>
+       <width>111</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>LNA Clamp</string>
+     </property>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>47</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Level:</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboBoxLNAClampLevel">
+      <property name="geometry">
+       <rect>
+        <x>45</x>
+        <y>17</y>
+        <width>61</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_9">
     <property name="geometry">
@@ -1005,7 +1041,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>801</width>
+     <width>810</width>
      <height>21</height>
     </rect>
    </property>

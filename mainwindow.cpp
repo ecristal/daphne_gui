@@ -44,6 +44,7 @@ void MainWindow::initializeWindow(){
     this->populateComboBoxImpedances();
     this->populateComboBoxLPF();
     this->populateComboBoxVGainValues();
+    this->populateComboBoxLNAClampLevel();
     this->serialTimeoutTimer.setSingleShot(true);
     ui->pushButtonConnect->setEnabled(false);
     ui->pushButtonDisconnect->setEnabled(false);
@@ -72,6 +73,13 @@ void MainWindow::populateComboBoxPGAClampLevel(){
     ui->comboBoxPGAClampLevel->addItem("-2 dBFS");
     ui->comboBoxPGAClampLevel->addItem("0 dBFS");
     ui->comboBoxPGAClampLevel->addItem("DISABLED");
+}
+
+void MainWindow::populateComboBoxLNAClampLevel(){
+    ui->comboBoxLNAClampLevel->addItem("AUTO");
+    ui->comboBoxLNAClampLevel->addItem("1.5Vpp");
+    ui->comboBoxLNAClampLevel->addItem("1.15Vpp");
+    ui->comboBoxLNAClampLevel->addItem("0.6Vpp");
 }
 
 void MainWindow::populateComboBoxPGAGain(){
@@ -119,8 +127,12 @@ void MainWindow::setConfig(){
     this->reg_51_value = this->eraseAndApplyMask(this->reg_51_value,pga_integrator_mask,eraser);
 
     uint16_t pga_clamp_level_mask = this->getPGAClampLevelMask();
-    eraser = MASK_ERASER_CLAMP_LEVEL_REG_51;
+    eraser = MASK_ERASER_PGA_CLAMP_LEVEL_REG_51;
     this->reg_51_value = this->eraseAndApplyMask(this->reg_51_value,pga_clamp_level_mask,eraser);
+
+    uint16_t lna_clamp_level_mask = this->getLNAClampLevelMask();
+    eraser = MASK_ERASER_LNA_CLAMP_LEVEL_REG_52;
+    this->reg_52_value = this->eraseAndApplyMask(this->reg_52_value,lna_clamp_level_mask,eraser);
 
     uint16_t active_termination_mask = this->getCheckBoxActiveTerminationMask();
     eraser = MASK_ERASER_ACTIVE_TERMINATION_ENABLE_REG_52;
@@ -260,6 +272,30 @@ uint16_t MainWindow::getPGAClampLevelMask(){
             break;
     }
     qDebug() << "PGA CLAMP MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
+    return mask;
+}
+
+uint16_t MainWindow::getLNAClampLevelMask(){
+    int pos = ui->comboBoxLNAClampLevel->currentIndex();
+    uint16_t mask;
+    switch(pos){
+        case 0:
+            mask = MASK_LNA_CLAMP_LEVEL_AUTO_REG_52;
+            break;
+        case 1:
+            mask = MASK_LNA_CLAMP_LEVEL_15VPP_REG_52;
+            break;
+        case 2:
+            mask = MASK_LNA_CLAMP_LEVEL_115VPP_REG_52;
+            break;
+        case 3:
+            mask = MASK_LNA_CLAMP_LEVEL_06VPP_REG_52;
+            break;
+        default:
+            mask = 0;
+            break;
+    }
+    qDebug() << "LNA CLAMP MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
     return mask;
 }
 
