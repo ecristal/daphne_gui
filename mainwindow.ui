@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>810</width>
+    <width>800</width>
     <height>769</height>
    </rect>
   </property>
@@ -511,7 +511,7 @@
       <string>SET CONFIG</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButtonREADCONFIG">
+    <widget class="QPushButton" name="pushButtonAFEALIGN">
      <property name="geometry">
       <rect>
        <x>300</x>
@@ -521,7 +521,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>READ CONFIG</string>
+      <string>AFE ALIGN</string>
      </property>
     </widget>
     <widget class="QGroupBox" name="groupBox_6">
@@ -811,7 +811,7 @@
       <rect>
        <x>20</x>
        <y>270</y>
-       <width>521</width>
+       <width>431</width>
        <height>51</height>
       </rect>
      </property>
@@ -946,6 +946,32 @@
       </property>
      </widget>
     </widget>
+    <widget class="QGroupBox" name="groupBoxEthernet">
+     <property name="geometry">
+      <rect>
+       <x>460</x>
+       <y>270</y>
+       <width>81</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Ethernet</string>
+     </property>
+     <widget class="QCheckBox" name="checkBoxEnableEthernet">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>60</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Enable</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_9">
     <property name="geometry">
@@ -1041,12 +1067,24 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>810</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionAligment"/>
+   </widget>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionAligment">
+   <property name="text">
+    <string>Aligment</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

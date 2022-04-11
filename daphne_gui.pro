@@ -13,6 +13,7 @@ CONFIG += c++11
 
 SOURCES += \
     daphnesocket.cpp \
+    dialogaligment.cpp \
     dialogreadoutchannel.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -20,11 +21,13 @@ SOURCES += \
 
 HEADERS += \
     daphnesocket.h \
+    dialogaligment.h \
     dialogreadoutchannel.h \
     mainwindow.h \
     qcustomplot.h
 
 FORMS += \
+    dialogaligment.ui \
     dialogreadoutchannel.ui \
     mainwindow.ui
 

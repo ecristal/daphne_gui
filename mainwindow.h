@@ -64,6 +64,7 @@
 #include <QFileDialog>
 
 #include "dialogreadoutchannel.h"
+#include "daphnesocket.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -96,6 +97,8 @@ private slots:
     void checkBoxMSBFirstChecked();
     void pushButtonSendRawCommandPressed();
     void pushButtonMultipleWaveformsDirectoryPressed();
+    void pushButtonAFEALIGNPressed();
+    void checkBoxEnableEthernetPressed();
 private:
     Ui::MainWindow *ui;
 
@@ -112,6 +115,8 @@ private:
     QString mutliple_waveforms_folder_address;
 
     DialogReadoutChannel* dialogReadoutChannelWindow;
+
+    DaphneSocket *socket;
 
     void populateComboBoxAvailableSerialPorts();
     void populateComboBoxAFE();
@@ -139,8 +144,11 @@ private:
     int calculateVGainReferenceValue();
     void populateComboBoxPGAClampLevel();
     uint16_t getPGAClampLevelMask();
-    void readAndPlotData();
+    void readAndPlotDataSerial();
     void populateComboBoxLNAClampLevel();
     uint16_t getLNAClampLevelMask();
+    void acquireWaveform();
+    void readAndPlotDataEthernet();
+    void delayMilli(int delay_milli);
 };
 #endif // MAINWINDOW_H

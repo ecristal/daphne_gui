@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QUdpSocket>
+#include <QHostAddress>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -26,11 +29,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->checkBoxMSBFirst,SIGNAL(stateChanged(int)),this,SLOT(checkBoxMSBFirstChecked()));
     connect(ui->pushButtonSendRawCommand,SIGNAL(clicked(bool)),this,SLOT(pushButtonSendRawCommandPressed()));
     connect(ui->pushButtonMultipleWaveformsDirectory,SIGNAL(clicked(bool)),this,SLOT(pushButtonMultipleWaveformsDirectoryPressed()));
+    connect(ui->pushButtonAFEALIGN,SIGNAL(clicked(bool)),this,SLOT(pushButtonAFEALIGNPressed()));
+    connect(ui->checkBoxEnableEthernet,SIGNAL(stateChanged(int)),this,SLOT(checkBoxEnableEthernetPressed()));
 }
 
 MainWindow::~MainWindow()
 {
     this->dialogReadoutChannelWindow->~DialogReadoutChannel();
+    this->socket->~DaphneSocket();
     delete ui;
 }
 
@@ -46,10 +52,12 @@ void MainWindow::initializeWindow(){
     this->populateComboBoxVGainValues();
     this->populateComboBoxLNAClampLevel();
     this->serialTimeoutTimer.setSingleShot(true);
+    ui->pushButtonAFEALIGN->setEnabled(false);
     ui->pushButtonConnect->setEnabled(false);
     ui->pushButtonDisconnect->setEnabled(false);
     ui->spinBoxBaudRate->setValue(1842300);
     this->serialPort_ = new QSerialPort(this);
+    this->socket = new DaphneSocket();
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
     this->Message("DAPHNE GUI V1_01_04\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
@@ -434,6 +442,12 @@ void MainWindow::delay(int delay_){
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
+void MainWindow::delayMilli(int delay_milli){
+    QTime dieTime = QTime::currentTime().addMSecs(delay_milli);
+    while(QTime::currentTime() < dieTime)
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
 void MainWindow::readDataFromSerial(){
     QByteArray serial_data_ = this->serialPort_->readAll();
     this->serialData.append(serial_data_);
@@ -470,7 +484,7 @@ void MainWindow::pushButtonInitialPressed(){
     this->sendCommand(command);
 }
 
-void MainWindow::readAndPlotData(){
+void MainWindow::readAndPlotDataSerial(){
     QString command = "RD FPGA\r\n";
     if(this->sendCommand(command)){
         this->dialogReadoutChannelWindow->show();
@@ -479,11 +493,13 @@ void MainWindow::readAndPlotData(){
 }
 
 void MainWindow::pushButtonRDFPGAPressed(){
+
+    //***************** SERIAL/ETHERNET **********************//
     this->dialogReadoutChannelWindow->setWindowStatus(true);
     if(ui->spinBoxMultipleWaveformsEnable->isChecked()){
         int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
         for(int i = 0; i< sampling_iterations; i++){
-            this->readAndPlotData();
+            this->acquireWaveform();
             this->dialogReadoutChannelWindow->saveContinousWaveform(this->mutliple_waveforms_folder_address,i);
         }
      }else if(ui->checkBoxEnableChannelOffsetSweep->isChecked()){
@@ -499,20 +515,21 @@ void MainWindow::pushButtonRDFPGAPressed(){
             }
             ui->spinBoxOffsetVoltage->setValue(i);
             this->pushButtonApplyOffsetPressed();
-            this->readAndPlotData();
-            this->readAndPlotData();
+            this->acquireWaveform();
+            this->acquireWaveform();
             this->dialogReadoutChannelWindow->saveContinousWaveform(this->mutliple_waveforms_folder_address,i);
             if(break_flag)
                 break;
         }
      }else{
-        this->readAndPlotData();
+        this->acquireWaveform();
         bool test = false;
         if(test){
             this->dialogReadoutChannelWindow->show();
             this->dialogReadoutChannelWindow->plotData(this->dialogReadoutChannelWindow->generateDaphneTestData(300), this->reg_4_value);
         }
     }
+    //**************END SERIAL *********************/
 }
 
 void MainWindow::pushButtonApplyBiasVoltages(){
@@ -628,4 +645,56 @@ void MainWindow::populateComboBoxVGainValues(){
 void MainWindow::pushButtonMultipleWaveformsDirectoryPressed(){
     this->mutliple_waveforms_folder_address = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), QDir::currentPath());
     qDebug()<<this->mutliple_waveforms_folder_address;
+}
+
+void MainWindow::pushButtonAFEALIGNPressed(){
+    //do something
+}
+
+void MainWindow::checkBoxEnableEthernetPressed(){
+    if(ui->checkBoxEnableEthernet->isChecked()){
+        ui->pushButtonAFEALIGN->setEnabled(true);
+    }else{
+        ui->pushButtonAFEALIGN->setEnabled(false);
+    }
+}
+
+void MainWindow::acquireWaveform(){
+    if(ui->checkBoxEnableEthernet->isChecked()){
+        this->readAndPlotDataEthernet();
+    }else{
+        this->readAndPlotDataSerial();
+    }
+}
+
+void MainWindow::readAndPlotDataEthernet(){
+    //do something
+    this->Message("From ethernet:\n",0);
+    int num = 1;
+    int length_data = sizeof(uint64_t)*num;
+    uint8_t *data_to_send = new uint8_t[length_data];
+    uint64_t *data_ = reinterpret_cast<uint64_t*>(data_to_send);
+    data_[0] = 0x16;
+    int bytes_sent = this->socket->write(0x4003,1,data_to_send);
+    this->Message("bytes sent: " + QString::number(bytes_sent),0);
+    data_[0] = 0x1234;
+    bytes_sent = this->socket->write(0x2000,1,data_to_send);
+    this->Message("bytes sent: " + QString::number(bytes_sent),0);
+    bytes_sent = this->socket->read(0x40000000,30);
+//    Aqui debo poner un timeout;
+    this->delayMilli(10);
+    QVector<QByteArray> receivedData = this->socket->getReceivedData();
+    int bytes_received = 0;
+    for(QByteArray data : receivedData){
+        bytes_received = bytes_received + data.length();
+    }
+    qDebug() << "data[0]: " << (int)receivedData.at(0)[0];
+    qDebug() << "data[1]: " << (int)receivedData.at(0)[1];
+    QByteArray data_i = receivedData.at(0);
+    uint64_t *u64_data = reinterpret_cast<uint64_t*>(data_i.begin() + 2);
+    for(int i = 0; i<(data_i.length()-2)/8;i++){
+        qDebug() << "data["<<i+2<<"]: "<<u64_data[i];
+    }
+    this->socket->flushReceivedData();
+    this->Message("bytes received: " + QString::number(bytes_received),0);
 }
