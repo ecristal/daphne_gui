@@ -62,9 +62,12 @@
 #include <QException>
 #include <QDir>
 #include <QFileDialog>
+#include <QUdpSocket>
+#include <QHostAddress>
 
 #include "dialogreadoutchannel.h"
 #include "daphnesocket.h"
+#include "dialogaligment.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -77,6 +80,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void sendFPGAReset();
+
+    DaphneSocket *getSocket();
+    void Message(QString message, int msgCode);
 
 private slots:
     void pushButtonConnectPressed();
@@ -99,6 +106,7 @@ private slots:
     void pushButtonMultipleWaveformsDirectoryPressed();
     void pushButtonAFEALIGNPressed();
     void checkBoxEnableEthernetPressed();
+    void menuAlignmentPressed();
 private:
     Ui::MainWindow *ui;
 
@@ -107,6 +115,7 @@ private:
     QTimer serialTimeoutTimer;
     QEventLoop waitingForData;
     QByteArray serialData;
+    QVector<double> ethernetData;
 
     uint16_t reg_4_value = 0;
     uint16_t reg_51_value = 0;
@@ -121,9 +130,7 @@ private:
     void populateComboBoxAvailableSerialPorts();
     void populateComboBoxAFE();
     void initializeWindow();
-    void Message(QString message, int msgCode);
     void sendDataFromSerial(const QString &send_data);
-    bool sendCommand(const QString &command);
     void populateComboBoxChannel();
     void waitForResponse(uint timeout);
     void delay(int delay_);
@@ -131,6 +138,7 @@ private:
     void populateComboBoxPGAGain();
     void populateComboBoxImpedances();
     void populateComboBoxLPF();
+    bool sendCommand(const QString &command);
     uint16_t getLNAGainMask();
     uint16_t getPGAGainMask();
     uint16_t getImpedanceMask();

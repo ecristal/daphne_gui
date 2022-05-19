@@ -1075,12 +1075,12 @@
     <property name="title">
      <string>Tools</string>
     </property>
-    <addaction name="actionAligment"/>
+    <addaction name="menuAlignment"/>
    </widget>
    <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionAligment">
+  <action name="menuAlignment">
    <property name="text">
     <string>Aligment</string>
    </property>

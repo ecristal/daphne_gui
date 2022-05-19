@@ -27,6 +27,7 @@ public:
     void saveContinousWaveform(QString &address, int &wave_number); 
     bool getWindowStatus();
     void setWindowStatus(bool status);
+    void plotDataEthernet(const QVector<double> &ethernet_data);
 private slots:
     void pushButtonSaveToTxtPressed();
 
@@ -45,5 +46,7 @@ private:
     uint16_t formatDataOFFSETBinaryLSB(const uint16_t &data);
     uint16_t formatDataOFFSETBinaryMSB(const uint16_t &data);
     void writeDataToFile();
+    void plot();
+    void generateTimeVectorEthernet(const int &length, double Tm);
 };
 #endif // DIALOGREADOUTCHANNEL_H

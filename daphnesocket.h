@@ -7,6 +7,9 @@
 #include <QString>
 #include <QUdpSocket>
 #include <QNetworkDatagram>
+#include <QTime>
+#include <QEventLoop>
+#include <QCoreApplication>
 
 class DaphneSocket : public QObject
 {
@@ -18,10 +21,14 @@ public:
     ~DaphneSocket();
     int read(const uint64_t &addr,const uint8_t &num);
     int write(const uint64_t &addr,const uint8_t &num, uint8_t *data);
+    QString alignAFEs(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr);
     int ping(int size);
     int pong(int size);
     QVector<QByteArray> getReceivedData();
     void flushReceivedData();
+    int sendSingleCommand(const uint64_t &addr, const uint64_t &data);
+    int sendData(const uint64_t &addr, const QVector<uint64_t> &data);
+    void waitForReadyRead();
 private slots:
     void readyRead_();
 private:
@@ -35,6 +42,7 @@ private:
 
     QVector<QByteArray> receivedData;
     int processDatagram(QByteArray &datagram);
+    void delayMilli(int delay_milli);
 };
 
 #endif // DAPHNESOCKET_H

@@ -1,9 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QUdpSocket>
-#include <QHostAddress>
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -31,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButtonMultipleWaveformsDirectory,SIGNAL(clicked(bool)),this,SLOT(pushButtonMultipleWaveformsDirectoryPressed()));
     connect(ui->pushButtonAFEALIGN,SIGNAL(clicked(bool)),this,SLOT(pushButtonAFEALIGNPressed()));
     connect(ui->checkBoxEnableEthernet,SIGNAL(stateChanged(int)),this,SLOT(checkBoxEnableEthernetPressed()));
+    connect(ui->menuAlignment,SIGNAL(triggered(bool)),this,SLOT(menuAlignmentPressed()));
 }
 
 MainWindow::~MainWindow()
@@ -41,6 +39,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::initializeWindow(){
+    this->setWindowTitle("DAPHNE GUI TOOL");
     this->populateComboBoxAvailableSerialPorts();
     this->populateComboBoxPGAClampLevel();
     this->populateComboBoxAFE();
@@ -532,6 +531,11 @@ void MainWindow::pushButtonRDFPGAPressed(){
     //**************END SERIAL *********************/
 }
 
+void MainWindow::sendFPGAReset(){
+    QString command = "CFG FPGA RESET\r\n";
+    this->sendCommand(command);
+}
+
 void MainWindow::pushButtonApplyBiasVoltages(){
     QString command = "WR VBIASCTRL V 1100\r\n";
     this->sendCommand(command);
@@ -669,20 +673,12 @@ void MainWindow::acquireWaveform(){
 
 void MainWindow::readAndPlotDataEthernet(){
     //do something
-    this->Message("From ethernet:\n",0);
-    int num = 1;
-    int length_data = sizeof(uint64_t)*num;
-    uint8_t *data_to_send = new uint8_t[length_data];
-    uint64_t *data_ = reinterpret_cast<uint64_t*>(data_to_send);
-    data_[0] = 0x16;
-    int bytes_sent = this->socket->write(0x4003,1,data_to_send);
-    this->Message("bytes sent: " + QString::number(bytes_sent),0);
-    data_[0] = 0x1234;
-    bytes_sent = this->socket->write(0x2000,1,data_to_send);
-    this->Message("bytes sent: " + QString::number(bytes_sent),0);
-    bytes_sent = this->socket->read(0x40000000,30);
+    int bytes_sent = this->socket->sendSingleCommand(0x4003,0x16);
+    bytes_sent = this->socket->sendSingleCommand(0x2000,0x1234);
+    bytes_sent = this->socket->read(0x40000000,183);
 //    Aqui debo poner un timeout;
-    this->delayMilli(10);
+    this->socket->waitForReadyRead();
+    this->delayMilli(5);
     QVector<QByteArray> receivedData = this->socket->getReceivedData();
     int bytes_received = 0;
     for(QByteArray data : receivedData){
@@ -692,9 +688,22 @@ void MainWindow::readAndPlotDataEthernet(){
     qDebug() << "data[1]: " << (int)receivedData.at(0)[1];
     QByteArray data_i = receivedData.at(0);
     uint64_t *u64_data = reinterpret_cast<uint64_t*>(data_i.begin() + 2);
+    this->ethernetData.clear();
     for(int i = 0; i<(data_i.length()-2)/8;i++){
-        qDebug() << "data["<<i+2<<"]: "<<u64_data[i];
+        //qDebug() << "data["<<i+2<<"]: "<<u64_data[i];
+        this->ethernetData.append((double)u64_data[i]);
     }
+    this->dialogReadoutChannelWindow->show();
+    this->dialogReadoutChannelWindow->plotDataEthernet(this->ethernetData);
     this->socket->flushReceivedData();
-    this->Message("bytes received: " + QString::number(bytes_received),0);
+    //this->Message("bytes received: " + QString::number(bytes_received),0);
+}
+
+void MainWindow::menuAlignmentPressed(){
+    DialogAligment alignment(this);
+    alignment.exec();
+}
+
+DaphneSocket* MainWindow::getSocket(){
+    return this->socket;
 }

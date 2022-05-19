@@ -34,6 +34,11 @@ void DialogReadoutChannel::plotData(const QByteArray &serial_data,const uint16_t
     }
 
     this->generateTimeVector(length_data-90,1.0/62500000.0);
+    this->plot();
+}
+
+void DialogReadoutChannel::plot(){
+
     double max_daphne_data = *std::max_element(this->daphneData.constBegin(),this->daphneData.constEnd());
     double min_daphne_data = *std::min_element(this->daphneData.constBegin(),this->daphneData.constEnd());
     double max_time_daphne_data = *std::max_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
@@ -42,6 +47,16 @@ void DialogReadoutChannel::plotData(const QByteArray &serial_data,const uint16_t
     ui->widgetDaphneDataGraph->xAxis->setRange(min_time_daphne_data,max_time_daphne_data);
     ui->widgetDaphneDataGraph->graph(0)->setData(this->daphneTime,this->daphneData);
     ui->widgetDaphneDataGraph->replot();
+
+}
+
+void DialogReadoutChannel::plotDataEthernet(const QVector<double> &ethernet_data){
+    this->daphneData.clear();
+    this->daphneData = ethernet_data;
+    this->daphneTime.clear();
+    int length_data = ethernet_data.length();
+    this->generateTimeVectorEthernet(length_data,1.0/62500000.0);
+    this->plot();
 }
 
 void DialogReadoutChannel::cancelButtonPressed(){
@@ -59,6 +74,14 @@ void DialogReadoutChannel::setWindowStatus(bool status){
 void DialogReadoutChannel::generateTimeVector(const int &length, double Tm){
     double time_ = 0.0;
     for(int i=0; i<length; i+=2){
+        time_ = time_ + Tm;
+        this->daphneTime.append(time_);
+    }
+}
+
+void DialogReadoutChannel::generateTimeVectorEthernet(const int &length, double Tm){
+    double time_ = 0.0;
+    for(int i=0; i<length; i++){
         time_ = time_ + Tm;
         this->daphneTime.append(time_);
     }
