@@ -204,9 +204,9 @@
     <widget class="QGroupBox" name="groupBoxBiasVoltage">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>10</x>
        <y>50</y>
-       <width>151</width>
+       <width>161</width>
        <height>121</height>
       </rect>
      </property>
@@ -539,7 +539,7 @@
       <rect>
        <x>10</x>
        <y>170</y>
-       <width>301</width>
+       <width>311</width>
        <height>61</height>
       </rect>
      </property>
@@ -816,7 +816,7 @@
       </property>
      </widget>
     </widget>
-    <widget class="QGroupBox" name="groupBox_11">
+    <widget class="QGroupBox" name="groupBoxSweepChannelOffset">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -893,7 +893,7 @@
      <widget class="QCheckBox" name="checkBoxEnableChannelOffsetSweep">
       <property name="geometry">
        <rect>
-        <x>370</x>
+        <x>380</x>
         <y>30</y>
         <width>71</width>
         <height>17</height>
@@ -1060,7 +1060,7 @@
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>41</y>
+       <y>30</y>
        <width>70</width>
        <height>17</height>
       </rect>
@@ -1078,8 +1078,11 @@
        <height>22</height>
       </rect>
      </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
      <property name="maximum">
-      <number>10000</number>
+      <number>100000</number>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButtonMultipleWaveformsDirectory">
@@ -1093,6 +1096,19 @@
      </property>
      <property name="text">
       <string>Directory</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="spinBoxMultipleWaveformsContinous">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>50</y>
+       <width>70</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Cont.</string>
      </property>
     </widget>
    </widget>
@@ -1112,12 +1128,24 @@
     </property>
     <addaction name="menuAlignment"/>
    </widget>
+   <widget class="QMenu" name="menuConfiguration">
+    <property name="title">
+     <string>Configuration</string>
+    </property>
+    <addaction name="actionEthernet"/>
+   </widget>
    <addaction name="menuTools"/>
+   <addaction name="menuConfiguration"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="menuAlignment">
    <property name="text">
     <string>Aligment</string>
+   </property>
+  </action>
+  <action name="actionEthernet">
+   <property name="text">
+    <string>Ethernet</string>
    </property>
   </action>
  </widget>

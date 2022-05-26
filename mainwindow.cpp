@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButtonGETCONFIG,SIGNAL(clicked(bool)),this,SLOT(pushButtonGETCONFIGPressed()));
     connect(ui->checkBoxEnableEthernet,SIGNAL(stateChanged(int)),this,SLOT(checkBoxEnableEthernetPressed()));
     connect(ui->menuAlignment,SIGNAL(triggered(bool)),this,SLOT(menuAlignmentPressed()));
+    connect(ui->actionEthernet,SIGNAL(triggered(bool)),this,SLOT(menuEthernetConfigurationPressed()));
 }
 
 MainWindow::~MainWindow()
@@ -58,7 +59,7 @@ void MainWindow::initializeWindow(){
     this->serialPort_ = new QSerialPort(this);
     this->socket = new DaphneSocket();
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_01_05\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_01_06\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -496,10 +497,16 @@ void MainWindow::pushButtonRDFPGAPressed(){
     //***************** SERIAL/ETHERNET **********************//
     this->dialogReadoutChannelWindow->setWindowStatus(true);
     if(ui->spinBoxMultipleWaveformsEnable->isChecked()){
-        int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
-        for(int i = 0; i< sampling_iterations; i++){
-            this->acquireWaveform();
-            this->dialogReadoutChannelWindow->saveContinousWaveform(this->mutliple_waveforms_folder_address,i);
+        if(ui->spinBoxMultipleWaveformsContinous->isChecked()){
+            while(true){
+                this->acquireWaveform();
+            }
+        }else{
+            int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
+            for(int i = 0; i< sampling_iterations; i++){
+                this->acquireWaveform();
+                this->dialogReadoutChannelWindow->saveContinousWaveform(this->mutliple_waveforms_folder_address,i);
+            }
         }
      }else if(ui->checkBoxEnableChannelOffsetSweep->isChecked()){
         int start_value = ui->spinBoxChannelOffsetSweepStartValue->value();
@@ -698,6 +705,24 @@ void MainWindow::readAndPlotDataEthernet(){
 void MainWindow::menuAlignmentPressed(){
     DialogAligment alignment(this);
     alignment.exec();
+}
+
+void MainWindow::menuEthernetConfigurationPressed(){
+    DialogEthernetConfiguration ethernetConfig(this);
+    ethernetConfig.setDaphneIpAddress(this->daphneIPAddr);
+    ethernetConfig.setComputerIpAddress(this->computerIPAddr);
+    ethernetConfig.setDaphnePortNumber(this->daphnePortNumber);
+    ethernetConfig.setComputerPortNumber(this->computerPortNumber);
+    int exec_code = ethernetConfig.exec();
+    if(exec_code){
+        qDebug()<<__PRETTY_FUNCTION__<< "::Accepted";
+        this->daphneIPAddr = ethernetConfig.getDaphneIpAddress();
+        this->daphnePortNumber = ethernetConfig.getDaphnePortNumber();
+        this->computerIPAddr = ethernetConfig.getComputerIpAddress();
+        this->computerPortNumber = ethernetConfig.getComputerPortNumber();
+    }else{
+        qDebug()<<__PRETTY_FUNCTION__<<"::Rejected";
+    }
 }
 
 DaphneSocket* MainWindow::getSocket(){

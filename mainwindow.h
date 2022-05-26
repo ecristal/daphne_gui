@@ -68,6 +68,7 @@
 #include "dialogreadoutchannel.h"
 #include "daphnesocket.h"
 #include "dialogaligment.h"
+#include "dialogethernetconfiguration.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -107,6 +108,7 @@ private slots:
     void pushButtonGETCONFIGPressed();
     void checkBoxEnableEthernetPressed();
     void menuAlignmentPressed();
+    void menuEthernetConfigurationPressed();
 private:
     Ui::MainWindow *ui;
 
@@ -126,6 +128,10 @@ private:
     DialogReadoutChannel* dialogReadoutChannelWindow;
 
     DaphneSocket *socket;
+    QString daphneIPAddr = "192.168.133.12";
+    QString computerIPAddr = "192.168.133.1";
+    int daphnePortNumber = 2001;
+    int computerPortNumber = 58789;
 
     void populateComboBoxAvailableSerialPorts();
     void populateComboBoxAFE();

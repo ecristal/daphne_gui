@@ -17,19 +17,22 @@ SOURCES += \
     dialogreadoutchannel.cpp \
     main.cpp \
     mainwindow.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    dialogethernetconfiguration.cpp
 
 HEADERS += \
     daphnesocket.h \
     dialogaligment.h \
     dialogreadoutchannel.h \
     mainwindow.h \
-    qcustomplot.h
+    qcustomplot.h \
+    dialogethernetconfiguration.h
 
 FORMS += \
     dialogaligment.ui \
     dialogreadoutchannel.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    dialogethernetconfiguration.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
