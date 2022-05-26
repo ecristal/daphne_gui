@@ -58,7 +58,7 @@ void MainWindow::initializeWindow(){
     this->serialPort_ = new QSerialPort(this);
     this->socket = new DaphneSocket();
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_01_04\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_01_05\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -193,7 +193,7 @@ void MainWindow::pushButtonApplyOffsetPressed(){
 void MainWindow::pushButtonApplyVGAINPressed(){
 
     QString command = "WR AFE ";
-    command = command + ui->comboBoxChannel->currentText();
+    command = command + ui->comboBoxAFE->currentText();
     command = command + " VGAIN V ";
     command = command + QString::number(this->calculateVGainReferenceValue());
     command = command + "\r\n";
