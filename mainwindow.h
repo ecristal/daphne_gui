@@ -104,7 +104,7 @@ private slots:
     void checkBoxMSBFirstChecked();
     void pushButtonSendRawCommandPressed();
     void pushButtonMultipleWaveformsDirectoryPressed();
-    void pushButtonAFEALIGNPressed();
+    void pushButtonGETCONFIGPressed();
     void checkBoxEnableEthernetPressed();
     void menuAlignmentPressed();
 private:

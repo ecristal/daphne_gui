@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->checkBoxMSBFirst,SIGNAL(stateChanged(int)),this,SLOT(checkBoxMSBFirstChecked()));
     connect(ui->pushButtonSendRawCommand,SIGNAL(clicked(bool)),this,SLOT(pushButtonSendRawCommandPressed()));
     connect(ui->pushButtonMultipleWaveformsDirectory,SIGNAL(clicked(bool)),this,SLOT(pushButtonMultipleWaveformsDirectoryPressed()));
-    connect(ui->pushButtonAFEALIGN,SIGNAL(clicked(bool)),this,SLOT(pushButtonAFEALIGNPressed()));
+    connect(ui->pushButtonGETCONFIG,SIGNAL(clicked(bool)),this,SLOT(pushButtonGETCONFIGPressed()));
     connect(ui->checkBoxEnableEthernet,SIGNAL(stateChanged(int)),this,SLOT(checkBoxEnableEthernetPressed()));
     connect(ui->menuAlignment,SIGNAL(triggered(bool)),this,SLOT(menuAlignmentPressed()));
 }
@@ -51,7 +51,7 @@ void MainWindow::initializeWindow(){
     this->populateComboBoxVGainValues();
     this->populateComboBoxLNAClampLevel();
     this->serialTimeoutTimer.setSingleShot(true);
-    ui->pushButtonAFEALIGN->setEnabled(false);
+    ui->pushButtonGETCONFIG->setEnabled(true);
     ui->pushButtonConnect->setEnabled(false);
     ui->pushButtonDisconnect->setEnabled(false);
     ui->spinBoxBaudRate->setValue(1842300);
@@ -557,14 +557,10 @@ void MainWindow::waitForResponse(uint timeout){
     this->receivingDataFlag = true;
     serialTimeoutTimer.start(timeout*1000);
     this->waitingForData.exec();
-//    while(this->receivingDataFlag){
-//        if(!this->receivingDataFlag)
-//            break;
-//    }
 }
 
 void MainWindow::serialTimeoutTimerTriggered(){
-    this->Message("Timout waiting for DAPHNE response",2);
+    this->Message("Timout waiting for DAPHNE serial response",2);
 }
 
 void MainWindow::populateComboBoxChannel(){
@@ -651,15 +647,15 @@ void MainWindow::pushButtonMultipleWaveformsDirectoryPressed(){
     qDebug()<<this->mutliple_waveforms_folder_address;
 }
 
-void MainWindow::pushButtonAFEALIGNPressed(){
+void MainWindow::pushButtonGETCONFIGPressed(){
     //do something
 }
 
 void MainWindow::checkBoxEnableEthernetPressed(){
     if(ui->checkBoxEnableEthernet->isChecked()){
-        ui->pushButtonAFEALIGN->setEnabled(true);
+
     }else{
-        ui->pushButtonAFEALIGN->setEnabled(false);
+
     }
 }
 
@@ -673,9 +669,9 @@ void MainWindow::acquireWaveform(){
 
 void MainWindow::readAndPlotDataEthernet(){
     //do something
-    int bytes_sent = this->socket->sendSingleCommand(0x4003,0x16);
-    bytes_sent = this->socket->sendSingleCommand(0x2000,0x1234);
-    bytes_sent = this->socket->read(0x40000000,183);
+    //int bytes_sent = this->socket->sendSingleCommand(0x4003,0x16); // delay value; done by the aligment subroutines.
+    //bytes_sent = this->socket->sendSingleCommand(0x2000,0x1234); // software trigger; send any data.
+    int bytes_sent = this->socket->read(0x40000000,183);
 //    Aqui debo poner un timeout;
     this->socket->waitForReadyRead();
     this->delayMilli(5);

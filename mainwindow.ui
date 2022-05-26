@@ -521,7 +521,7 @@
       <string>SET CONFIG</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButtonAFEALIGN">
+    <widget class="QPushButton" name="pushButtonGETCONFIG">
      <property name="geometry">
       <rect>
        <x>300</x>
@@ -531,7 +531,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>AFE ALIGN</string>
+      <string>GET CONFIG</string>
      </property>
     </widget>
     <widget class="QGroupBox" name="groupBox_6">
