@@ -35,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     this->dialogReadoutChannelWindow->~DialogReadoutChannel();
-    this->socket->~DaphneSocket();
     delete ui;
 }
 
@@ -57,9 +56,8 @@ void MainWindow::initializeWindow(){
     ui->pushButtonDisconnect->setEnabled(false);
     ui->spinBoxBaudRate->setValue(1842300);
     this->serialPort_ = new QSerialPort(this);
-    this->socket = new DaphneSocket();
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_01_06\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_01_09\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -660,15 +658,16 @@ void MainWindow::pushButtonGETCONFIGPressed(){
 
 void MainWindow::checkBoxEnableEthernetPressed(){
     if(ui->checkBoxEnableEthernet->isChecked()){
-
+        this->socket = new DaphneSocket(this->computerIPAddr, this->daphneIPAddr, this->computerPortNumber, this->daphnePortNumber);
     }else{
-
+        this->socket->~DaphneSocket();
     }
 }
 
 void MainWindow::acquireWaveform(){
     if(ui->checkBoxEnableEthernet->isChecked()){
-        this->readAndPlotDataEthernet();
+        int channel = ui->comboBoxChannel->currentText().toInt();
+        this->readAndPlotDataEthernet(channel);
     }else{
         this->readAndPlotDataSerial();
     }
@@ -702,6 +701,63 @@ void MainWindow::readAndPlotDataEthernet(){
     //this->Message("bytes received: " + QString::number(bytes_received),0);
 }
 
+void MainWindow::readAndPlotDataEthernet(const int channel){
+    //do something
+    //int bytes_sent = this->socket->sendSingleCommand(0x4003,0x16); // delay value; done by the aligment subroutines.
+    //bytes_sent = this->socket->sendSingleCommand(0x2000,0x1234); // software trigger; send any data.
+    int spyBuffer = this->getSpyBufferFromChannel(channel);
+    int bytes_sent = this->socket->read(spyBuffer,183);
+//    Aqui debo poner un timeout;
+    this->socket->waitForReadyRead();
+    this->delayMilli(5);
+    QVector<QByteArray> receivedData = this->socket->getReceivedData();
+    int bytes_received = 0;
+    for(QByteArray data : receivedData){
+        bytes_received = bytes_received + data.length();
+    }
+    qDebug() << "data[0]: " << (int)receivedData.at(0)[0];
+    qDebug() << "data[1]: " << (int)receivedData.at(0)[1];
+    QByteArray data_i = receivedData.at(0);
+    uint64_t *u64_data = reinterpret_cast<uint64_t*>(data_i.begin() + 2);
+    this->ethernetData.clear();
+    for(int i = 0; i<(data_i.length()-2)/8;i++){
+        //qDebug() << "data["<<i+2<<"]: "<<u64_data[i];
+        this->ethernetData.append((double)u64_data[i]);
+    }
+    this->dialogReadoutChannelWindow->show();
+    this->dialogReadoutChannelWindow->plotDataEthernet(this->ethernetData);
+    this->socket->flushReceivedData();
+    //this->Message("bytes received: " + QString::number(bytes_received),0);
+}
+
+int MainWindow::getSpyBufferFromChannel(const int channel){
+  int spyBuffer = 0x40000000;
+  int afe = 0;
+  if(channel >= 0 && channel< 8){
+    afe = 0;
+    spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
+  }else if(channel >= 8 && channel< 15){
+    afe = 1;
+    spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
+  }else if(channel >= 16 && channel< 23){
+    afe = 2;
+    spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
+  }else if(channel >= 24 && channel< 31){
+    afe = 3;
+    spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
+  }else if(channel >= 32 && channel< 39){
+    afe = 4;
+    spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
+  }else{
+    afe = 0;
+    spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
+  }
+  qDebug() << "spyBuffer :: " << QString::number(spyBuffer, 16);
+  return spyBuffer;
+}
+
+
+
 void MainWindow::menuAlignmentPressed(){
     DialogAligment alignment(this);
     alignment.exec();
@@ -720,6 +776,13 @@ void MainWindow::menuEthernetConfigurationPressed(){
         this->daphnePortNumber = ethernetConfig.getDaphnePortNumber();
         this->computerIPAddr = ethernetConfig.getComputerIpAddress();
         this->computerPortNumber = ethernetConfig.getComputerPortNumber();
+
+        if(ui->checkBoxEnableEthernet->isChecked()){
+            this->socket->~DaphneSocket();
+            this->socket = new DaphneSocket(this->computerIPAddr, this->daphneIPAddr, this->computerPortNumber, this->daphnePortNumber);
+        }else{
+            //... do nothing
+        }
     }else{
         qDebug()<<__PRETTY_FUNCTION__<<"::Rejected";
     }

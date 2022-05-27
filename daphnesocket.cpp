@@ -1,5 +1,7 @@
 #include "daphnesocket.h"
 
+#include <exception>
+
 DaphneSocket::DaphneSocket()
 {
     this->ipAddr = "192.168.133.1";
@@ -20,17 +22,23 @@ DaphneSocket::DaphneSocket()
     }
 }
 
-DaphneSocket::DaphneSocket(const QString &ipAddr, const QString &targetIpAddr, const uint16_t &portNumber)
+DaphneSocket::DaphneSocket(const QString &ipAddr, const QString &targetIpAddr, const uint16_t &portNumber, const uint16_t &targetPortNumber)
 {
     this->ipAddr = ipAddr;
     this->targetIpAddr = targetIpAddr;
-    this->portNumber = portNumber;
+    this->portNumber = targetPortNumber;
+    this->socketPortNumber = portNumber;
     this->hostAddr.setAddress(this->ipAddr);
     this->targetAddr.setAddress(this->targetIpAddr);
-    this->udpSocket = new QUdpSocket();
-    this->udpSocket->bind(this->hostAddr,this->socketPortNumber);
+    this->udpSocket = new QUdpSocket(this);
 
-    //connect(this->udpSocket, SIGNAL(readyRead()), this, SLOT(readyRead()));
+    if(!this->udpSocket->bind(this->hostAddr,this->socketPortNumber))
+    {
+       qDebug() << "Failed to bind UDP socket:" << this->udpSocket->errorString();
+    }else{
+       qDebug() << "UDP socket binded to: " << this->hostAddr.toString() << "::" << this->socketPortNumber;
+       connect(this->udpSocket, SIGNAL(readyRead()), this, SLOT(readyRead_()), Qt::QueuedConnection);
+    }
 }
 
 DaphneSocket::~DaphneSocket(){

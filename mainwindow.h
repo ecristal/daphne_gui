@@ -164,5 +164,7 @@ private:
     void acquireWaveform();
     void readAndPlotDataEthernet();
     void delayMilli(int delay_milli);
+    void readAndPlotDataEthernet(const int channel);
+    int getSpyBufferFromChannel(const int channel);
 };
 #endif // MAINWINDOW_H

@@ -17,7 +17,7 @@ class DaphneSocket : public QObject
 
 public:
     DaphneSocket();
-    DaphneSocket(const QString &ipAddr,const QString &targetIpAddr, const uint16_t &portNumber);
+    DaphneSocket(const QString &ipAddr, const QString &targetIpAddr, const uint16_t &portNumber, const uint16_t &targetPortNumber);
     ~DaphneSocket();
     int read(const uint64_t &addr,const uint8_t &num);
     int write(const uint64_t &addr,const uint8_t &num, uint8_t *data);
@@ -43,6 +43,7 @@ private:
     QVector<QByteArray> receivedData;
     int processDatagram(QByteArray &datagram);
     void delayMilli(int delay_milli);
+
 };
 
 #endif // DAPHNESOCKET_H
