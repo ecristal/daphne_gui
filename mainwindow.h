@@ -69,6 +69,7 @@
 #include "daphnesocket.h"
 #include "dialogaligment.h"
 #include "dialogethernetconfiguration.h"
+#include "dialogacquisitionconfiguration.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -110,6 +111,7 @@ private slots:
     void menuAlignmentPressed();
     void menuEthernetConfigurationPressed();
     void populateComboBoxChannel();
+    void menuAcquisitionConfigurationPressed();
 private:
     Ui::MainWindow *ui;
 

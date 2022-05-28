@@ -1185,6 +1185,7 @@
      <string>Configuration</string>
     </property>
     <addaction name="actionEthernet"/>
+    <addaction name="actionAcquisition"/>
    </widget>
    <addaction name="menuTools"/>
    <addaction name="menuConfiguration"/>
@@ -1198,6 +1199,11 @@
   <action name="actionEthernet">
    <property name="text">
     <string>Ethernet</string>
+   </property>
+  </action>
+  <action name="actionAcquisition">
+   <property name="text">
+    <string>Acquisition</string>
    </property>
   </action>
  </widget>

@@ -33,14 +33,14 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>10</y>
-     <width>231</width>
+     <y>-10</y>
+     <width>261</width>
      <height>41</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>17</pointsize>
+     <pointsize>18</pointsize>
     </font>
    </property>
    <property name="text">

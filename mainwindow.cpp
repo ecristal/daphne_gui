@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->menuAlignment,SIGNAL(triggered(bool)),this,SLOT(menuAlignmentPressed()));
     connect(ui->actionEthernet,SIGNAL(triggered(bool)),this,SLOT(menuEthernetConfigurationPressed()));
     connect(ui->comboBoxAFE,SIGNAL(currentIndexChanged(int)),this,SLOT(populateComboBoxChannel()));
+    connect(ui->actionAcquisition,SIGNAL(triggered(bool)),this,SLOT(menuAcquisitionConfigurationPressed()));
 }
 
 MainWindow::~MainWindow()
@@ -58,7 +59,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_02_00\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_02_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -853,6 +854,16 @@ void MainWindow::menuEthernetConfigurationPressed(){
     }else{
         qDebug()<<__PRETTY_FUNCTION__<<"::Rejected";
     }
+}
+
+void MainWindow::menuAcquisitionConfigurationPressed(){
+  DialogAcquisitionConfiguration acquisitionConfig(this);
+  int exec_code = acquisitionConfig.exec();
+  if(exec_code){
+    //... accepted config
+  }else{
+    //... rejected config
+  }
 }
 
 DaphneSocket* MainWindow::getSocket(){
