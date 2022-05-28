@@ -109,6 +109,7 @@ private slots:
     void checkBoxEnableEthernetPressed();
     void menuAlignmentPressed();
     void menuEthernetConfigurationPressed();
+    void populateComboBoxChannel();
 private:
     Ui::MainWindow *ui;
 
@@ -137,7 +138,6 @@ private:
     void populateComboBoxAFE();
     void initializeWindow();
     void sendDataFromSerial(const QString &send_data);
-    void populateComboBoxChannel();
     void waitForResponse(uint timeout);
     void delay(int delay_);
     void populateComboBoxLNAGain();

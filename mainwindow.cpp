@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->checkBoxEnableEthernet,SIGNAL(stateChanged(int)),this,SLOT(checkBoxEnableEthernetPressed()));
     connect(ui->menuAlignment,SIGNAL(triggered(bool)),this,SLOT(menuAlignmentPressed()));
     connect(ui->actionEthernet,SIGNAL(triggered(bool)),this,SLOT(menuEthernetConfigurationPressed()));
+    connect(ui->comboBoxAFE,SIGNAL(currentIndexChanged(int)),this,SLOT(populateComboBoxChannel()));
 }
 
 MainWindow::~MainWindow()
@@ -54,10 +55,10 @@ void MainWindow::initializeWindow(){
     ui->pushButtonGETCONFIG->setEnabled(true);
     ui->pushButtonConnect->setEnabled(false);
     ui->pushButtonDisconnect->setEnabled(false);
-    ui->spinBoxBaudRate->setValue(1842300);
+    ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_01_09\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_01_12\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -569,8 +570,39 @@ void MainWindow::serialTimeoutTimerTriggered(){
 }
 
 void MainWindow::populateComboBoxChannel(){
-    for(int i=0;i<40;i++){
-        ui->comboBoxChannel->addItem(QString::number(i));
+    ui->comboBoxChannel->clear();
+    int afe = ui->comboBoxAFE->currentText().toInt();
+    switch(afe){
+      case 0:
+        for(int i=0;i<8;i++){
+            ui->comboBoxChannel->addItem(QString::number(i));
+        }
+      break;
+      case 1:
+        for(int i=8;i<16;i++){
+            ui->comboBoxChannel->addItem(QString::number(i));
+        }
+      break;
+      case 2:
+        for(int i=16;i<24;i++){
+            ui->comboBoxChannel->addItem(QString::number(i));
+        }
+      break;
+      case 3:
+        for(int i=24;i<32;i++){
+            ui->comboBoxChannel->addItem(QString::number(i));
+        }
+      break;
+      case 4:
+        for(int i=32;i<40;i++){
+            ui->comboBoxChannel->addItem(QString::number(i));
+        }
+      break;
+      default:
+        for(int i=0;i<40;i++){
+            ui->comboBoxChannel->addItem(QString::number(i));
+        }
+      break;
     }
 }
 
@@ -707,11 +739,17 @@ void MainWindow::readAndPlotDataEthernet(const int channel){
     //bytes_sent = this->socket->sendSingleCommand(0x2000,0x1234); // software trigger; send any data.
     int spyBuffer = this->getSpyBufferFromChannel(channel);
     int bytes_sent = this->socket->read(spyBuffer,183);
+    this->delayMilli(1);
+//    bytes_sent = this->socket->read(spyBuffer,100);
+//    this->delayMilli(1);
+//    bytes_sent = this->socket->read(spyBuffer,100);
+//    this->delayMilli(1);
 //    Aqui debo poner un timeout;
     this->socket->waitForReadyRead();
-    this->delayMilli(5);
+
     QVector<QByteArray> receivedData = this->socket->getReceivedData();
     int bytes_received = 0;
+    qDebug() << "datagrams Received :" << receivedData.length();
     for(QByteArray data : receivedData){
         bytes_received = bytes_received + data.length();
     }
