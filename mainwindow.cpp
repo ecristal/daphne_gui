@@ -181,24 +181,44 @@ void MainWindow::setConfig(){
 
 void MainWindow::pushButtonApplyOffsetPressed(){
 
+  if(ui->checkBoxAllAFEChannelOffset->isChecked()){
+    for(int i = 0; i < ui->comboBoxChannel->count(); i++){
+      QString command = "WR OFFSET CH ";
+      command = command + ui->comboBoxChannel->itemText(i);
+      command = command + " V ";
+      command = command + QString::number(ui->spinBoxOffsetVoltage->value());
+      command = command + "\r\n";
+      this->sendCommand(command);
+    }
+  }else{
     QString command = "WR OFFSET CH ";
     command = command + ui->comboBoxChannel->currentText();
     command = command + " V ";
     command = command + QString::number(ui->spinBoxOffsetVoltage->value());
     command = command + "\r\n";
     this->sendCommand(command);
-
+  }
 }
 
 void MainWindow::pushButtonApplyVGAINPressed(){
 
+  if(ui->checkBoxAllAFEVgain->isChecked()){
+    for(int i = 0; i < ui->comboBoxAFE->count(); i++){
+      QString command = "WR AFE ";
+      command = command + ui->comboBoxAFE->itemText(i);
+      command = command + " VGAIN V ";
+      command = command + QString::number(this->calculateVGainReferenceValue());
+      command = command + "\r\n";
+      this->sendCommand(command);
+    }
+  }else{
     QString command = "WR AFE ";
     command = command + ui->comboBoxAFE->currentText();
     command = command + " VGAIN V ";
     command = command + QString::number(this->calculateVGainReferenceValue());
     command = command + "\r\n";
     this->sendCommand(command);
-
+  }
 }
 
 int MainWindow::calculateVGainReferenceValue(){
@@ -543,6 +563,14 @@ void MainWindow::sendFPGAReset(){
 }
 
 void MainWindow::pushButtonApplyBiasVoltages(){
+  if(ui->checkBoxOnlyTrim->isChecked()){
+    QString command = "WR TRIM CH ";
+    command = command + ui->comboBoxChannel->currentText();
+    command = command + " V ";
+    command = command + QString::number(ui->spinBoxTrim->value());
+    command = command + "\r\n";
+    this->sendCommand(command);
+  }else{
     QString command = "WR VBIASCTRL V 1100\r\n";
     this->sendCommand(command);
     command = "WR AFE ";
@@ -557,6 +585,7 @@ void MainWindow::pushButtonApplyBiasVoltages(){
     command = command + QString::number(ui->spinBoxTrim->value());
     command = command + "\r\n";
     this->sendCommand(command);
+  }
 }
 
 void MainWindow::waitForResponse(uint timeout){
