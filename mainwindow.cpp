@@ -60,7 +60,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_02_05\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_02_06\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -157,8 +157,8 @@ void MainWindow::setConfig(){
     eraser = MASK_ERASER_ADC_FORMAT_REG_4;
     this->reg_4_value = this->eraseAndApplyMask(this->reg_4_value,adc_format_mask,eraser);
 
-    qDebug() << "REG 51: " << QString::number(this->reg_51_value, 2) << " :: " << QString::number(this->reg_51_value, 16);
-    qDebug() << "REG 52: " << QString::number(this->reg_52_value, 2) << " :: " << QString::number(this->reg_52_value, 16);
+    //qDebug() << "REG 51: " << QString::number(this->reg_51_value, 2) << " :: " << QString::number(this->reg_51_value, 16);
+    //qDebug() << "REG 52: " << QString::number(this->reg_52_value, 2) << " :: " << QString::number(this->reg_52_value, 16);
 
     QString command = "WR AFE ";
     command = command + ui->comboBoxAFE->currentText();
@@ -285,7 +285,7 @@ uint16_t MainWindow::getLNAGainMask(){
             mask = 0;
             break;
     }
-    qDebug() << "LNA MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
+    //qDebug() << "LNA MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
     return mask;
 }
 
@@ -306,7 +306,7 @@ uint16_t MainWindow::getPGAClampLevelMask(){
             mask = 0;
             break;
     }
-    qDebug() << "PGA CLAMP MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
+    //qDebug() << "PGA CLAMP MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
     return mask;
 }
 
@@ -330,7 +330,7 @@ uint16_t MainWindow::getLNAClampLevelMask(){
             mask = 0;
             break;
     }
-    qDebug() << "LNA CLAMP MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
+    //qDebug() << "LNA CLAMP MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
     return mask;
 }
 
@@ -348,7 +348,7 @@ uint16_t MainWindow::getPGAGainMask(){
             mask = 0;
             break;
     }
-    qDebug() << "PGA MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
+    //qDebug() << "PGA MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
     return mask;
 }
 
@@ -372,7 +372,7 @@ uint16_t MainWindow::getLPFMask(){
             mask = 0;
             break;
     }
-    qDebug() << "LPF MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
+    //qDebug() << "LPF MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
     return mask;
 }
 
@@ -396,7 +396,7 @@ uint16_t MainWindow::getImpedanceMask(){
             mask = 0;
             break;
     }
-    qDebug() << "IMPEDANCE MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
+    //qDebug() << "IMPEDANCE MASK: " << QString::number(mask, 2) << " :: " << QString::number(mask, 16);
     return mask;
 }
 
@@ -415,9 +415,9 @@ void MainWindow::pushButtonConnectPressed(){
 }
 
 void MainWindow::pushButtonDisconnectPressed(){
-    qDebug()<<__func__;
+    //qDebug()<<__func__;
     if (this->serialPort_->isOpen()){
-        qDebug()<<__func__<< " line:" <<__LINE__;
+        //qDebug()<<__func__<< " line:" <<__LINE__;
         this->serialPort_->close();
         ui->pushButtonDisconnect->setEnabled(false);
         ui->pushButtonConnect->setEnabled(true);
@@ -486,7 +486,7 @@ void MainWindow::readDataFromSerial(){
 
 void MainWindow::sendDataFromSerial(const QString &send_data){
     QByteArray send_data_byte_array = send_data.toUtf8();
-    qDebug() <<"send_data: " <<send_data_byte_array.toHex();
+    //qDebug() <<"send_data: " <<send_data_byte_array.toHex();
     this->serialPort_->write(send_data_byte_array);
 }
 
@@ -722,7 +722,7 @@ void MainWindow::populateComboBoxVGainValues(){
 
 void MainWindow::pushButtonMultipleWaveformsDirectoryPressed(){
     this->mutliple_waveforms_folder_address = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), QDir::currentPath());
-    qDebug()<<this->mutliple_waveforms_folder_address;
+    //qDebug()<<this->mutliple_waveforms_folder_address;
 }
 
 void MainWindow::pushButtonGETCONFIGPressed(){
@@ -763,13 +763,13 @@ void MainWindow::readAndPlotDataEthernet(){
     for(QByteArray data : receivedData){
         bytes_received = bytes_received + data.length();
     }
-    qDebug() << "data[0]: " << (int)receivedData.at(0)[0];
-    qDebug() << "data[1]: " << (int)receivedData.at(0)[1];
+    ////qDebug() << "data[0]: " << (int)receivedData.at(0)[0];
+    ////qDebug() << "data[1]: " << (int)receivedData.at(0)[1];
     QByteArray data_i = receivedData.at(0);
     uint64_t *u64_data = reinterpret_cast<uint64_t*>(data_i.begin() + 2);
     this->ethernetData.clear();
     for(int i = 0; i<(data_i.length()-2)/8;i++){
-        //qDebug() << "data["<<i+2<<"]: "<<u64_data[i];
+        ////qDebug() << "data["<<i+2<<"]: "<<u64_data[i];
         this->ethernetData.append((double)u64_data[i]);
     }
     this->dialogReadoutChannelWindow->show();
@@ -788,10 +788,10 @@ void MainWindow::requestDataFromChannel(const int &channel,const int &length){
   for(int i = 0; i < numberOfRequest; i++){
     if(i == numberOfRequest - 1){
       this->socket->read(spyBuffer + i*minimunDatagramSize + lastRequestSize,minimunDatagramSize);
-      qDebug() << "Requested n-1:: " << QString::number(spyBuffer + i*minimunDatagramSize + lastRequestSize,16);
+      ////qDebug() << "Requested n-1:: " << QString::number(spyBuffer + i*minimunDatagramSize + lastRequestSize,16);
     }else{
       this->socket->read(spyBuffer + i*minimunDatagramSize,minimunDatagramSize);
-      qDebug() << "Requested :: " << QString::number(spyBuffer + i*minimunDatagramSize,16);
+      ////qDebug() << "Requested :: " << QString::number(spyBuffer + i*minimunDatagramSize,16);
     }
   }
 }
@@ -804,7 +804,7 @@ void MainWindow::readAndPlotDataEthernet(const int &channel){
 
     QVector<QByteArray> receivedData = this->socket->getReceivedData();
     int bytes_received = 0;
-    qDebug() << "datagrams Received :" << receivedData.length();
+    ////qDebug() << "datagrams Received :" << receivedData.length();
     this->ethernetData.clear();
     for(QByteArray data : receivedData){
         bytes_received = bytes_received + data.length();
@@ -854,7 +854,7 @@ void MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
 
   QVector<QByteArray> receivedData = this->socket->getReceivedData();
   int bytes_received = 0;
-  qDebug() << "datagrams Received :" << receivedData.length();
+  ////qDebug() << "datagrams Received :" << receivedData.length();
   this->ethernetData.clear();
   for(QByteArray data : receivedData){
       bytes_received = bytes_received + data.length();
@@ -887,7 +887,7 @@ int MainWindow::getSpyBufferFromChannel(const int &channel){
     afe = 0;
     spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
   }
-  qDebug() << "spyBuffer :: " << QString::number(spyBuffer, 16);
+  ////qDebug() << "spyBuffer :: " << QString::number(spyBuffer, 16);
   return spyBuffer;
 }
 
@@ -906,7 +906,7 @@ void MainWindow::menuEthernetConfigurationPressed(){
     ethernetConfig.setComputerPortNumber(this->computerPortNumber);
     int exec_code = ethernetConfig.exec();
     if(exec_code){
-        qDebug()<<__PRETTY_FUNCTION__<< "::Accepted";
+        //qDebug()<<__PRETTY_FUNCTION__<< "::Accepted";
         this->daphneIPAddr = ethernetConfig.getDaphneIpAddress();
         this->daphnePortNumber = ethernetConfig.getDaphnePortNumber();
         this->computerIPAddr = ethernetConfig.getComputerIpAddress();
@@ -919,7 +919,7 @@ void MainWindow::menuEthernetConfigurationPressed(){
             //... do nothing
         }
     }else{
-        qDebug()<<__PRETTY_FUNCTION__<<"::Rejected";
+        //qDebug()<<__PRETTY_FUNCTION__<<"::Rejected";
     }
 }
 

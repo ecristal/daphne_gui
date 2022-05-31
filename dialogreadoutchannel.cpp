@@ -25,11 +25,11 @@ void DialogReadoutChannel::plotData(const QByteArray &serial_data,const uint16_t
     this->daphneData.clear();
     this->daphneTime.clear();
     int length_data = serial_data.length();
-    qDebug() <<"length: "<< length_data;
+    ////qDebug() <<"length: "<< length_data;
     uint16_t byte_data;
     for(int i = 90; i<length_data; i+=2){
         byte_data = bytes2int16(serial_data[i],serial_data[i+1]);
-        //qDebug() << "Data: " << (double)this->formatData(byte_data);
+        ////qDebug() << "Data: " << (double)this->formatData(byte_data);
         this->daphneData.append((double)this->formatData(byte_data, format));
     }
 
@@ -85,9 +85,9 @@ void DialogReadoutChannel::plotDataMultichannel(const QVector<double> &ethernet_
         this->daphneDataSingleChannel.append(daphneData.at(i));
       }
   }
-  qDebug() << "daphnedata::length : " << this->daphneData.length();
-  qDebug() << "daphnetime::length : " << this->daphneTime.length();
-  qDebug() << "daphneDataSingleChannel::length : " << this->daphneDataSingleChannel.length();
+  //qDebug() << "daphnedata::length : " << this->daphneData.length();
+  //qDebug() << "daphnetime::length : " << this->daphneTime.length();
+  //qDebug() << "daphneDataSingleChannel::length : " << this->daphneDataSingleChannel.length();
   this->plotMultichannel();
 }
 
@@ -130,7 +130,7 @@ QByteArray DialogReadoutChannel::generateDaphneTestData(const uint32_t &length){
     uint8_t* byte_data = new uint8_t[2];
     for(uint32_t i=0;i<length;i++){
         senoidal_ = (int16_t)amplitude*std::sin(omega*tiempo_);
-        qDebug() << "Data senoidal: " << (double)senoidal_;
+        //qDebug() << "Data senoidal: " << (double)senoidal_;
         tiempo_ = tiempo_ + step;
         this->daphneTime.append(tiempo_);
         this->uint162bytes(senoidal_, byte_data);
@@ -164,8 +164,8 @@ int32_t DialogReadoutChannel::formatData(const uint16_t &data, const uint16_t fo
 }
 
 int16_t DialogReadoutChannel::formatData2CompLSB(const uint16_t &data){
-    qDebug() << __PRETTY_FUNCTION__;
-    qDebug() << "Data binary before format: " << QString::number(data,2);
+    //qDebug() << __PRETTY_FUNCTION__;
+    //qDebug() << "Data binary before format: " << QString::number(data,2);
     uint16_t b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,ba,bb,bc,bd,be,bf;
     b0 = (data >> 15) & 0b00000001;
     b1 = (data >> 13) & 0b00000010;
@@ -188,31 +188,31 @@ int16_t DialogReadoutChannel::formatData2CompLSB(const uint16_t &data){
     uint16_t value = b0 + b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9 + ba + bb + bc + bd + be + bf;
     int16_t return_value = 0;
     value = (value>>2)&0b11111111111111; // El ADC es de 14 bits, entonces manuel se encarga de hacer un shift de 2 posiciones a la derecha y pone
-    qDebug() << "Data binary after format: " << QString::number(value,2);
+    //qDebug() << "Data binary after format: " << QString::number(value,2);
 //    return_value = value;                                            // ceros en el bit 15 y 14;
 //    if (value>=(8192)){
 //        return_value=-1*((value^0b11111111111111)+1); // Aqui se realiza la inversion del complemento a 2, pero creo que no es necesario si hago un cast de uint16_t a int16_t;
 //    }
     return_value = ((int16_t)(value << 2)) / 4 ;
-    qDebug() << "Data binary after signed conversion: " << QString::number(return_value,2) << " int16: " << QString::number(return_value);
+    //qDebug() << "Data binary after signed conversion: " << QString::number(return_value,2) << " int16: " << QString::number(return_value);
     return return_value;
 }
 
 int16_t DialogReadoutChannel::formatData2CompMSB(const uint16_t &data){
 
-    qDebug() << __PRETTY_FUNCTION__;
-    qDebug() << "Data binary before format: " << QString::number(data,2);
+    //qDebug() << __PRETTY_FUNCTION__;
+    //qDebug() << "Data binary before format: " << QString::number(data,2);
     uint16_t value; // En este caso no es necesario hacer las inversion del LSB y MSB porque los datos se reciben en el orden correcto.
     value = data; // Aqui solo se toman los 14 bits
-    qDebug() << "Data binary after format: " << QString::number(value,2);
+    //qDebug() << "Data binary after format: " << QString::number(value,2);
     int16_t return_value = ((int16_t)(value << 2)) / 4;
-    qDebug() << "Data binary after signed conversion: " << QString::number(return_value,2) << " int16: " << QString::number(return_value);
+    //qDebug() << "Data binary after signed conversion: " << QString::number(return_value,2) << " int16: " << QString::number(return_value);
     return return_value;
 }
 
 uint16_t DialogReadoutChannel::formatDataOFFSETBinaryLSB(const uint16_t &data){
-    qDebug() << __PRETTY_FUNCTION__;
-    qDebug() << "Data binary before format: " << QString::number(data,2);
+    //qDebug() << __PRETTY_FUNCTION__;
+    //qDebug() << "Data binary before format: " << QString::number(data,2);
     uint16_t b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,ba,bb,bc,bd,be,bf;
     b0 = (data >> 15) & 0b00000001;
     b1 = (data >> 13) & 0b00000010;
@@ -236,18 +236,18 @@ uint16_t DialogReadoutChannel::formatDataOFFSETBinaryLSB(const uint16_t &data){
 
     value = (value>>2)&0b11111111111111; // El ADC es de 14 bits, entonces manuel se encarga de hacer un shift de 2 posiciones a la derecha y pone
                                                 // ceros en el bit 15 y 14;
-    qDebug() << "Data binary before format: " << QString::number(value,2);
-    qDebug() << "Data binary after signed conversion: " << QString::number(value,2) << " int16: " << QString::number(value);
+    //qDebug() << "Data binary before format: " << QString::number(value,2);
+    //qDebug() << "Data binary after signed conversion: " << QString::number(value,2) << " int16: " << QString::number(value);
     return value;
 }
 
 uint16_t DialogReadoutChannel::formatDataOFFSETBinaryMSB(const uint16_t &data){
-    qDebug() << __PRETTY_FUNCTION__;
-    qDebug() << "Data binary before format: " << QString::number(data,2);
+    //qDebug() << __PRETTY_FUNCTION__;
+    //qDebug() << "Data binary before format: " << QString::number(data,2);
     uint16_t value; // En este caso no es necesario hacer las inversion del LSB y MSB porque los datos se reciben en el orden correcto.
     value = data; // Aqui solo se toman los 14 bits
-    qDebug() << "Data binary before format: " << QString::number(value,2);
-    qDebug() << "Data binary after signed conversion: " << QString::number(value,2) << " int16: " << QString::number(value);
+    //qDebug() << "Data binary before format: " << QString::number(value,2);
+    //qDebug() << "Data binary after signed conversion: " << QString::number(value,2) << " int16: " << QString::number(value);
     return value;
 }
 
@@ -279,14 +279,14 @@ void DialogReadoutChannel::writeDataToFile(){
 
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Waveforms"), this->saveDir, tr("Waveforms (*.txt)"));
     QStringList split_fileName = fileName.split('/');
-    qDebug() << fileName;
-    qDebug() << split_fileName.last();
+    ////qDebug() << fileName;
+    ////qDebug() << split_fileName.last();
     if(split_fileName.last() != ".txt" && fileName != ""){
         QFile file(fileName);
         file.open(QIODevice::WriteOnly);
         QTextStream writeToFile(&file);
         for(int i = 0; i<this->daphneData.length(); i++){
-            qDebug() << this->daphneData.at(i);
+            ////qDebug() << this->daphneData.at(i);
             writeToFile << QString::number(this->daphneData.at(i))<<"\n";
         }
     }else{
@@ -305,7 +305,7 @@ void DialogReadoutChannel::saveContinousWaveform(const QString &address,int &wav
     file.open(QIODevice::WriteOnly);
     QTextStream writeToFile(&file);
     for(int i = 0; i<this->daphneData.length(); i++){
-        qDebug() << this->daphneData.at(i);
+        ////qDebug() << this->daphneData.at(i);
         writeToFile << QString::number(this->daphneData.at(i))<<"\n";
     }
     ui->lcdNumberWaveform->setPalette(Qt::darkGreen);
@@ -338,7 +338,7 @@ void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const int &r
     file.open(QIODevice::Append);
     QTextStream writeToFile(&file);
     for(int k = this->enabledChannelsNumbers.at(i)*record_length; k < this->enabledChannelsNumbers.at(i)*record_length + record_length; k++){
-        qDebug() << this->daphneData.at(k);
+        ////qDebug() << this->daphneData.at(k);
         writeToFile << QString::number(this->daphneData.at(k))<<"\n";
     }
   }

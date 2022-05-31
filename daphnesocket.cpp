@@ -121,7 +121,7 @@ void DaphneSocket::readyRead_()
     this->udpSocket->readDatagram(datagram.data(), datagram.size(), &this->hostAddr, &this->socketPortNumber);
     number_of_bytes_received = number_of_bytes_received + this->processDatagram(datagram);
     //}
-    qDebug() << "Received data: ";
+    //qDebug() << "Received data: ";
 }
 
 int DaphneSocket::processDatagram(QByteArray &datagram){
