@@ -69,7 +69,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Record lenght:</string>
+     <string>Record length:</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="spinBoxRecordLenght">
@@ -85,7 +85,7 @@
      <number>64</number>
     </property>
     <property name="maximum">
-     <number>1024</number>
+     <number>4096</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
@@ -98,11 +98,11 @@
      </rect>
     </property>
     <property name="text">
-     <string>[max: 1023]</string>
+     <string>[max: 1024]</string>
     </property>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="groupBox_2">
+  <widget class="QGroupBox" name="groupBoxEnabledChannels">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -127,7 +127,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox_3">
+   <widget class="QGroupBox" name="groupBoxAFE0">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -138,6 +138,12 @@
     </property>
     <property name="title">
      <string>AFE 0</string>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
     </property>
     <widget class="QCheckBox" name="checkBoxChannel0">
      <property name="geometry">
@@ -244,7 +250,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_4">
+   <widget class="QGroupBox" name="groupBoxAFE1">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -361,7 +367,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_5">
+   <widget class="QGroupBox" name="groupBoxAFE2">
     <property name="geometry">
      <rect>
       <x>270</x>
@@ -478,7 +484,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_6">
+   <widget class="QGroupBox" name="groupBoxAFE3">
     <property name="geometry">
      <rect>
       <x>400</x>
@@ -595,7 +601,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_7">
+   <widget class="QGroupBox" name="groupBoxAFE4">
     <property name="geometry">
      <rect>
       <x>530</x>

@@ -50,13 +50,45 @@ void DialogReadoutChannel::plot(){
 
 }
 
+void DialogReadoutChannel::plotMultichannel(){
+
+    double max_daphne_data = *std::max_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
+    double min_daphne_data = *std::min_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
+    double max_time_daphne_data = *std::max_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
+    double min_time_daphne_data = *std::min_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
+    ui->widgetDaphneDataGraph->yAxis->setRange(min_daphne_data,max_daphne_data);
+    ui->widgetDaphneDataGraph->xAxis->setRange(min_time_daphne_data,max_time_daphne_data);
+    ui->widgetDaphneDataGraph->graph(0)->setData(this->daphneTime,this->daphneDataSingleChannel);
+    ui->widgetDaphneDataGraph->replot();
+
+}
+
 void DialogReadoutChannel::plotDataEthernet(const QVector<double> &ethernet_data){
     this->daphneData.clear();
     this->daphneData = ethernet_data;
     this->daphneTime.clear();
     int length_data = ethernet_data.length();
-    this->generateTimeVectorEthernet(length_data,1.0/62500000.0);
+    this->generateTimeVectorEthernet(length_data,1.0/65000000.0);
     this->plot();
+}
+
+void DialogReadoutChannel::plotDataMultichannel(const QVector<double> &ethernet_data, const int &recordLength, const int &channel){
+
+  this->daphneData.clear();
+  this->daphneDataSingleChannel.clear();
+  this->daphneData = ethernet_data;
+  this->daphneTime.clear();
+  int length_data = recordLength;
+  this->generateTimeVectorEthernet(length_data,1.0/65000000.0);
+  for(int i = 0; i < daphneData.length(); i++){
+      if(i >= channel*recordLength && i < channel*recordLength + recordLength){
+        this->daphneDataSingleChannel.append(daphneData.at(i));
+      }
+  }
+  qDebug() << "daphnedata::length : " << this->daphneData.length();
+  qDebug() << "daphnetime::length : " << this->daphneTime.length();
+  qDebug() << "daphneDataSingleChannel::length : " << this->daphneDataSingleChannel.length();
+  this->plotMultichannel();
 }
 
 void DialogReadoutChannel::cancelButtonPressed(){
@@ -266,7 +298,7 @@ QVector<double> DialogReadoutChannel::getDaphneData(){
     return this->daphneData;
 }
 
-void DialogReadoutChannel::saveContinousWaveform(QString &address,int &wave_number){
+void DialogReadoutChannel::saveContinousWaveform(const QString &address,int &wave_number){
 
     QString fileName = address + "/waveform_" + QString::number(wave_number) + ".txt";
     QFile file(fileName);
@@ -278,4 +310,38 @@ void DialogReadoutChannel::saveContinousWaveform(QString &address,int &wave_numb
     }
     ui->lcdNumberWaveform->setPalette(Qt::darkGreen);
     ui->lcdNumberWaveform->display(wave_number);
+}
+
+void DialogReadoutChannel::createFileNames(const QString &address, const QVector<bool> &enabledChannels){
+
+    QVector<QString> files;
+    QVector<int> enabledChannelsNumbers_;
+    int k = 0;
+    for(int i = 0; i < enabledChannels.length(); i++){
+      if(enabledChannels.at(i)){
+        QString fileName = address + "/channel_" + QString::number(k) + ".dat";
+        files.append(fileName);
+        enabledChannelsNumbers_.append(i);
+      }
+      k++;
+    }
+    this->enabledChannelsNumbers.clear();
+    this->saveFiles.clear();
+    this->saveFiles = files;
+    this->enabledChannelsNumbers = enabledChannelsNumbers_;
+}
+
+void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const int &record_length){
+
+  for(int i = 0; i < this->saveFiles.length(); i++){
+    QFile file(this->saveFiles.at(i));
+    file.open(QIODevice::Append);
+    QTextStream writeToFile(&file);
+    for(int k = this->enabledChannelsNumbers.at(i)*record_length; k < this->enabledChannelsNumbers.at(i)*record_length + record_length; k++){
+        qDebug() << this->daphneData.at(k);
+        writeToFile << QString::number(this->daphneData.at(k))<<"\n";
+    }
+  }
+  ui->lcdNumberWaveform->setPalette(Qt::darkGreen);
+  ui->lcdNumberWaveform->display(wave_number);
 }

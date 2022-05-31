@@ -136,6 +136,10 @@ private:
     int daphnePortNumber = 2001;
     int computerPortNumber = 58789;
 
+    // Acquisition menu
+    QVector<bool> channelsEnabledState;
+    int recordLength = 64;
+
     void populateComboBoxAvailableSerialPorts();
     void populateComboBoxAFE();
     void initializeWindow();
@@ -165,8 +169,13 @@ private:
     uint16_t getLNAClampLevelMask();
     void acquireWaveform();
     void readAndPlotDataEthernet();
-    void delayMilli(int delay_milli);
-    void readAndPlotDataEthernet(const int channel);
-    int getSpyBufferFromChannel(const int channel);
+    void delayMilli(const int &delay_milli);
+    void readAndPlotDataEthernet(const int &channel);
+    int getSpyBufferFromChannel(const int &channel);
+    void configureEnabledChannels();
+    void requestDataFromChannel(const int &channel, const int &length);
+    void readMultichannelEthernet(const QVector<bool> &enabledChannels);
+    void readChannelsEthernet(const QVector<bool> &enabledChannels);
+    void acquireWaveformEnabled();
 };
 #endif // MAINWINDOW_H

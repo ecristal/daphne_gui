@@ -53,13 +53,14 @@ void MainWindow::initializeWindow(){
     this->populateComboBoxVGainValues();
     this->populateComboBoxLNAClampLevel();
     this->serialTimeoutTimer.setSingleShot(true);
+    this->configureEnabledChannels();
     ui->pushButtonGETCONFIG->setEnabled(true);
     ui->pushButtonConnect->setEnabled(false);
     ui->pushButtonDisconnect->setEnabled(false);
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_02_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_02_05\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -69,6 +70,12 @@ void MainWindow::populateComboBoxAvailableSerialPorts(){
     for(QSerialPortInfo port : availablePorts){
         ui->comboBoxAvailableSerialPort->addItem(port.portName());
     }
+}
+
+void MainWindow::configureEnabledChannels(){
+  for(int i = 0; i < 40; i++){
+    this->channelsEnabledState.append(true);
+  }
 }
 
 void MainWindow::populateComboBoxLNAGain(){
@@ -462,7 +469,7 @@ void MainWindow::delay(int delay_){
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
-void MainWindow::delayMilli(int delay_milli){
+void MainWindow::delayMilli(const int &delay_milli){
     QTime dieTime = QTime::currentTime().addMSecs(delay_milli);
     while(QTime::currentTime() < dieTime)
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
@@ -523,9 +530,13 @@ void MainWindow::pushButtonRDFPGAPressed(){
             }
         }else{
             int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
+            this->dialogReadoutChannelWindow->createFileNames(this->mutliple_waveforms_folder_address,this->channelsEnabledState);
             for(int i = 0; i< sampling_iterations; i++){
-                this->acquireWaveform();
-                this->dialogReadoutChannelWindow->saveContinousWaveform(this->mutliple_waveforms_folder_address,i);
+                int channel = ui->comboBoxChannel->currentText().toInt();
+                this->acquireWaveformEnabled();
+                this->dialogReadoutChannelWindow->plotDataMultichannel(this->ethernetData,this->recordLength,channel);
+                this->dialogReadoutChannelWindow->saveMultiChannel(i,this->recordLength);
+                this->dialogReadoutChannelWindow->show();
             }
         }
      }else if(ui->checkBoxEnableChannelOffsetSweep->isChecked()){
@@ -735,6 +746,10 @@ void MainWindow::acquireWaveform(){
     }
 }
 
+void MainWindow::acquireWaveformEnabled(){
+  this->readMultichannelEthernet(this->channelsEnabledState);
+}
+
 void MainWindow::readAndPlotDataEthernet(){
     //do something
     //int bytes_sent = this->socket->sendSingleCommand(0x4003,0x16); // delay value; done by the aligment subroutines.
@@ -763,42 +778,94 @@ void MainWindow::readAndPlotDataEthernet(){
     //this->Message("bytes received: " + QString::number(bytes_received),0);
 }
 
-void MainWindow::readAndPlotDataEthernet(const int channel){
-    //do something
-    //int bytes_sent = this->socket->sendSingleCommand(0x4003,0x16); // delay value; done by the aligment subroutines.
-    //bytes_sent = this->socket->sendSingleCommand(0x2000,0x1234); // software trigger; send any data.
-    int spyBuffer = this->getSpyBufferFromChannel(channel);
-    int bytes_sent = this->socket->read(spyBuffer,183);
-    this->delayMilli(1);
-//    bytes_sent = this->socket->read(spyBuffer,100);
-//    this->delayMilli(1);
-//    bytes_sent = this->socket->read(spyBuffer,100);
-//    this->delayMilli(1);
-//    Aqui debo poner un timeout;
+void MainWindow::requestDataFromChannel(const int &channel,const int &length){
+
+  int minimunDatagramSize = 64;
+  int numberOfRequest = (int)(length/minimunDatagramSize);
+  int lastRequestSize = length%minimunDatagramSize;
+  int spyBuffer = this->getSpyBufferFromChannel(channel);
+
+  for(int i = 0; i < numberOfRequest; i++){
+    if(i == numberOfRequest - 1){
+      this->socket->read(spyBuffer + i*minimunDatagramSize + lastRequestSize,minimunDatagramSize);
+      qDebug() << "Requested n-1:: " << QString::number(spyBuffer + i*minimunDatagramSize + lastRequestSize,16);
+    }else{
+      this->socket->read(spyBuffer + i*minimunDatagramSize,minimunDatagramSize);
+      qDebug() << "Requested :: " << QString::number(spyBuffer + i*minimunDatagramSize,16);
+    }
+  }
+}
+
+void MainWindow::readAndPlotDataEthernet(const int &channel){
+
+    this->requestDataFromChannel(channel,this->recordLength);
     this->socket->waitForReadyRead();
+    this->delayMilli(5);
 
     QVector<QByteArray> receivedData = this->socket->getReceivedData();
     int bytes_received = 0;
     qDebug() << "datagrams Received :" << receivedData.length();
+    this->ethernetData.clear();
     for(QByteArray data : receivedData){
         bytes_received = bytes_received + data.length();
-    }
-    qDebug() << "data[0]: " << (int)receivedData.at(0)[0];
-    qDebug() << "data[1]: " << (int)receivedData.at(0)[1];
-    QByteArray data_i = receivedData.at(0);
-    uint64_t *u64_data = reinterpret_cast<uint64_t*>(data_i.begin() + 2);
-    this->ethernetData.clear();
-    for(int i = 0; i<(data_i.length()-2)/8;i++){
-        //qDebug() << "data["<<i+2<<"]: "<<u64_data[i];
-        this->ethernetData.append((double)u64_data[i]);
+        uint64_t *u64_data = reinterpret_cast<uint64_t*>(data.begin() + 2);
+        for(int i = 0; i<(data.length()-2)/8;i++){
+            this->ethernetData.append((double)u64_data[i]);
+        }
+        //delete[] u64_data;
     }
     this->dialogReadoutChannelWindow->show();
     this->dialogReadoutChannelWindow->plotDataEthernet(this->ethernetData);
     this->socket->flushReceivedData();
-    //this->Message("bytes received: " + QString::number(bytes_received),0);
 }
 
-int MainWindow::getSpyBufferFromChannel(const int channel){
+void MainWindow::readMultichannelEthernet(const QVector<bool> &enabledChannels){
+
+  this->readChannelsEthernet(enabledChannels);
+
+  QVector<double> ethernetData_aux;
+  int k = 0;
+  for(bool enabledChannel : enabledChannels){
+    if(enabledChannel == false){
+      for(int i = 0; i < this->recordLength; i++){
+        ethernetData_aux.append(-99.0);
+      }
+    }else{
+      for(int i = 0; i < this->recordLength; i++){
+        ethernetData_aux.append(this->ethernetData.at(k));
+        k++;
+      }
+    }
+  }
+  this->ethernetData.clear();
+  this->ethernetData = ethernetData_aux;
+  this->socket->flushReceivedData();
+}
+
+void MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
+
+  for(int i = 0; i < enabledChannels.length(); i++){
+    if(enabledChannels.at(i)){
+      this->requestDataFromChannel(i,this->recordLength);
+    }
+  }
+  this->socket->waitForReadyRead();
+  this->delayMilli(5);
+
+  QVector<QByteArray> receivedData = this->socket->getReceivedData();
+  int bytes_received = 0;
+  qDebug() << "datagrams Received :" << receivedData.length();
+  this->ethernetData.clear();
+  for(QByteArray data : receivedData){
+      bytes_received = bytes_received + data.length();
+      uint64_t *u64_data = reinterpret_cast<uint64_t*>(data.begin() + 2);
+      for(int i = 0; i<(data.length()-2)/8;i++){
+          this->ethernetData.append((double)u64_data[i]);
+      }
+  }
+}
+
+int MainWindow::getSpyBufferFromChannel(const int &channel){
   int spyBuffer = 0x40000000;
   int afe = 0;
   if(channel >= 0 && channel< 8){
@@ -858,9 +925,13 @@ void MainWindow::menuEthernetConfigurationPressed(){
 
 void MainWindow::menuAcquisitionConfigurationPressed(){
   DialogAcquisitionConfiguration acquisitionConfig(this);
+  acquisitionConfig.setCheckBoxStates(this->channelsEnabledState);
+  acquisitionConfig.setRecordLength(this->recordLength);
   int exec_code = acquisitionConfig.exec();
   if(exec_code){
     //... accepted config
+    this->channelsEnabledState = acquisitionConfig.getCheckBoxStates();
+    this->recordLength = acquisitionConfig.getRecordLength();
   }else{
     //... rejected config
   }

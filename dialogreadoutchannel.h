@@ -24,10 +24,13 @@ public:
     void generateTimeVector(const int &length, double Tm);
     int32_t formatData(const uint16_t &data, const uint16_t format);
     QVector<double> getDaphneData();
-    void saveContinousWaveform(QString &address, int &wave_number); 
+    void saveContinousWaveform(const QString &address, int &wave_number);
     bool getWindowStatus();
     void setWindowStatus(bool status);
     void plotDataEthernet(const QVector<double> &ethernet_data);
+    void createFileNames(const QString &address, const QVector<bool> &enabledChannels);
+    void saveMultiChannel(const int &wave_number, const int &record_length);
+    void plotDataMultichannel(const QVector<double> &ethernet_data, const int &recordLength, const int &channel);
 private slots:
     void pushButtonSaveToTxtPressed();
 
@@ -37,7 +40,10 @@ private:
 
     QVector<double> daphneTime;
     QVector<double> daphneData;
+    QVector<double> daphneDataSingleChannel;
     QString saveDir;
+    QVector<QString> saveFiles;
+    QVector<int> enabledChannelsNumbers;
 
     bool window_status;
 
@@ -48,5 +54,6 @@ private:
     void writeDataToFile();
     void plot();
     void generateTimeVectorEthernet(const int &length, double Tm);
+    void plotMultichannel();
 };
 #endif // DIALOGREADOUTCHANNEL_H
