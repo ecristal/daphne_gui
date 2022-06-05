@@ -786,12 +786,12 @@ void MainWindow::requestDataFromChannel(const int &channel,const int &length){
   int spyBuffer = this->getSpyBufferFromChannel(channel);
 
   for(int i = 0; i < numberOfRequest; i++){
-    if(i == numberOfRequest - 1){
-      this->socket->read(spyBuffer + i*minimunDatagramSize + lastRequestSize,minimunDatagramSize);
-      ////qDebug() << "Requested n-1:: " << QString::number(spyBuffer + i*minimunDatagramSize + lastRequestSize,16);
+    if(i == numberOfRequest - 1 && lastRequestSize != 0){
+      this->socket->read(spyBuffer + i*minimunDatagramSize, lastRequestSize);
+      qDebug() << "Requested n-1:: " << QString::number(spyBuffer + i*minimunDatagramSize + lastRequestSize,16);
     }else{
       this->socket->read(spyBuffer + i*minimunDatagramSize,minimunDatagramSize);
-      ////qDebug() << "Requested :: " << QString::number(spyBuffer + i*minimunDatagramSize,16);
+      qDebug() << "Requested :: " << QString::number(spyBuffer + i*minimunDatagramSize,16);
     }
   }
 }
