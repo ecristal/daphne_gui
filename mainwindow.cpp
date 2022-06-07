@@ -60,7 +60,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_03_02\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_03_03\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -160,30 +160,42 @@ void MainWindow::setConfig(){
     //qDebug() << "REG 51: " << QString::number(this->reg_51_value, 2) << " :: " << QString::number(this->reg_51_value, 16);
     //qDebug() << "REG 52: " << QString::number(this->reg_52_value, 2) << " :: " << QString::number(this->reg_52_value, 16);
 
-    QString command = "WR AFE ";
-    command = command + ui->comboBoxAFE->currentText();
-    command = command + " REG 52 V ";
-    command = command + QString::number(this->reg_52_value);
-    command = command + "\r\n";
-    this->Message("Writing on R52: bin" + QString::number(this->reg_52_value, 2) + " :: hex: " + QString::number(this->reg_52_value, 16),0);
-    this->sendCommand(command);
+    if(ui->checkBoxAllAFEConfigs->isChecked()){
+      for(int i=0; i<5; i++){
+        this->setAFEConfiguration(QString::number(i));
+      }
+    }else{
+      this->setAFEConfiguration(ui->comboBoxAFE->currentText());
+    }
+
+}
+
+void MainWindow::setAFEConfiguration(const QString &afe_number){
+
+  QString command = "WR AFE ";
+  command = command + afe_number;
+  command = command + " REG 52 V ";
+  command = command + QString::number(this->reg_52_value);
+  command = command + "\r\n";
+  this->Message("Writing on R52: bin" + QString::number(this->reg_52_value, 2) + " :: hex: " + QString::number(this->reg_52_value, 16),0);
+  this->sendCommand(command);
 
 
-    command = "WR AFE ";
-    command = command + ui->comboBoxAFE->currentText();
-    command = command + " REG 51 V ";
-    command = command + QString::number(this->reg_51_value);
-    command = command + "\r\n";
-    this->Message("Writing on R51: bin" + QString::number(this->reg_51_value, 2) + " :: hex: " + QString::number(this->reg_51_value, 16),0);
-    this->sendCommand(command);
+  command = "WR AFE ";
+  command = command + afe_number;
+  command = command + " REG 51 V ";
+  command = command + QString::number(this->reg_51_value);
+  command = command + "\r\n";
+  this->Message("Writing on R51: bin" + QString::number(this->reg_51_value, 2) + " :: hex: " + QString::number(this->reg_51_value, 16),0);
+  this->sendCommand(command);
 
-    command = "WR AFE ";
-    command = command + ui->comboBoxAFE->currentText();
-    command = command + " REG 4 V ";
-    command = command + QString::number(this->reg_4_value);
-    command = command + "\r\n";
-    this->Message("Writing on R4: bin" + QString::number(this->reg_4_value, 2) + " :: hex: " + QString::number(this->reg_4_value, 16),0);
-    this->sendCommand(command);
+  command = "WR AFE ";
+  command = command + afe_number;
+  command = command + " REG 4 V ";
+  command = command + QString::number(this->reg_4_value);
+  command = command + "\r\n";
+  this->Message("Writing on R4: bin" + QString::number(this->reg_4_value, 2) + " :: hex: " + QString::number(this->reg_4_value, 16),0);
+  this->sendCommand(command);
 
 }
 

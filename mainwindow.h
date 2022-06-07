@@ -183,5 +183,6 @@ private:
     void readMultichannelEthernet_vector(const QVector<bool> &enabledChannels);
     void delayMicro(const int &delay_micro);
     void setOFFSETGain(const int &i);
+    void setAFEConfiguration(const QString &afe_number);
 };
 #endif // MAINWINDOW_H
