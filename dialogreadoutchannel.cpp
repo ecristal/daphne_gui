@@ -10,6 +10,7 @@ DialogReadoutChannel::DialogReadoutChannel(QWidget *parent) :
     ui(new Ui::DialogReadoutChannel)
 {
     ui->setupUi(this);
+    this->setWindowTitle("READOUT");
     this->window_status = true;
     ui->widgetDaphneDataGraph->addGraph();
     connect(ui->pushButtonTxt,SIGNAL(clicked(bool)),this,SLOT(pushButtonSaveToTxtPressed()));

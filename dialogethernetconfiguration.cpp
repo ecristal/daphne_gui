@@ -6,6 +6,7 @@ DialogEthernetConfiguration::DialogEthernetConfiguration(QWidget *parent) :
   ui(new Ui::DialogEthernetConfiguration)
 {
   ui->setupUi(this);
+  this->setWindowTitle("ETHERNET CONFIGURATION");
   connect(ui->pushButtonDefault,SIGNAL(clicked(bool)),this,SLOT(pushButtonDefaultPressed()));
 }
 

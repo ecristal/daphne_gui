@@ -6,6 +6,7 @@ DialogAligment::DialogAligment(QWidget *parent) :
     ui(new Ui::DialogAligment)
 {
     ui->setupUi(this);
+    this->setWindowTitle("ALIGNMENT");
     connect(ui->pushButtonAlign,SIGNAL(clicked(bool)), this, SLOT(pushButtonAlignPressed()));
 }
 

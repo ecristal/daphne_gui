@@ -43,7 +43,7 @@ private:
     QVector<QByteArray> receivedData;
     int processDatagram(QByteArray &datagram);
     void delayMilli(int delay_milli);
-
+    bool perform_aligment = true;
 };
 
 #endif // DAPHNESOCKET_H

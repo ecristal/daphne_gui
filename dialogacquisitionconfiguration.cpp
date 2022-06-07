@@ -6,6 +6,7 @@ DialogAcquisitionConfiguration::DialogAcquisitionConfiguration(QWidget *parent) 
   ui(new Ui::DialogAcquisitionConfiguration)
 {
   ui->setupUi(this);
+  this->setWindowTitle("ACQUISITION CONFIGURATION");
   connect(ui->pushButtonSelectAll,SIGNAL(clicked(bool)),this,SLOT(pushButtonSelectAllPressed()));
   connect(ui->pushButtonUnselect,SIGNAL(clicked(bool)),this,SLOT(pushButtonUnselectAllPressed()));
   configureCheckboxPointers();

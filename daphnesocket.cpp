@@ -195,7 +195,7 @@ QString DaphneSocket::alignAFEs(const int &retry, QVector<bool> &isAfeAligned, Q
                QVector<uint64_t> v({0,1,2,3,4,5,6,7,8});
                this->sendData((0x3000+(0x10*afe)),v);
            }
-           if(retry == retry-1)
+           if(retry_ == retry-1)
                qDebug() << "FAILED!";
                output = output + "FAILED!\n";
                isAfeAlignedStr[afe] = isAfeAlignedStr[afe] + " FAILED!";
