@@ -127,7 +127,7 @@ void DaphneSocket::readyRead_()
 int DaphneSocket::processDatagram(QByteArray &datagram){
     if(datagram.length() != 0)
       this->receivedData.append(datagram);
-    if(this->receivedData.length() > 512)
+    if(this->receivedData.length() > 15000)
         this->receivedData.pop_back();
     return datagram.length();
 }

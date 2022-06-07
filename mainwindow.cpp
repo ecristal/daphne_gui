@@ -60,7 +60,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_02_07\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_03_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -187,10 +187,30 @@ void MainWindow::setConfig(){
 
 }
 
+void MainWindow::setOFFSETGain(const int &i){
+
+  if(ui->checkBoxAllAFEChannelOffsetGAIN->isChecked()){
+    QString command = "CFG OFFSET CH ";
+    command = command + QString::number(i);
+    command = command + " GAIN ";
+    command = command + QString::number(2);
+    command = command + "\r\n";
+    this->sendCommand(command);
+  }else{
+    QString command = "CFG OFFSET CH ";
+    command = command + QString::number(i);
+    command = command + " GAIN ";
+    command = command + QString::number(1);
+    command = command + "\r\n";
+    this->sendCommand(command);
+  }
+}
+
 void MainWindow::pushButtonApplyOffsetPressed(){
 
   if(ui->checkBoxAllAFEChannelOffset->isChecked()){
     for(int i = 0; i < ui->comboBoxChannel->count(); i++){
+      this->setOFFSETGain(i);
       QString command = "WR OFFSET CH ";
       command = command + ui->comboBoxChannel->itemText(i);
       command = command + " V ";
@@ -199,6 +219,7 @@ void MainWindow::pushButtonApplyOffsetPressed(){
       this->sendCommand(command);
     }
   }else{
+    this->setOFFSETGain(ui->comboBoxChannel->currentText().toInt());
     QString command = "WR OFFSET CH ";
     command = command + ui->comboBoxChannel->currentText();
     command = command + " V ";
@@ -475,6 +496,14 @@ void MainWindow::delayMilli(const int &delay_milli){
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
+void MainWindow::delayMicro(const int &delay_micro){
+  std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+  auto duration = now.time_since_epoch();
+  auto dieTime = std::chrono::duration_cast<std::chrono::microseconds>(duration).count() + delay_micro;
+  while(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() < dieTime)
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
 void MainWindow::readDataFromSerial(){
     QByteArray serial_data_ = this->serialPort_->readAll();
     this->serialData.append(serial_data_);
@@ -522,6 +551,7 @@ void MainWindow::readAndPlotDataSerial(){
 void MainWindow::pushButtonRDFPGAPressed(){
 
     //***************** SERIAL/ETHERNET **********************//
+    ui->pushButtonRDFPGA->setEnabled(false);
     this->dialogReadoutChannelWindow->setWindowStatus(true);
     if(ui->spinBoxMultipleWaveformsEnable->isChecked()){
         if(ui->spinBoxMultipleWaveformsContinous->isChecked()){
@@ -532,11 +562,23 @@ void MainWindow::pushButtonRDFPGAPressed(){
             int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
             this->dialogReadoutChannelWindow->createFileNames(this->mutliple_waveforms_folder_address,this->channelsEnabledState);
             for(int i = 0; i< sampling_iterations; i++){
+              if(this->dialogReadoutChannelWindow->getWindowStatus() == false){
+                break;
+              }
                 int channel = ui->comboBoxChannel->currentText().toInt();
                 this->acquireWaveformEnabled();
-                this->dialogReadoutChannelWindow->plotDataMultichannel(this->channelsData,channel);
-                this->dialogReadoutChannelWindow->saveMultiChannel(i,this->channelsData);
-                this->dialogReadoutChannelWindow->show();
+                //qDebug() << "expected datagrams :: " << this->expected_datagrams << " :: received datagrams :: " << this->received_datagrams;
+                if(this->received_datagrams == this->expected_datagrams){
+                  this->dialogReadoutChannelWindow->plotDataMultichannel(this->channelsData,channel);
+                  this->dialogReadoutChannelWindow->saveMultiChannel(i,this->channelsData);
+                  this->dialogReadoutChannelWindow->show();
+                  //qDebug() << "accepted";
+                }else{
+                  if(i >= 0)
+                    i--;
+                  //qDebug() << "rejected";
+                }
+                this->expected_datagrams = 0;
                 //this->dialogReadoutChannelWindow->plotDataMultichannel(this->ethernetData,this->recordLength,channel);
                 //this->dialogReadoutChannelWindow->saveMultiChannel(i,this->recordLength);
                 //this->dialogReadoutChannelWindow->show();
@@ -569,6 +611,7 @@ void MainWindow::pushButtonRDFPGAPressed(){
             this->dialogReadoutChannelWindow->plotData(this->dialogReadoutChannelWindow->generateDaphneTestData(300), this->reg_4_value);
         }
     }
+    ui->pushButtonRDFPGA->setEnabled(true);
     //**************END SERIAL *********************/
 }
 
@@ -783,7 +826,7 @@ void MainWindow::readAndPlotDataEthernet(){
 
 void MainWindow::requestDataFromChannel(const int &channel,const int &length){
 
-  int minimunDatagramSize = 64;
+  int minimunDatagramSize = 128;
   int numberOfRequest = (int)(length/minimunDatagramSize);
   int lastRequestSize = length%minimunDatagramSize;
   int spyBuffer = this->getSpyBufferFromChannel(channel);
@@ -791,11 +834,13 @@ void MainWindow::requestDataFromChannel(const int &channel,const int &length){
   for(int i = 0; i < numberOfRequest; i++){
     if(i == numberOfRequest - 1 && lastRequestSize != 0){
       this->socket->read(spyBuffer + i*minimunDatagramSize, lastRequestSize);
-      qDebug() << "Requested n-1:: " << QString::number(spyBuffer + i*minimunDatagramSize + lastRequestSize,16);
+      //qDebug() << "Requested n-1:: " << QString::number(spyBuffer + i*minimunDatagramSize + lastRequestSize,16);
     }else{
       this->socket->read(spyBuffer + i*minimunDatagramSize,minimunDatagramSize);
-      qDebug() << "Requested :: " << QString::number(spyBuffer + i*minimunDatagramSize,16);
+      //qDebug() << "Requested :: " << QString::number(spyBuffer + i*minimunDatagramSize,16);
     }
+    this->expected_datagrams = this->expected_datagrams + 1;
+    this->socket->waitForReadyRead();
   }
 }
 
@@ -847,7 +892,7 @@ void MainWindow::readMultichannelEthernet(const QVector<bool> &enabledChannels){
 
 void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledChannels){
 
-  this->readChannelsEthernet(enabledChannels);
+  this->received_datagrams = this->readChannelsEthernet(enabledChannels);
 
   this->channelsData.clear();
 
@@ -872,19 +917,20 @@ void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledCha
   this->socket->flushReceivedData();
 }
 
-void MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
+int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
 
   for(int i = 0; i < enabledChannels.length(); i++){
     if(enabledChannels.at(i)){
       this->requestDataFromChannel(i,this->recordLength);
+      this->delayMicro(50);
     }
   }
-  this->socket->waitForReadyRead();
-  this->delayMilli(5);
+
+  this->delayMilli(8);
 
   QVector<QByteArray> receivedData = this->socket->getReceivedData();
   int bytes_received = 0;
-  ////qDebug() << "datagrams Received :" << receivedData.length();
+  //qDebug() << "datagrams Received :" << receivedData.length();
   this->ethernetData.clear();
   for(QByteArray data : receivedData){
       bytes_received = bytes_received + data.length();
@@ -893,6 +939,7 @@ void MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
           this->ethernetData.append((double)u64_data[i]);
       }
   }
+  return receivedData.length();
 }
 
 int MainWindow::getSpyBufferFromChannel(const int &channel){

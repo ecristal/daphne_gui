@@ -13,7 +13,7 @@ DialogReadoutChannel::DialogReadoutChannel(QWidget *parent) :
     this->window_status = true;
     ui->widgetDaphneDataGraph->addGraph();
     connect(ui->pushButtonTxt,SIGNAL(clicked(bool)),this,SLOT(pushButtonSaveToTxtPressed()));
-    connect(ui->buttonBox,SIGNAL(rejected(bool)),this,SLOT(cancelButtonPressed()));
+    connect(ui->buttonBox,SIGNAL(rejected()),this,SLOT(cancelButtonPressed()));
 }
 
 DialogReadoutChannel::~DialogReadoutChannel()

@@ -64,6 +64,7 @@
 #include <QFileDialog>
 #include <QUdpSocket>
 #include <QHostAddress>
+#include <chrono>
 
 #include "dialogreadoutchannel.h"
 #include "daphnesocket.h"
@@ -135,10 +136,11 @@ private:
     QString computerIPAddr = "192.168.133.1";
     int daphnePortNumber = 2001;
     int computerPortNumber = 58789;
+    int received_datagrams, expected_datagrams;
 
     // Acquisition menu
     QVector<bool> channelsEnabledState;
-    int recordLength = 64;
+    int recordLength = 256;
     QVector<QVector<double>> channelsData;
 
     void populateComboBoxAvailableSerialPorts();
@@ -176,8 +178,10 @@ private:
     void configureEnabledChannels();
     void requestDataFromChannel(const int &channel, const int &length);
     void readMultichannelEthernet(const QVector<bool> &enabledChannels);
-    void readChannelsEthernet(const QVector<bool> &enabledChannels);
+    int readChannelsEthernet(const QVector<bool> &enabledChannels);
     void acquireWaveformEnabled();
     void readMultichannelEthernet_vector(const QVector<bool> &enabledChannels);
+    void delayMicro(const int &delay_micro);
+    void setOFFSETGain(const int &i);
 };
 #endif // MAINWINDOW_H
