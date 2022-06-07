@@ -31,6 +31,8 @@ public:
     void createFileNames(const QString &address, const QVector<bool> &enabledChannels);
     void saveMultiChannel(const int &wave_number, const int &record_length);
     void plotDataMultichannel(const QVector<double> &ethernet_data, const int &recordLength, const int &channel);
+    void plotDataMultichannel(const QVector<QVector<double> > &ethernet_data, const int &channel);
+    void saveMultiChannel(const int &wave_number, const QVector<QVector<double> > &data);
 private slots:
     void pushButtonSaveToTxtPressed();
 

@@ -60,7 +60,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_02_06\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_02_07\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -534,9 +534,12 @@ void MainWindow::pushButtonRDFPGAPressed(){
             for(int i = 0; i< sampling_iterations; i++){
                 int channel = ui->comboBoxChannel->currentText().toInt();
                 this->acquireWaveformEnabled();
-                this->dialogReadoutChannelWindow->plotDataMultichannel(this->ethernetData,this->recordLength,channel);
-                this->dialogReadoutChannelWindow->saveMultiChannel(i,this->recordLength);
+                this->dialogReadoutChannelWindow->plotDataMultichannel(this->channelsData,channel);
+                this->dialogReadoutChannelWindow->saveMultiChannel(i,this->channelsData);
                 this->dialogReadoutChannelWindow->show();
+                //this->dialogReadoutChannelWindow->plotDataMultichannel(this->ethernetData,this->recordLength,channel);
+                //this->dialogReadoutChannelWindow->saveMultiChannel(i,this->recordLength);
+                //this->dialogReadoutChannelWindow->show();
             }
         }
      }else if(ui->checkBoxEnableChannelOffsetSweep->isChecked()){
@@ -747,7 +750,7 @@ void MainWindow::acquireWaveform(){
 }
 
 void MainWindow::acquireWaveformEnabled(){
-  this->readMultichannelEthernet(this->channelsEnabledState);
+  this->readMultichannelEthernet_vector(this->channelsEnabledState);
 }
 
 void MainWindow::readAndPlotDataEthernet(){
@@ -839,6 +842,33 @@ void MainWindow::readMultichannelEthernet(const QVector<bool> &enabledChannels){
   }
   this->ethernetData.clear();
   this->ethernetData = ethernetData_aux;
+  this->socket->flushReceivedData();
+}
+
+void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledChannels){
+
+  this->readChannelsEthernet(enabledChannels);
+
+  this->channelsData.clear();
+
+  QVector<double> ethernetData_aux;
+
+  int k = 0;
+  for(bool enabledChannel : enabledChannels){
+    ethernetData_aux.clear();
+    if(enabledChannel == false){
+      for(int i = 0; i < this->recordLength; i++){
+        ethernetData_aux.append(-99.0);
+      }
+      this->channelsData.append(ethernetData_aux);
+    }else{
+      for(int i = 0; i < this->recordLength; i++){
+        ethernetData_aux.append(this->ethernetData.at(k));
+        k++;
+      }
+      this->channelsData.append(ethernetData_aux);
+    }
+  }
   this->socket->flushReceivedData();
 }
 

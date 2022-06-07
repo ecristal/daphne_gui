@@ -91,6 +91,27 @@ void DialogReadoutChannel::plotDataMultichannel(const QVector<double> &ethernet_
   this->plotMultichannel();
 }
 
+void DialogReadoutChannel::plotDataMultichannel(const QVector<QVector<double>> &ethernet_data, const int &channel){
+
+  //this->daphneData.clear();
+  this->daphneDataSingleChannel.clear();
+  //this->daphneData = ethernet_data;
+  this->daphneTime.clear();
+  int length_data = ethernet_data.at(channel).length();
+  this->generateTimeVectorEthernet(length_data,1.0/65000000.0);
+  this->daphneDataSingleChannel = ethernet_data.at(channel);
+
+//  for(int i = 0; i < daphneData.length(); i++){
+//      if(i >= channel*recordLength && i < channel*recordLength + recordLength){
+//        this->daphneDataSingleChannel.append(daphneData.at(i));
+//      }
+//  }
+  //qDebug() << "daphnedata::length : " << this->daphneData.length();
+  //qDebug() << "daphnetime::length : " << this->daphneTime.length();
+  //qDebug() << "daphneDataSingleChannel::length : " << this->daphneDataSingleChannel.length();
+  this->plotMultichannel();
+}
+
 void DialogReadoutChannel::cancelButtonPressed(){
     this->window_status = false;
 }
@@ -331,16 +352,20 @@ void DialogReadoutChannel::createFileNames(const QString &address, const QVector
     this->enabledChannelsNumbers = enabledChannelsNumbers_;
 }
 
-void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const int &record_length){
+void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const QVector<QVector<double>> &data){
 
   for(int i = 0; i < this->saveFiles.length(); i++){
     QFile file(this->saveFiles.at(i));
     file.open(QIODevice::Append);
     QTextStream writeToFile(&file);
-    for(int k = this->enabledChannelsNumbers.at(i)*record_length; k < this->enabledChannelsNumbers.at(i)*record_length + record_length; k++){
-        ////qDebug() << this->daphneData.at(k);
-        writeToFile << QString::number(this->daphneData.at(k))<<"\n";
+    QVector<double> channel_data = data.at(this->enabledChannelsNumbers.at(i));
+    for(double data2write : channel_data){
+      writeToFile << QString::number(data2write)<<"\n";
     }
+//    for(int k = this->enabledChannelsNumbers.at(i)*record_length; k < this->enabledChannelsNumbers.at(i)*record_length + record_length; k++){
+//        ////qDebug() << this->daphneData.at(k);
+//        writeToFile << QString::number(this->daphneData.at(k))<<"\n";
+//    }
   }
   ui->lcdNumberWaveform->setPalette(Qt::darkGreen);
   ui->lcdNumberWaveform->display(wave_number);

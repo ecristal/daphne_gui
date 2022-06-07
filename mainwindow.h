@@ -139,6 +139,7 @@ private:
     // Acquisition menu
     QVector<bool> channelsEnabledState;
     int recordLength = 64;
+    QVector<QVector<double>> channelsData;
 
     void populateComboBoxAvailableSerialPorts();
     void populateComboBoxAFE();
@@ -177,5 +178,6 @@ private:
     void readMultichannelEthernet(const QVector<bool> &enabledChannels);
     void readChannelsEthernet(const QVector<bool> &enabledChannels);
     void acquireWaveformEnabled();
+    void readMultichannelEthernet_vector(const QVector<bool> &enabledChannels);
 };
 #endif // MAINWINDOW_H
