@@ -60,7 +60,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_03_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_03_02\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -208,24 +208,36 @@ void MainWindow::setOFFSETGain(const int &i){
 
 void MainWindow::pushButtonApplyOffsetPressed(){
 
-  if(ui->checkBoxAllAFEChannelOffset->isChecked()){
-    for(int i = 0; i < ui->comboBoxChannel->count(); i++){
+  if(ui->checkBoxAllCHOffset->isChecked()){
+    for(int i = 0; i < 40; i++){
       this->setOFFSETGain(i);
       QString command = "WR OFFSET CH ";
-      command = command + ui->comboBoxChannel->itemText(i);
+      command = command + QString::number(i);
       command = command + " V ";
       command = command + QString::number(ui->spinBoxOffsetVoltage->value());
       command = command + "\r\n";
       this->sendCommand(command);
     }
   }else{
-    this->setOFFSETGain(ui->comboBoxChannel->currentText().toInt());
-    QString command = "WR OFFSET CH ";
-    command = command + ui->comboBoxChannel->currentText();
-    command = command + " V ";
-    command = command + QString::number(ui->spinBoxOffsetVoltage->value());
-    command = command + "\r\n";
-    this->sendCommand(command);
+    if(ui->checkBoxAllAFEChannelOffset->isChecked()){
+      for(int i = 0; i < ui->comboBoxChannel->count(); i++){
+        this->setOFFSETGain(ui->comboBoxChannel->itemText(i).toInt());
+        QString command = "WR OFFSET CH ";
+        command = command + ui->comboBoxChannel->itemText(i);
+        command = command + " V ";
+        command = command + QString::number(ui->spinBoxOffsetVoltage->value());
+        command = command + "\r\n";
+        this->sendCommand(command);
+      }
+    }else{
+      this->setOFFSETGain(ui->comboBoxChannel->currentText().toInt());
+      QString command = "WR OFFSET CH ";
+      command = command + ui->comboBoxChannel->currentText();
+      command = command + " V ";
+      command = command + QString::number(ui->spinBoxOffsetVoltage->value());
+      command = command + "\r\n";
+      this->sendCommand(command);
+    }
   }
 }
 
