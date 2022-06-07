@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->comboBoxAvailableSerialPort,SIGNAL(activated(int)),this,SLOT(comboBoxAvailableSerialPortsValueChanged()));
     connect(ui->pushButtonRefresh,SIGNAL(clicked(bool)),this,SLOT(pushButtonRefreshPressed()));
     connect(this->serialPort_,SIGNAL(readyRead()),this,SLOT(readDataFromSerial()));
-    connect(ui->pushButtonInitial,SIGNAL(clicked(bool)),this,SLOT(pushButtonInitialPressed()));
+    //connect(ui->pushButtonInitial,SIGNAL(clicked(bool)),this,SLOT(pushButtonInitialPressed()));
     connect(ui->pushButtonRDFPGA,SIGNAL(clicked(bool)),this,SLOT(pushButtonRDFPGAPressed()));
     connect(ui->pushButtonApplyBiasVoltages,SIGNAL(clicked(bool)),this,SLOT(pushButtonApplyBiasVoltages()));
     connect(&this->serialTimeoutTimer,SIGNAL(timeout()),this,SLOT(serialTimeoutTimerTriggered()));

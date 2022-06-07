@@ -302,19 +302,6 @@
       </property>
      </widget>
     </widget>
-    <widget class="QPushButton" name="pushButtonInitial">
-     <property name="geometry">
-      <rect>
-       <x>225</x>
-       <y>27</y>
-       <width>70</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>INITIAL</string>
-     </property>
-    </widget>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="geometry">
       <rect>
@@ -535,6 +522,9 @@
      </property>
     </widget>
     <widget class="QPushButton" name="pushButtonGETCONFIG">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>300</x>
@@ -625,7 +615,7 @@
       <property name="geometry">
        <rect>
         <x>133</x>
-        <y>31</y>
+        <y>24</y>
         <width>61</width>
         <height>17</height>
        </rect>
@@ -645,6 +635,19 @@
       </property>
       <property name="text">
        <string>Gain</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxAllCHOffset">
+      <property name="geometry">
+       <rect>
+        <x>133</x>
+        <y>42</y>
+        <width>61</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>All CH</string>
       </property>
      </widget>
     </widget>
@@ -1048,6 +1051,19 @@
        <string>Enable</string>
       </property>
      </widget>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxAllAFEConfigs">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>30</y>
+       <width>71</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>All AFEs</string>
+     </property>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_9">
