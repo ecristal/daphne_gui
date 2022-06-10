@@ -71,6 +71,7 @@
 #include "dialogaligment.h"
 #include "dialogethernetconfiguration.h"
 #include "dialogacquisitionconfiguration.h"
+#include "serialexception.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -87,6 +88,7 @@ public:
 
     DaphneSocket *getSocket();
     void Message(QString message, int msgCode);
+    void displayMessageBox(const QString &msg);
 
 private slots:
     void pushButtonConnectPressed();
@@ -117,7 +119,7 @@ private:
     Ui::MainWindow *ui;
 
     QSerialPort* serialPort_;
-    bool receivingDataFlag = false;
+    bool receivingSerialDataFlag = false;
     QTimer serialTimeoutTimer;
     QEventLoop waitingForData;
     QByteArray serialData;
@@ -153,7 +155,7 @@ private:
     void populateComboBoxPGAGain();
     void populateComboBoxImpedances();
     void populateComboBoxLPF();
-    bool sendCommand(const QString &command);
+    bool sendCommand_(const QString &command);
     uint16_t getLNAGainMask();
     uint16_t getPGAGainMask();
     uint16_t getImpedanceMask();
@@ -184,5 +186,6 @@ private:
     void delayMicro(const int &delay_micro);
     void setOFFSETGain(const int &i);
     void setAFEConfiguration(const QString &afe_number);
+    void sendCommand(const QString &command);
 };
 #endif // MAINWINDOW_H

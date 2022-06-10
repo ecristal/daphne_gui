@@ -60,7 +60,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_03_04\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_03_05\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -160,12 +160,17 @@ void MainWindow::setConfig(){
     //qDebug() << "REG 51: " << QString::number(this->reg_51_value, 2) << " :: " << QString::number(this->reg_51_value, 16);
     //qDebug() << "REG 52: " << QString::number(this->reg_52_value, 2) << " :: " << QString::number(this->reg_52_value, 16);
 
-    if(ui->checkBoxAllAFEConfigs->isChecked()){
-      for(int i=0; i<5; i++){
-        this->setAFEConfiguration(QString::number(i));
+    try{
+      if(ui->checkBoxAllAFEConfigs->isChecked()){
+        for(int i=0; i<5; i++){
+          this->setAFEConfiguration(QString::number(i));
+        }
+      }else{
+        this->setAFEConfiguration(ui->comboBoxAFE->currentText());
       }
-    }else{
-      this->setAFEConfiguration(ui->comboBoxAFE->currentText());
+    }catch(serialException &serial_exception){
+      serial_exception.handleException(this);
+      return;
     }
 
 }
@@ -179,7 +184,6 @@ void MainWindow::setAFEConfiguration(const QString &afe_number){
   command = command + "\r\n";
   this->Message("Writing on R52: bin" + QString::number(this->reg_52_value, 2) + " :: hex: " + QString::number(this->reg_52_value, 16),0);
   this->sendCommand(command);
-
 
   command = "WR AFE ";
   command = command + afe_number;
@@ -219,58 +223,64 @@ void MainWindow::setOFFSETGain(const int &i){
 }
 
 void MainWindow::pushButtonApplyOffsetPressed(){
-
-  if(ui->checkBoxAllCHOffset->isChecked()){
-    for(int i = 0; i < 40; i++){
-      this->setOFFSETGain(i);
-      QString command = "WR OFFSET CH ";
-      command = command + QString::number(i);
-      command = command + " V ";
-      command = command + QString::number(ui->spinBoxOffsetVoltage->value());
-      command = command + "\r\n";
-      this->sendCommand(command);
-    }
-  }else{
-    if(ui->checkBoxAllAFEChannelOffset->isChecked()){
-      for(int i = 0; i < ui->comboBoxChannel->count(); i++){
-        this->setOFFSETGain(ui->comboBoxChannel->itemText(i).toInt());
+  try{
+    if(ui->checkBoxAllCHOffset->isChecked()){
+      for(int i = 0; i < 40; i++){
+        this->setOFFSETGain(i);
         QString command = "WR OFFSET CH ";
-        command = command + ui->comboBoxChannel->itemText(i);
+        command = command + QString::number(i);
         command = command + " V ";
         command = command + QString::number(ui->spinBoxOffsetVoltage->value());
         command = command + "\r\n";
         this->sendCommand(command);
       }
     }else{
-      this->setOFFSETGain(ui->comboBoxChannel->currentText().toInt());
-      QString command = "WR OFFSET CH ";
-      command = command + ui->comboBoxChannel->currentText();
-      command = command + " V ";
-      command = command + QString::number(ui->spinBoxOffsetVoltage->value());
-      command = command + "\r\n";
-      this->sendCommand(command);
+      if(ui->checkBoxAllAFEChannelOffset->isChecked()){
+        for(int i = 0; i < ui->comboBoxChannel->count(); i++){
+          this->setOFFSETGain(ui->comboBoxChannel->itemText(i).toInt());
+          QString command = "WR OFFSET CH ";
+          command = command + ui->comboBoxChannel->itemText(i);
+          command = command + " V ";
+          command = command + QString::number(ui->spinBoxOffsetVoltage->value());
+          command = command + "\r\n";
+          this->sendCommand(command);
+        }
+      }else{
+        this->setOFFSETGain(ui->comboBoxChannel->currentText().toInt());
+        QString command = "WR OFFSET CH ";
+        command = command + ui->comboBoxChannel->currentText();
+        command = command + " V ";
+        command = command + QString::number(ui->spinBoxOffsetVoltage->value());
+        command = command + "\r\n";
+        this->sendCommand(command);
+      }
     }
+  }catch(serialException &e){
+    e.handleException(this);
   }
 }
 
 void MainWindow::pushButtonApplyVGAINPressed(){
-
-  if(ui->checkBoxAllAFEVgain->isChecked()){
-    for(int i = 0; i < ui->comboBoxAFE->count(); i++){
+  try{
+    if(ui->checkBoxAllAFEVgain->isChecked()){
+      for(int i = 0; i < ui->comboBoxAFE->count(); i++){
+        QString command = "WR AFE ";
+        command = command + ui->comboBoxAFE->itemText(i);
+        command = command + " VGAIN V ";
+        command = command + QString::number(this->calculateVGainReferenceValue());
+        command = command + "\r\n";
+        this->sendCommand(command);
+      }
+    }else{
       QString command = "WR AFE ";
-      command = command + ui->comboBoxAFE->itemText(i);
+      command = command + ui->comboBoxAFE->currentText();
       command = command + " VGAIN V ";
       command = command + QString::number(this->calculateVGainReferenceValue());
       command = command + "\r\n";
       this->sendCommand(command);
     }
-  }else{
-    QString command = "WR AFE ";
-    command = command + ui->comboBoxAFE->currentText();
-    command = command + " VGAIN V ";
-    command = command + QString::number(this->calculateVGainReferenceValue());
-    command = command + "\r\n";
-    this->sendCommand(command);
+  }catch(serialException &e){
+    e.handleException(this);
   }
 }
 
@@ -543,18 +553,31 @@ void MainWindow::sendDataFromSerial(const QString &send_data){
     this->serialPort_->write(send_data_byte_array);
 }
 
-bool MainWindow::sendCommand(const QString &command){
-    if(this->serialPort_->isOpen()){
-        this->serialData.clear();
-        this->Message(command,0);
-        this->sendDataFromSerial(command);
-        this->waitForResponse(5);
-        this->delay(1);
-        return true;
-    }else{
-        QMessageBox::critical(this, tr("Error"), "Serial Port is closed.");
-        return false;
+bool MainWindow::sendCommand_(const QString &command){
+  try{
+    if(!this->serialPort_->isOpen()){
+      throw(serialException(1));
     }
+    this->serialData.clear();
+    this->Message(command,0);
+    this->sendDataFromSerial(command);
+    this->waitForResponse(5); //throws 2
+    if(!this->receivingSerialDataFlag){
+       throw(serialException(2));
+    }
+    this->delay(1);
+    return true;
+    }catch(serialException &serial_exception){
+      serial_exception.handleException(this);
+      return false;
+    }
+}
+
+void MainWindow::sendCommand(const QString &command){
+
+  if(!this->sendCommand_(command)){
+    throw(serialException(3));
+  }
 }
 
 void MainWindow::pushButtonInitialPressed(){
@@ -566,9 +589,13 @@ void MainWindow::pushButtonInitialPressed(){
 
 void MainWindow::readAndPlotDataSerial(){
     QString command = "RD FPGA\r\n";
-    if(this->sendCommand(command)){
-        this->dialogReadoutChannelWindow->show();
-        this->dialogReadoutChannelWindow->plotData(this->serialData, this->reg_4_value);
+    try{
+      this->sendCommand(command);
+      this->dialogReadoutChannelWindow->show();
+      this->dialogReadoutChannelWindow->plotData(this->serialData, this->reg_4_value);
+    }
+    catch(serialException &e){
+      e.handleException(this);
     }
 }
 
@@ -645,39 +672,45 @@ void MainWindow::sendFPGAReset(){
 }
 
 void MainWindow::pushButtonApplyBiasVoltages(){
-  if(ui->checkBoxOnlyTrim->isChecked()){
-    QString command = "WR TRIM CH ";
-    command = command + ui->comboBoxChannel->currentText();
-    command = command + " V ";
-    command = command + QString::number(ui->spinBoxTrim->value());
-    command = command + "\r\n";
-    this->sendCommand(command);
-  }else{
-    QString command = "WR VBIASCTRL V 1100\r\n";
-    this->sendCommand(command);
-    command = "WR AFE ";
-    command = command + ui->comboBoxAFE->currentText();
-    command = command + " BIASSET V ";
-    command = command + QString::number(ui->spinBoxBiasVoltage->value());
-    command = command + "\r\n";
-    this->sendCommand(command);
-    command = "WR TRIM CH ";
-    command = command + ui->comboBoxChannel->currentText();
-    command = command + " V ";
-    command = command + QString::number(ui->spinBoxTrim->value());
-    command = command + "\r\n";
-    this->sendCommand(command);
+  try{
+    if(ui->checkBoxOnlyTrim->isChecked()){
+      QString command = "WR TRIM CH ";
+      command = command + ui->comboBoxChannel->currentText();
+      command = command + " V ";
+      command = command + QString::number(ui->spinBoxTrim->value());
+      command = command + "\r\n";
+      this->sendCommand(command);
+    }else{
+      QString command = "WR VBIASCTRL V 1100\r\n";
+      this->sendCommand(command);
+      command = "WR AFE ";
+      command = command + ui->comboBoxAFE->currentText();
+      command = command + " BIASSET V ";
+      command = command + QString::number(ui->spinBoxBiasVoltage->value());
+      command = command + "\r\n";
+      this->sendCommand(command);
+      command = "WR TRIM CH ";
+      command = command + ui->comboBoxChannel->currentText();
+      command = command + " V ";
+      command = command + QString::number(ui->spinBoxTrim->value());
+      command = command + "\r\n";
+      this->sendCommand(command);
+    }
+  }catch(serialException &e){
+    e.handleException(this);
   }
 }
 
 void MainWindow::waitForResponse(uint timeout){
-    this->receivingDataFlag = true;
+    this->receivingSerialDataFlag = true;
     serialTimeoutTimer.start(timeout*1000);
     this->waitingForData.exec();
 }
 
 void MainWindow::serialTimeoutTimerTriggered(){
-    this->Message("Timout waiting for DAPHNE serial response",2);
+    this->Message("Timeout waiting for DAPHNE serial response",2);
+    this->receivingSerialDataFlag = false;
+    //throw(serialException(2));
 }
 
 void MainWindow::populateComboBoxChannel(){
@@ -779,9 +812,13 @@ uint16_t MainWindow::getADCFormatMask(){
 }
 
 void MainWindow::pushButtonSendRawCommandPressed(){
+  try{
     QString command = ui->lineEditSendRawCommand->text();
     command = command + "\r\n";
     this->sendCommand(command);
+  }catch(serialException &e){
+    e.handleException(this);
+  }
 }
 
 void MainWindow::populateComboBoxVGainValues(){
@@ -1040,4 +1077,8 @@ void MainWindow::menuAcquisitionConfigurationPressed(){
 
 DaphneSocket* MainWindow::getSocket(){
     return this->socket;
+}
+
+void MainWindow::displayMessageBox(const QString &msg){
+  QMessageBox::critical(this, tr("Error"), msg);
 }

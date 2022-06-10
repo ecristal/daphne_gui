@@ -18,17 +18,20 @@ DialogAligment::~DialogAligment()
 void DialogAligment::pushButtonAlignPressed(){
     MainWindow *mymainwindow = reinterpret_cast<MainWindow*>(this->parent());
     int retry = ui->spinBoxRetries->value();
-    for(int i = 0; i< retry; i++){
-        mymainwindow->sendFPGAReset();
-        QVector<bool> isAfeAligned({0,0,0,0,0});
-        QVector<QString> isAfeAlignedStr({"","","","",""});
-        mymainwindow->getSocket()->alignAFEs(100,isAfeAligned,isAfeAlignedStr);
-        if(this->areAFEsAligned(isAfeAligned)){
-            this->writeAlignedLabels(isAfeAlignedStr);
-            break;
-        }
+    try{
+      for(int i = 0; i< retry; i++){
+          mymainwindow->sendFPGAReset();
+          QVector<bool> isAfeAligned({0,0,0,0,0});
+          QVector<QString> isAfeAlignedStr({"","","","",""});
+          mymainwindow->getSocket()->alignAFEs(100,isAfeAligned,isAfeAlignedStr);
+          if(this->areAFEsAligned(isAfeAligned)){
+              this->writeAlignedLabels(isAfeAlignedStr);
+              break;
+          }
+      }
+    }catch(serialException &e){
+      e.handleException(mymainwindow);
     }
-
 }
 
 bool DialogAligment::areAFEsAligned(const QVector<bool> &isAfeAligned){

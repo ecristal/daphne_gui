@@ -19,7 +19,8 @@ SOURCES += \
     mainwindow.cpp \
     qcustomplot.cpp \
     dialogethernetconfiguration.cpp \
-    dialogacquisitionconfiguration.cpp
+    dialogacquisitionconfiguration.cpp \
+    serialexception.cpp
 
 HEADERS += \
     daphnesocket.h \
@@ -28,7 +29,8 @@ HEADERS += \
     mainwindow.h \
     qcustomplot.h \
     dialogethernetconfiguration.h \
-    dialogacquisitionconfiguration.h
+    dialogacquisitionconfiguration.h \
+    serialexception.h
 
 FORMS += \
     dialogaligment.ui \
