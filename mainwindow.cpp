@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionEthernet,SIGNAL(triggered(bool)),this,SLOT(menuEthernetConfigurationPressed()));
     connect(ui->comboBoxAFE,SIGNAL(currentIndexChanged(int)),this,SLOT(populateComboBoxChannel()));
     connect(ui->actionAcquisition,SIGNAL(triggered(bool)),this,SLOT(menuAcquisitionConfigurationPressed()));
+    connect(ui->actionAFE,SIGNAL(triggered(bool)),this,SLOT(menuAFEConfigurationPressed()));
 }
 
 MainWindow::~MainWindow()
@@ -60,7 +61,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_04_00\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_04_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -1070,6 +1071,22 @@ void MainWindow::menuAcquisitionConfigurationPressed(){
     //... accepted config
     this->channelsEnabledState = acquisitionConfig.getCheckBoxStates();
     this->recordLength = acquisitionConfig.getRecordLength();
+  }else{
+    //... rejected config
+  }
+}
+
+void MainWindow::menuAFEConfigurationPressed(){
+  DialogAFEConfiguration afeConfig(this);
+  afeConfig.setSpinBoxHPFKValue(this->digitalHPFKValue);
+  afeConfig.setCheckBoxHPFEnabled(this->digitalHPFEnabled);
+  afeConfig.setCheckBoxLFNSupressorEnabled(this->lowNoiseSupressionEnabled);
+  int exec_code = afeConfig.exec();
+  if(exec_code){
+    //... accepted config
+    this->digitalHPFKValue = afeConfig.getSpinBoxHPFKValue();
+    this->digitalHPFEnabled = afeConfig.getCheckBoxHPFEnabled();
+    this->lowNoiseSupressionEnabled = afeConfig.getCheckBoxLFNSupressorEnabled();
   }else{
     //... rejected config
   }

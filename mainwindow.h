@@ -1,6 +1,35 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
+
+#define MASK_CHANNEL_OFFSET_SUBSTRACTION_ENABLE_REG3 0x100
+#define MASK_DIGITAL_GAIN_ENABLED_REG3 0x1000
+
+#define MASK_OFFSET_CH1_SUBSTRACT_REG13 0x3FF //aqui debo realizar una operacion
+#define MASK_OFFSET_CH2_SUBSTRACT_REG15 0x3FF //realmente no es necesario
+#define MASK_OFFSET_CH3_SUBSTRACT_REG17 0x3FF // colocar todas las variables pues tienen el mismo valor
+#define MASK_OFFSET_CH4_SUBSTRACT_REG19 0x3FF // pero es util para saber cual registro escribir
+#define MASK_OFFSET_CH5_SUBSTRACT_REG31 0x3FF
+#define MASK_OFFSET_CH6_SUBSTRACT_REG29 0x3FF
+#define MASK_OFFSET_CH7_SUBSTRACT_REG27 0x3FF
+#define MASK_OFFSET_CH8_SUBSTRACT_REG25 0x3FF
+
+#define MASK_DIGITAL_GAIN_CH1_REG13 0xF800 //aqui debo realizar una operacion
+#define MASK_DIGITAL_GAIN_CH2_REG15 0xF800 //realmente no es necesario
+#define MASK_DIGITAL_GAIN_CH3_REG17 0xF800 // colocar todas las variables pues tienen el mismo valor
+#define MASK_DIGITAL_GAIN_CH4_REG19 0xF800 // pero es util para saber cual registro escribir
+#define MASK_DIGITAL_GAIN_CH5_REG31 0xF800
+#define MASK_DIGITAL_GAIN_CH6_REG29 0xF800
+#define MASK_DIGITAL_GAIN_CH7_REG27 0xF800
+#define MASK_DIGITAL_GAIN_CH8_REG25 0xF800
+
+#define MASK_DIGITAL_HPF_FILTER_CH_1_4_ENABLE_REG21 0x1
+#define MASK_DIGITAL_HPF_FILTER_CH_1_4_K_VALUE_REG21 0x1E
+
+#define MASK_DIGITAL_HPF_FILTER_CH_5_8_ENABLE_REG33 0x1
+#define MASK_DIGITAL_HPF_FILTER_CH_5_8_K_VALUE_REG33 0x1E
+
 #define MASK_ADC_OUTPUT_FORMAT_2COMP_REG_4 0x0
 #define MASK_ADC_OUTPUT_FORMAT_OFFSET_BIN_REG_4 0x8
 #define MASK_LSB_FIRST_REG_4 0x0
@@ -72,6 +101,7 @@
 #include "dialogethernetconfiguration.h"
 #include "dialogacquisitionconfiguration.h"
 #include "serialexception.h"
+#include "dialogafeconfiguration.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -115,6 +145,7 @@ private slots:
     void menuEthernetConfigurationPressed();
     void populateComboBoxChannel();
     void menuAcquisitionConfigurationPressed();
+    void menuAFEConfigurationPressed();
 private:
     Ui::MainWindow *ui;
 
@@ -144,6 +175,11 @@ private:
     QVector<bool> channelsEnabledState;
     int recordLength = 256;
     QVector<QVector<double>> channelsData;
+
+    //AFE configuration menu
+    bool lowNoiseSupressionEnabled = false;
+    uint16_t digitalHPFKValue = 9;
+    bool digitalHPFEnabled = false;
 
     void populateComboBoxAvailableSerialPorts();
     void populateComboBoxAFE();

@@ -20,7 +20,8 @@ SOURCES += \
     qcustomplot.cpp \
     dialogethernetconfiguration.cpp \
     dialogacquisitionconfiguration.cpp \
-    serialexception.cpp
+    serialexception.cpp \
+    dialogafeconfiguration.cpp
 
 HEADERS += \
     daphnesocket.h \
@@ -30,14 +31,16 @@ HEADERS += \
     qcustomplot.h \
     dialogethernetconfiguration.h \
     dialogacquisitionconfiguration.h \
-    serialexception.h
+    serialexception.h \
+    dialogafeconfiguration.h
 
 FORMS += \
     dialogaligment.ui \
     dialogreadoutchannel.ui \
     mainwindow.ui \
     dialogethernetconfiguration.ui \
-    dialogacquisitionconfiguration.ui
+    dialogacquisitionconfiguration.ui \
+    dialogafeconfiguration.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
