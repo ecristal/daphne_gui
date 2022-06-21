@@ -156,6 +156,9 @@ private:
     QByteArray serialData;
     QVector<double> ethernetData;
 
+    uint16_t reg_1_value = 0;
+    uint16_t reg_21_value = 0;
+    uint16_t reg_33_value = 0;
     uint16_t reg_4_value = 0;
     uint16_t reg_51_value = 0;
     uint16_t reg_52_value = 0;

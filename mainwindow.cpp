@@ -61,7 +61,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_04_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_04_02\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -200,6 +200,30 @@ void MainWindow::setAFEConfiguration(const QString &afe_number){
   command = command + QString::number(this->reg_4_value);
   command = command + "\r\n";
   this->Message("Writing on R4: bin" + QString::number(this->reg_4_value, 2) + " :: hex: " + QString::number(this->reg_4_value, 16),0);
+  this->sendCommand(command);
+
+  command = "WR AFE ";
+  command = command + afe_number;
+  command = command + " REG 1 V ";
+  command = command + QString::number(this->reg_1_value);
+  command = command + "\r\n";
+  this->Message("Writing on R1: bin" + QString::number(this->reg_1_value, 2) + " :: hex: " + QString::number(this->reg_1_value, 16),0);
+  this->sendCommand(command);
+
+  command = "WR AFE ";
+  command = command + afe_number;
+  command = command + " REG 21 V ";
+  command = command + QString::number(this->reg_21_value);
+  command = command + "\r\n";
+  this->Message("Writing on R21: bin" + QString::number(this->reg_21_value, 2) + " :: hex: " + QString::number(this->reg_21_value, 16),0);
+  this->sendCommand(command);
+
+  command = "WR AFE ";
+  command = command + afe_number;
+  command = command + " REG 33 V ";
+  command = command + QString::number(this->reg_33_value);
+  command = command + "\r\n";
+  this->Message("Writing on R33: bin" + QString::number(this->reg_33_value, 2) + " :: hex: " + QString::number(this->reg_33_value, 16),0);
   this->sendCommand(command);
 
 }
@@ -1087,6 +1111,37 @@ void MainWindow::menuAFEConfigurationPressed(){
     this->digitalHPFKValue = afeConfig.getSpinBoxHPFKValue();
     this->digitalHPFEnabled = afeConfig.getCheckBoxHPFEnabled();
     this->lowNoiseSupressionEnabled = afeConfig.getCheckBoxLFNSupressorEnabled();
+
+    uint16_t digitalHPFKValue_register = this->digitalHPFKValue << 1;
+    uint16_t lowNoiseSupressionEnabled_register = (uint16_t)this->lowNoiseSupressionEnabled << 11;
+    uint16_t digitalHPFEnabled_register = (uint16_t)this->digitalHPFEnabled;
+
+    uint16_t eraser = MASK_DIGITAL_HPF_FILTER_CH_1_4_K_VALUE_REG21;
+    this->reg_21_value = this->eraseAndApplyMask(this->reg_21_value,digitalHPFKValue_register,eraser);
+
+    eraser = MASK_DIGITAL_HPF_FILTER_CH_1_4_ENABLE_REG21;
+    this->reg_21_value = this->eraseAndApplyMask(this->reg_21_value,digitalHPFEnabled_register,eraser);
+
+    eraser = MASK_DIGITAL_HPF_FILTER_CH_5_8_K_VALUE_REG33;
+    this->reg_33_value = this->eraseAndApplyMask(this->reg_33_value,digitalHPFKValue_register,eraser);
+
+    eraser = MASK_DIGITAL_HPF_FILTER_CH_5_8_ENABLE_REG33;
+    this->reg_33_value = this->eraseAndApplyMask(this->reg_33_value,digitalHPFEnabled_register,eraser);
+
+    eraser = MASK_LOW_FREQ_NOISE_SUPR_REG_1;
+    this->reg_1_value = this->eraseAndApplyMask(this->reg_1_value,lowNoiseSupressionEnabled_register,eraser);
+
+    try{
+
+    }catch(serialException &serial_exception){
+      serial_exception.handleException(this);
+      return;
+    }
+
+//    qDebug() << "Writing on R1: bin" + QString::number(this->reg_1_value, 2) + " :: hex: " + QString::number(this->reg_1_value, 16);
+//    qDebug() << "Writing on R21: bin" + QString::number(this->reg_21_value, 2) + " :: hex: " + QString::number(this->reg_21_value, 16);
+//    qDebug() << "Writing on R33: bin" + QString::number(this->reg_33_value, 2) + " :: hex: " + QString::number(this->reg_33_value, 16);
+
   }else{
     //... rejected config
   }
