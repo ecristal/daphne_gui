@@ -51,7 +51,7 @@ void MainWindow::initializeWindow(){
     this->populateComboBoxPGAGain();
     this->populateComboBoxImpedances();
     this->populateComboBoxLPF();
-    this->populateComboBoxVGainValues();
+    //this->populateComboBoxVGainValues(); //obsoleto
     this->populateComboBoxLNAClampLevel();
     this->serialTimeoutTimer.setSingleShot(true);
     this->configureEnabledChannels();
@@ -61,7 +61,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_04_02\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_04_03\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -311,7 +311,7 @@ void MainWindow::pushButtonApplyVGAINPressed(){
 
 int MainWindow::calculateVGainReferenceValue(){
 
-    double vGain_value = ui->comboBoxVGainValues->currentText().toDouble();
+    double vGain_value = ui->spinBoxVGainValues->value();
     vGain_value = ((2.49 + 1.5)/1.5)*vGain_value;
     return (int)(vGain_value*1000.0);
 }
@@ -846,11 +846,11 @@ void MainWindow::pushButtonSendRawCommandPressed(){
   }
 }
 
-void MainWindow::populateComboBoxVGainValues(){
-    for(int i = 0; i < 16; i++){
-        ui->comboBoxVGainValues->addItem(QString::number(1.5 - 0.1*i));
-    }
-}
+//void MainWindow::populateComboBoxVGainValues(){
+//    for(int i = 0; i < 16; i++){
+//        ui->comboBoxVGainValues->addItem(QString::number(1.5 - 0.1*i));
+//    }
+//}
 
 void MainWindow::pushButtonMultipleWaveformsDirectoryPressed(){
     this->mutliple_waveforms_folder_address = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), QDir::currentPath());

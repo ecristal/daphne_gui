@@ -694,16 +694,6 @@
        <string>Apply</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="comboBoxVGainValues">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>30</y>
-        <width>51</width>
-        <height>22</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_8">
       <property name="geometry">
        <rect>
@@ -733,6 +723,22 @@
       </property>
       <property name="text">
        <string>All AFE</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="spinBoxVGainValues">
+      <property name="geometry">
+       <rect>
+        <x>46</x>
+        <y>25</y>
+        <width>60</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="maximum">
+       <double>1.500000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.010000000000000</double>
       </property>
      </widget>
     </widget>
