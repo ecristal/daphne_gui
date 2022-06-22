@@ -1,4 +1,5 @@
 #include "daphnesocket.h"
+#include "ethernetudpexception.h"
 
 #include <exception>
 
@@ -12,13 +13,14 @@ DaphneSocket::DaphneSocket()
     this->targetAddr.setAddress(this->targetIpAddr);
     this->udpSocket = new QUdpSocket(this);
 
-
     if(!this->udpSocket->bind(this->hostAddr,this->socketPortNumber))
     {
-       qDebug() << "Failed to bind UDP socket:" << this->udpSocket->errorString();
+       //qDebug() << "Failed to bind UDP socket:" << this->udpSocket->errorString();
+       throw ethernetUDPException(2, "Failed to bind UDP socket: \n" + this->udpSocket->errorString());
     }else{
-       qDebug() << "UDP socket binded to: " << this->hostAddr.toString() << "::" << this->socketPortNumber;
-       connect(this->udpSocket, SIGNAL(readyRead()), this, SLOT(readyRead_()), Qt::QueuedConnection);
+       //qDebug() << "UDP socket binded to: " << this->hostAddr.toString() << "::" << this->socketPortNumber;
+      this->bindedToAddr = "UDP socket binded to: " + this->hostAddr.toString() + "::" + this->socketPortNumber;
+      connect(this->udpSocket, SIGNAL(readyRead()), this, SLOT(readyRead_()), Qt::QueuedConnection);
     }
 }
 
@@ -34,10 +36,12 @@ DaphneSocket::DaphneSocket(const QString &ipAddr, const QString &targetIpAddr, c
 
     if(!this->udpSocket->bind(this->hostAddr,this->socketPortNumber))
     {
-       qDebug() << "Failed to bind UDP socket:" << this->udpSocket->errorString();
+       //qDebug() << "Failed to bind UDP socket:" << this->udpSocket->errorString();
+       throw ethernetUDPException(2, "Failed to bind UDP socket:\n" + this->udpSocket->errorString());
     }else{
-       qDebug() << "UDP socket binded to: " << this->hostAddr.toString() << "::" << this->socketPortNumber;
-       connect(this->udpSocket, SIGNAL(readyRead()), this, SLOT(readyRead_()), Qt::QueuedConnection);
+       //qDebug() << "UDP socket binded to: " << this->hostAddr.toString() << "::" << this->socketPortNumber;
+      this->bindedToAddr = "UDP socket binded to: " + this->hostAddr.toString() + "::" + this->socketPortNumber;
+      connect(this->udpSocket, SIGNAL(readyRead()), this, SLOT(readyRead_()), Qt::QueuedConnection);
     }
 }
 
@@ -133,7 +137,11 @@ int DaphneSocket::processDatagram(QByteArray &datagram){
 }
 
 QVector<QByteArray> DaphneSocket::getReceivedData(){
+  if(this->receivedData.length() != 0){
     return this->receivedData;
+  }else{
+    throw ethernetUDPException(1);
+  }
 }
 
 void DaphneSocket::flushReceivedData(){
@@ -145,6 +153,7 @@ void DaphneSocket::waitForReadyRead(){
 }
 
 QString DaphneSocket::alignAFEs(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr){
+
    int MINWIDTH = 13;
    qDebug() << "Resetting IDELAY y ISERCES...";
    QString output = "Resetting IDELAY y ISERCES...\n";

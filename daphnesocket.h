@@ -29,6 +29,8 @@ public:
     int sendSingleCommand(const uint64_t &addr, const uint64_t &data);
     int sendData(const uint64_t &addr, const QVector<uint64_t> &data);
     void waitForReadyRead();
+    QString getBindedToStr(){return this->bindedToAddr;}
+
 private slots:
     void readyRead_();
 private:
@@ -44,6 +46,8 @@ private:
     int processDatagram(QByteArray &datagram);
     void delayMilli(int delay_milli);
     bool perform_aligment = true;
+
+    QString bindedToAddr = "";
 };
 
 #endif // DAPHNESOCKET_H

@@ -21,7 +21,8 @@ SOURCES += \
     dialogethernetconfiguration.cpp \
     dialogacquisitionconfiguration.cpp \
     serialexception.cpp \
-    dialogafeconfiguration.cpp
+    dialogafeconfiguration.cpp \
+    ethernetudpexception.cpp
 
 HEADERS += \
     daphnesocket.h \
@@ -32,7 +33,8 @@ HEADERS += \
     dialogethernetconfiguration.h \
     dialogacquisitionconfiguration.h \
     serialexception.h \
-    dialogafeconfiguration.h
+    dialogafeconfiguration.h \
+    ethernetudpexception.h
 
 FORMS += \
     dialogaligment.ui \

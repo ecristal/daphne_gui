@@ -31,6 +31,8 @@ void DialogAligment::pushButtonAlignPressed(){
       }
     }catch(serialException &e){
       e.handleException(mymainwindow);
+    }catch(ethernetUDPException &e){
+      e.handleException(mymainwindow);
     }
 }
 

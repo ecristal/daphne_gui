@@ -184,6 +184,8 @@ private:
     uint16_t digitalHPFKValue = 9;
     bool digitalHPFEnabled = false;
 
+    bool ethernetCheckBoxCheckedFlag = false;
+
     void populateComboBoxAvailableSerialPorts();
     void populateComboBoxAFE();
     void initializeWindow();
@@ -226,5 +228,6 @@ private:
     void setOFFSETGain(const int &i);
     void setAFEConfiguration(const QString &afe_number);
     void sendCommand(const QString &command);
+    void handleNewEthernetSocket();
 };
 #endif // MAINWINDOW_H

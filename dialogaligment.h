@@ -6,6 +6,7 @@
 #include "mainwindow.h"
 #include "daphnesocket.h"
 #include "serialexception.h"
+#include "ethernetudpexception.h"
 
 namespace Ui {
 class DialogAligment;

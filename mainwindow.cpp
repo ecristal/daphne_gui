@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButtonSendRawCommand,SIGNAL(clicked(bool)),this,SLOT(pushButtonSendRawCommandPressed()));
     connect(ui->pushButtonMultipleWaveformsDirectory,SIGNAL(clicked(bool)),this,SLOT(pushButtonMultipleWaveformsDirectoryPressed()));
     connect(ui->pushButtonGETCONFIG,SIGNAL(clicked(bool)),this,SLOT(pushButtonGETCONFIGPressed()));
-    connect(ui->checkBoxEnableEthernet,SIGNAL(stateChanged(int)),this,SLOT(checkBoxEnableEthernetPressed()));
+    connect(ui->checkBoxEnableEthernet,SIGNAL(clicked(bool)),this,SLOT(checkBoxEnableEthernetPressed()));
     connect(ui->menuAlignment,SIGNAL(triggered(bool)),this,SLOT(menuAlignmentPressed()));
     connect(ui->actionEthernet,SIGNAL(triggered(bool)),this,SLOT(menuEthernetConfigurationPressed()));
     connect(ui->comboBoxAFE,SIGNAL(currentIndexChanged(int)),this,SLOT(populateComboBoxChannel()));
@@ -43,6 +43,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::initializeWindow(){
     this->setWindowTitle("DAPHNE GUI TOOL");
+    ui->menuAlignment->setEnabled(false);
     this->populateComboBoxAvailableSerialPorts();
     this->populateComboBoxPGAClampLevel();
     this->populateComboBoxAFE();
@@ -61,7 +62,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_04_03\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_04_04\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -862,11 +863,28 @@ void MainWindow::pushButtonGETCONFIGPressed(){
 }
 
 void MainWindow::checkBoxEnableEthernetPressed(){
-    if(ui->checkBoxEnableEthernet->isChecked()){
+ this->handleNewEthernetSocket();
+}
+
+void MainWindow::handleNewEthernetSocket(){
+  try{
+    if(this->ethernetCheckBoxCheckedFlag == false){
         this->socket = new DaphneSocket(this->computerIPAddr, this->daphneIPAddr, this->computerPortNumber, this->daphnePortNumber);
+        this->Message(this->socket->getBindedToStr(),2);
+        this->ethernetCheckBoxCheckedFlag = true;
+        ui->menuAlignment->setEnabled(true);
     }else{
+        this->ethernetCheckBoxCheckedFlag = false;
         this->socket->~DaphneSocket();
+        ui->menuAlignment->setEnabled(false);
     }
+  }catch(ethernetUDPException &e){
+    e.handleException(this);
+    //this->socket->~DaphneSocket();
+    ui->checkBoxEnableEthernet->setChecked(false);
+    ui->menuAlignment->setEnabled(false);
+    this->ethernetCheckBoxCheckedFlag = false;
+  }
 }
 
 void MainWindow::acquireWaveform(){
@@ -883,10 +901,12 @@ void MainWindow::acquireWaveformEnabled(){
 }
 
 void MainWindow::readAndPlotDataEthernet(){
+
+  try{
     //do something
     //int bytes_sent = this->socket->sendSingleCommand(0x4003,0x16); // delay value; done by the aligment subroutines.
     //bytes_sent = this->socket->sendSingleCommand(0x2000,0x1234); // software trigger; send any data.
-    int bytes_sent = this->socket->read(0x40000000,183);
+    this->socket->read(0x40000000,183);
 //    Aqui debo poner un timeout;
     this->socket->waitForReadyRead();
     this->delayMilli(5);
@@ -907,31 +927,38 @@ void MainWindow::readAndPlotDataEthernet(){
     this->dialogReadoutChannelWindow->show();
     this->dialogReadoutChannelWindow->plotDataEthernet(this->ethernetData);
     this->socket->flushReceivedData();
+  }catch(ethernetUDPException &e){
+    e.handleException(this);
+  }
     //this->Message("bytes received: " + QString::number(bytes_received),0);
 }
 
 void MainWindow::requestDataFromChannel(const int &channel,const int &length){
 
-  int minimunDatagramSize = 128;
-  int numberOfRequest = (int)(length/minimunDatagramSize);
-  int lastRequestSize = length%minimunDatagramSize;
-  int spyBuffer = this->getSpyBufferFromChannel(channel);
+  try{
+    int minimunDatagramSize = 128;
+    int numberOfRequest = (int)(length/minimunDatagramSize);
+    int lastRequestSize = length%minimunDatagramSize;
+    int spyBuffer = this->getSpyBufferFromChannel(channel);
 
-  for(int i = 0; i < numberOfRequest; i++){
-    if(i == numberOfRequest - 1 && lastRequestSize != 0){
-      this->socket->read(spyBuffer + i*minimunDatagramSize, lastRequestSize);
-      //qDebug() << "Requested n-1:: " << QString::number(spyBuffer + i*minimunDatagramSize + lastRequestSize,16);
-    }else{
-      this->socket->read(spyBuffer + i*minimunDatagramSize,minimunDatagramSize);
-      //qDebug() << "Requested :: " << QString::number(spyBuffer + i*minimunDatagramSize,16);
+    for(int i = 0; i < numberOfRequest; i++){
+      if(i == numberOfRequest - 1 && lastRequestSize != 0){
+        this->socket->read(spyBuffer + i*minimunDatagramSize, lastRequestSize);
+        //qDebug() << "Requested n-1:: " << QString::number(spyBuffer + i*minimunDatagramSize + lastRequestSize,16);
+      }else{
+        this->socket->read(spyBuffer + i*minimunDatagramSize,minimunDatagramSize);
+        //qDebug() << "Requested :: " << QString::number(spyBuffer + i*minimunDatagramSize,16);
+      }
+      this->expected_datagrams = this->expected_datagrams + 1;
+      this->socket->waitForReadyRead();
     }
-    this->expected_datagrams = this->expected_datagrams + 1;
-    this->socket->waitForReadyRead();
+  }catch(ethernetUDPException &e){
+    e.handleException(this);
   }
 }
 
 void MainWindow::readAndPlotDataEthernet(const int &channel){
-
+  try{
     this->requestDataFromChannel(channel,this->recordLength);
     this->socket->waitForReadyRead();
     this->delayMilli(5);
@@ -951,6 +978,9 @@ void MainWindow::readAndPlotDataEthernet(const int &channel){
     this->dialogReadoutChannelWindow->show();
     this->dialogReadoutChannelWindow->plotDataEthernet(this->ethernetData);
     this->socket->flushReceivedData();
+  }catch(ethernetUDPException &e){
+    e.handleException(this);
+  }
 }
 
 void MainWindow::readMultichannelEthernet(const QVector<bool> &enabledChannels){
@@ -1005,27 +1035,31 @@ void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledCha
 
 int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
 
-  for(int i = 0; i < enabledChannels.length(); i++){
-    if(enabledChannels.at(i)){
-      this->requestDataFromChannel(i,this->recordLength);
-      this->delayMicro(50);
-    }
-  }
-
-  this->delayMilli(8);
-
-  QVector<QByteArray> receivedData = this->socket->getReceivedData();
-  int bytes_received = 0;
-  //qDebug() << "datagrams Received :" << receivedData.length();
-  this->ethernetData.clear();
-  for(QByteArray data : receivedData){
-      bytes_received = bytes_received + data.length();
-      uint64_t *u64_data = reinterpret_cast<uint64_t*>(data.begin() + 2);
-      for(int i = 0; i<(data.length()-2)/8;i++){
-          this->ethernetData.append((double)u64_data[i]);
+  try{
+    for(int i = 0; i < enabledChannels.length(); i++){
+      if(enabledChannels.at(i)){
+        this->requestDataFromChannel(i,this->recordLength);
+        this->delayMicro(50);
       }
+    }
+
+    this->delayMilli(8);
+
+    QVector<QByteArray> receivedData = this->socket->getReceivedData();
+    int bytes_received = 0;
+    //qDebug() << "datagrams Received :" << receivedData.length();
+    this->ethernetData.clear();
+    for(QByteArray data : receivedData){
+        bytes_received = bytes_received + data.length();
+        uint64_t *u64_data = reinterpret_cast<uint64_t*>(data.begin() + 2);
+        for(int i = 0; i<(data.length()-2)/8;i++){
+            this->ethernetData.append((double)u64_data[i]);
+        }
+    }
+    return receivedData.length();
+  }catch(ethernetUDPException &e){
+    e.handleException(this);
   }
-  return receivedData.length();
 }
 
 int MainWindow::getSpyBufferFromChannel(const int &channel){
@@ -1077,7 +1111,7 @@ void MainWindow::menuEthernetConfigurationPressed(){
 
         if(ui->checkBoxEnableEthernet->isChecked()){
             this->socket->~DaphneSocket();
-            this->socket = new DaphneSocket(this->computerIPAddr, this->daphneIPAddr, this->computerPortNumber, this->daphnePortNumber);
+            this->handleNewEthernetSocket();
         }else{
             //... do nothing
         }
@@ -1130,13 +1164,6 @@ void MainWindow::menuAFEConfigurationPressed(){
 
     eraser = MASK_LOW_FREQ_NOISE_SUPR_REG_1;
     this->reg_1_value = this->eraseAndApplyMask(this->reg_1_value,lowNoiseSupressionEnabled_register,eraser);
-
-    try{
-
-    }catch(serialException &serial_exception){
-      serial_exception.handleException(this);
-      return;
-    }
 
 //    qDebug() << "Writing on R1: bin" + QString::number(this->reg_1_value, 2) + " :: hex: " + QString::number(this->reg_1_value, 16);
 //    qDebug() << "Writing on R21: bin" + QString::number(this->reg_21_value, 2) + " :: hex: " + QString::number(this->reg_21_value, 16);
