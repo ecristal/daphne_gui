@@ -62,7 +62,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_04_04\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_04_06\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -996,7 +996,11 @@ void MainWindow::readMultichannelEthernet(const QVector<bool> &enabledChannels){
       }
     }else{
       for(int i = 0; i < this->recordLength; i++){
-        ethernetData_aux.append(this->ethernetData.at(k));
+        if(k < this->ethernetData.length()){
+          ethernetData_aux.append(this->ethernetData.at(k));
+        }else{
+            //qDebug() << "Error ASSERT" << __PRETTY_FUNCTION__ << "k value = " << k << "ethernet data len = " << this->ethernetData.length();
+        }
         k++;
       }
     }
@@ -1024,7 +1028,11 @@ void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledCha
       this->channelsData.append(ethernetData_aux);
     }else{
       for(int i = 0; i < this->recordLength; i++){
-        ethernetData_aux.append(this->ethernetData.at(k));
+        if(k < this->ethernetData.length()){
+          ethernetData_aux.append(this->ethernetData.at(k));
+        }else{
+            //qDebug() << "Error ASSERT" << __PRETTY_FUNCTION__ << "k value = " << k << "ethernet data len = " << this->ethernetData.length();;
+        }
         k++;
       }
       this->channelsData.append(ethernetData_aux);
