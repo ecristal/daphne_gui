@@ -114,9 +114,11 @@ void DialogIVcurve::pushButtonStartPressed(){
       this->initialPoistion++;
       mymainwindow->delayMilli(500);
     }
-    ui->pushButtonStart->setEnabled(true);
-    ui->pushButtonPause->setEnabled(false);
-    ui->pushButtonStop->setEnabled(false);
+    if(!this->pausePressedFLAG){
+      ui->pushButtonStart->setEnabled(true);
+      ui->pushButtonPause->setEnabled(false);
+      ui->pushButtonStop->setEnabled(false);
+    }
   }catch(serialException &e){
     e.handleException(mymainwindow);
   }
@@ -126,12 +128,18 @@ void DialogIVcurve::pushButtonPausePressed(){
 
   this->pausePressedFLAG = true;
   ui->pushButtonStop->setEnabled(true);
-  ui->pushButtonStart->setEnabled(false);
+  ui->pushButtonPause->setEnabled(false);
   ui->pushButtonStart->setEnabled(true);
   ui->pushButtonStart->setText("Resume");
 }
 
 void DialogIVcurve::pushButtonStopPressed(){
+
+  this->pausePressedFLAG = false;
+  ui->pushButtonStop->setEnabled(false);
+  ui->pushButtonPause->setEnabled(false);
+  ui->pushButtonStart->setEnabled(true);
+  ui->pushButtonStart->setText("Start");
 
 }
 
