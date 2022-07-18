@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <QTextStream>
 #include <QString>
+#include <qmath.h>
 
 #include "mainwindow.h"
 

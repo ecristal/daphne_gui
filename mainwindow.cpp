@@ -63,7 +63,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_05_04\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_05_05\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -775,6 +775,24 @@ void MainWindow::populateComboBoxChannel(){
         }
       break;
     }
+}
+
+int MainWindow::getAFENumberFromChannelNumber(const int &channelNumber){
+
+  if(channelNumber >= 0 && channelNumber <8){
+    return 0;
+  }else if(channelNumber >= 8 && channelNumber <16){
+    return 1;
+  }else if (channelNumber >= 16 && channelNumber <24){
+    return 2;
+  }else if(channelNumber >= 24 && channelNumber <32){
+    return 3;
+  }else if(channelNumber >= 32 && channelNumber <40){
+    return 4;
+  }else{
+    return -99;
+  }
+
 }
 
 void MainWindow::populateComboBoxAFE(){

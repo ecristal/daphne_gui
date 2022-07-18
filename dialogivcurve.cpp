@@ -96,23 +96,57 @@ void DialogIVcurve::pushButtonStartPressed(){
 
   ui->widgetIVgraph->xAxis->setRange(this->xValues.front(),this->xValues.last());
   MainWindow *mymainwindow = reinterpret_cast<MainWindow*>(this->parent());
+
   try{
+    QString command = "WR VBIASCTRL V 1100\r\n";
+    mymainwindow->sendCommand(command);
+
     for(int i=this->initialPoistion; i<this->xValues.length();i++){
-      //mymainwindow->sendCommand("comando");
       if(this->pausePressedFLAG){
         break;
       }
-      this->yValues.append(this->rg.generateDouble()*200);
+
+      // comunication code here
+      command = "WR AFE ";
+      int afe_number = mymainwindow->getAFENumberFromChannelNumber(ui->spinBoxChannelNumber->value());
+      command = command + QString::number(afe_number);
+      command = command + " BIASSET V ";
+      command = command + QString::number(this->xValues.at(i));
+      command = command + "\r\n";
+      mymainwindow->sendCommand(command);
+
+      command = "RD CM CH ";
+      command = command + QString::number(ui->spinBoxChannelNumber->value());
+      command = command + "\r\n";
+      mymainwindow->sendCommand(command);
+
+      QString serial_string = mymainwindow->getSerialString();
+
+      QStringList serial_split = serial_string.split("=");
+      serial_string = serial_split.last();
+      qDebug() << "Serial String :: " << serial_string;
+
+      serial_split = serial_string.split("\r");
+      serial_string = serial_split.first();
+      double adc_value = serial_string.toDouble();
+      qDebug() << "Serial String :: " << serial_string << "double :: " << adc_value;
+
+      this->yValues.append(adc_value);
+      //this->yValues.append(this->rg.generateDouble()*200); // comment out
+      //
+
       double y_min = *std::min_element(this->yValues.begin(),this->yValues.end());
       double y_max = *std::max_element(this->yValues.begin(),this->yValues.end());
-      ui->widgetIVgraph->yAxis->setRange(y_min - 0.1*y_max, y_max + 0.1*y_max);
+      double lim = 0.1*std::abs(y_max - y_min);
+
+      ui->widgetIVgraph->yAxis->setRange(y_min - 0.1*lim, y_max + 0.1*lim);
       x_graph.append(this->xValues.at(i));
       ui->widgetIVgraph->graph(0)->setData(x_graph,this->yValues);
       qDebug() << this->xValues.at(i) << "::" << this->yValues.at(i);
       qDebug() << x_graph.length() << "::" << this->yValues.length();
       ui->widgetIVgraph->replot();
       this->initialPoistion++;
-      mymainwindow->delayMilli(500);
+      //mymainwindow->delayMilli(500);
     }
     if(!this->pausePressedFLAG){
       ui->pushButtonStart->setEnabled(true);

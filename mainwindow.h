@@ -125,6 +125,7 @@ public:
     void delayMicro(const int &delay_micro);
 
     QString getSerialString();
+    int getAFENumberFromChannelNumber(const int &channelNumber);
 private slots:
     void pushButtonConnectPressed();
     void pushButtonDisconnectPressed();
