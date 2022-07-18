@@ -114,22 +114,24 @@ void DialogIVcurve::pushButtonStartPressed(){
       command = command + QString::number(this->xValues.at(i));
       command = command + "\r\n";
       mymainwindow->sendCommand(command);
+      qDebug() << command;
 
       command = "RD CM CH ";
       command = command + QString::number(ui->spinBoxChannelNumber->value());
       command = command + "\r\n";
       mymainwindow->sendCommand(command);
+      qDebug() << command;
 
       QString serial_string = mymainwindow->getSerialString();
 
       QStringList serial_split = serial_string.split("=");
       serial_string = serial_split.last();
-      qDebug() << "Serial String :: " << serial_string;
+      //qDebug() << "Serial String :: " << serial_string;
 
       serial_split = serial_string.split("\r");
       serial_string = serial_split.first();
       double adc_value = serial_string.toDouble();
-      qDebug() << "Serial String :: " << serial_string << "double :: " << adc_value;
+      //qDebug() << "Serial String :: " << serial_string << "double :: " << adc_value;
 
       this->yValues.append(adc_value);
       //this->yValues.append(this->rg.generateDouble()*200); // comment out
@@ -152,6 +154,15 @@ void DialogIVcurve::pushButtonStartPressed(){
       ui->pushButtonStart->setEnabled(true);
       ui->pushButtonPause->setEnabled(false);
       ui->pushButtonStop->setEnabled(false);
+
+      command = "WR AFE ";
+      int afe_number = mymainwindow->getAFENumberFromChannelNumber(ui->spinBoxChannelNumber->value());
+      command = command + QString::number(afe_number);
+      command = command + " BIASSET V ";
+      command = command + QString::number(0);
+      command = command + "\r\n";
+      mymainwindow->sendCommand(command);
+      qDebug() << command;
     }
   }catch(serialException &e){
     e.handleException(mymainwindow);
@@ -174,6 +185,20 @@ void DialogIVcurve::pushButtonStopPressed(){
   ui->pushButtonPause->setEnabled(false);
   ui->pushButtonStart->setEnabled(true);
   ui->pushButtonStart->setText("Start");
+
+  MainWindow *mymainwindow = reinterpret_cast<MainWindow*>(this->parent());
+  try{
+    QString command = "WR AFE ";
+    int afe_number = mymainwindow->getAFENumberFromChannelNumber(ui->spinBoxChannelNumber->value());
+    command = command + QString::number(afe_number);
+    command = command + " BIASSET V ";
+    command = command + QString::number(0);
+    command = command + "\r\n";
+    mymainwindow->sendCommand(command);
+    qDebug() << command;
+  }catch(serialException &e){
+      e.handleException(mymainwindow);
+  }
 
 }
 
