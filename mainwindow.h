@@ -102,6 +102,7 @@
 #include "dialogacquisitionconfiguration.h"
 #include "serialexception.h"
 #include "dialogafeconfiguration.h"
+#include "dialogivcurve.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -146,6 +147,7 @@ private slots:
     void populateComboBoxChannel();
     void menuAcquisitionConfigurationPressed();
     void menuAFEConfigurationPressed();
+    void menuIVCurvePressed();
 private:
     Ui::MainWindow *ui;
 

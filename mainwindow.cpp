@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->comboBoxAFE,SIGNAL(currentIndexChanged(int)),this,SLOT(populateComboBoxChannel()));
     connect(ui->actionAcquisition,SIGNAL(triggered(bool)),this,SLOT(menuAcquisitionConfigurationPressed()));
     connect(ui->actionAFE,SIGNAL(triggered(bool)),this,SLOT(menuAFEConfigurationPressed()));
+    connect(ui->actionI_V_Curve,SIGNAL(triggered(bool)),this,SLOT(menuIVCurvePressed()));
 }
 
 MainWindow::~MainWindow()
@@ -62,7 +63,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_04_06\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_05_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -1188,4 +1189,14 @@ DaphneSocket* MainWindow::getSocket(){
 
 void MainWindow::displayMessageBox(const QString &msg){
   QMessageBox::critical(this, tr("Error"), msg);
+}
+
+void MainWindow::menuIVCurvePressed(){
+  DialogIVcurve IVcurve(this);
+  int exec_code = IVcurve.exec();
+  if(exec_code){
+    //... accepted config
+  }else{
+    //... rejected config
+  }
 }

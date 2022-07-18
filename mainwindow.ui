@@ -1220,6 +1220,7 @@
      <string>Tools</string>
     </property>
     <addaction name="menuAlignment"/>
+    <addaction name="actionI_V_Curve"/>
    </widget>
    <widget class="QMenu" name="menuConfiguration">
     <property name="title">
@@ -1251,6 +1252,11 @@
   <action name="actionAFE">
    <property name="text">
     <string>AFE</string>
+   </property>
+  </action>
+  <action name="actionI_V_Curve">
+   <property name="text">
+    <string>I-V Curve</string>
    </property>
   </action>
  </widget>
