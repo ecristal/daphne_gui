@@ -61,7 +61,7 @@
      </rect>
     </property>
     <property name="maximum">
-     <number>2000</number>
+     <number>1998</number>
     </property>
    </widget>
    <widget class="QSpinBox" name="spinBoxBiasStep">
@@ -73,11 +73,14 @@
       <height>29</height>
      </rect>
     </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
     <property name="maximum">
      <number>1000</number>
     </property>
    </widget>
-   <widget class="QSpinBox" name="spinBoxBiasHigh">
+   <widget class="QSpinBox" name="spinBoxBiasUpper">
     <property name="geometry">
      <rect>
       <x>397</x>
@@ -168,7 +171,7 @@
      <string>Pause</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonStop_2">
+   <widget class="QPushButton" name="pushButtonSaveData">
     <property name="geometry">
      <rect>
       <x>735</x>
@@ -179,6 +182,32 @@
     </property>
     <property name="text">
      <string>Save Data</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>76</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Channel: </string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBoxChannelNumber">
+    <property name="geometry">
+     <rect>
+      <x>92</x>
+      <y>70</y>
+      <width>71</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>39</number>
     </property>
    </widget>
   </widget>
