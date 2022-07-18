@@ -63,7 +63,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_05_05\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_05_07\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -1215,10 +1215,19 @@ QString MainWindow::getSerialString(){
 
 void MainWindow::menuIVCurvePressed(){
   DialogIVcurve IVcurve(this);
-  int exec_code = IVcurve.exec();
-  if(exec_code){
-    //... accepted config
-  }else{
-    //... rejected config
-  }
+  IVcurve.exec();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QMessageBox::StandardButton resBtn = QMessageBox::question( this, "DAPHNE GUI",
+                                                                tr("Are you sure?\n Please consider that Bias Voltages will no be set back to zero"),
+                                                                QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
+                                                                QMessageBox::Yes);
+    if (resBtn != QMessageBox::Yes) {
+        event->ignore();
+    } else {
+        event->accept();
+        qApp->quit();
+    }
 }

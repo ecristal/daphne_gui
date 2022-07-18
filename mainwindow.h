@@ -94,6 +94,7 @@
 #include <QUdpSocket>
 #include <QHostAddress>
 #include <chrono>
+#include <QCloseEvent>
 
 #include "dialogreadoutchannel.h"
 #include "daphnesocket.h"
@@ -236,5 +237,6 @@ private:
     void setOFFSETGain(const int &i);
     void setAFEConfiguration(const QString &afe_number);
     void handleNewEthernetSocket();
+    void closeEvent(QCloseEvent *event);
 };
 #endif // MAINWINDOW_H

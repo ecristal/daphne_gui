@@ -17,11 +17,13 @@ DialogIVcurve::DialogIVcurve(QWidget *parent) :
 
 DialogIVcurve::~DialogIVcurve()
 {
+
   delete ui;
 
 }
 
 void DialogIVcurve::initializeWindow(){
+  this->setWindowTitle("I-V Curve");
   ui->widgetIVgraph->addGraph();
   ui->widgetIVgraph->xAxis->setLabel("Bias Voltage [DAC]");
   ui->widgetIVgraph->yAxis->setLabel("Measure");
@@ -33,9 +35,9 @@ void DialogIVcurve::initializeWindow(){
 void DialogIVcurve::spinBoxBiasLowValueChanged(){
   int biasLowValue = ui->spinBoxBiasLow->value();
   int biasUpperValue = ui->spinBoxBiasUpper->value();
-  ui->spinBoxBiasUpper->setMinimum(biasLowValue + 2);
-  if(biasLowValue < biasUpperValue)
+  if(biasLowValue > biasUpperValue)
     ui->spinBoxBiasUpper->setValue(biasLowValue+2);
+    ui->spinBoxBiasUpper->setMinimum(biasLowValue + 2);
     biasUpperValue = biasLowValue + 2;
   int biasStepMaximun = (biasUpperValue - biasLowValue)/2;
   ui->spinBoxBiasStep->setMaximum(biasStepMaximun);
@@ -72,6 +74,7 @@ void DialogIVcurve::pushButtonStartPressed(){
   ui->pushButtonStart->setText("Start");
   ui->pushButtonStart->setEnabled(false);
   ui->pushButtonPause->setEnabled(true);
+  ui->pushButtonStop->setEnabled(false);
   int biasLowValue = ui->spinBoxBiasLow->value();
   int biasUpperValue = ui->spinBoxBiasUpper->value();
   int biasStepValues = ui->spinBoxBiasStep->value();
@@ -98,11 +101,20 @@ void DialogIVcurve::pushButtonStartPressed(){
   MainWindow *mymainwindow = reinterpret_cast<MainWindow*>(this->parent());
 
   try{
+
+    this->runningFLAG = true;
+    ui->spinBoxChannelNumber->setEnabled(false);
+    ui->pushButtonSaveData->setEnabled(false);
+
     QString command = "WR VBIASCTRL V 1100\r\n";
     mymainwindow->sendCommand(command);
-
     for(int i=this->initialPoistion; i<this->xValues.length();i++){
       if(this->pausePressedFLAG){
+        ui->pushButtonStop->setEnabled(true);
+        ui->pushButtonPause->setEnabled(false);
+        ui->pushButtonSaveData->setEnabled(true);
+        ui->pushButtonStart->setEnabled(true);
+        ui->pushButtonStart->setText("Resume");
         break;
       }
 
@@ -163,24 +175,33 @@ void DialogIVcurve::pushButtonStartPressed(){
       command = command + "\r\n";
       mymainwindow->sendCommand(command);
       qDebug() << command;
+
+      ui->spinBoxChannelNumber->setEnabled(true);
+      ui->pushButtonSaveData->setEnabled(true);
+      this->runningFLAG = false;
     }
   }catch(serialException &e){
     e.handleException(mymainwindow);
+    ui->pushButtonStart->setEnabled(true);
+    ui->pushButtonPause->setEnabled(false);
+    ui->pushButtonStop->setEnabled(false);
+    ui->spinBoxChannelNumber->setEnabled(true);
+    ui->pushButtonSaveData->setEnabled(true);
+    this->runningFLAG = false;
   }
 }
 
 void DialogIVcurve::pushButtonPausePressed(){
 
   this->pausePressedFLAG = true;
-  ui->pushButtonStop->setEnabled(true);
-  ui->pushButtonPause->setEnabled(false);
-  ui->pushButtonStart->setEnabled(true);
-  ui->pushButtonStart->setText("Resume");
+
 }
 
 void DialogIVcurve::pushButtonStopPressed(){
 
   this->pausePressedFLAG = false;
+  this->runningFLAG = false;
+  ui->spinBoxChannelNumber->setEnabled(true);
   ui->pushButtonStop->setEnabled(false);
   ui->pushButtonPause->setEnabled(false);
   ui->pushButtonStart->setEnabled(true);
@@ -202,6 +223,23 @@ void DialogIVcurve::pushButtonStopPressed(){
 
 }
 
+void DialogIVcurve::closeEvent(QCloseEvent *event)
+{
+  if(this->runningFLAG){
+    QMessageBox::warning(this, tr("Warning"), "IV curve is still running.\nPlease PAUSE and STOP the process to exit.");
+    event->ignore();
+  }else{
+    QMessageBox::StandardButton resBtn = QMessageBox::question( this, "DAPHNE GUI",
+                                                                tr("Are you sure?\n"),
+                                                                QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
+                                                                QMessageBox::Yes);
+    if (resBtn != QMessageBox::Yes) {
+      event->ignore();
+    } else {
+      event->accept();
+    }
+  }
+}
 
 
 

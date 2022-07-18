@@ -38,12 +38,14 @@ private:
   int initialPoistion = 0;
 
   bool pausePressedFLAG = false;
-
+  bool runningFLAG = false;
 
   QVector<double> xValues;
   QVector<double> yValues;
 
   QRandomGenerator64 rg;
+
+  void closeEvent(QCloseEvent *event);
 };
 
 #endif // DIALOGIVCURVE_H
