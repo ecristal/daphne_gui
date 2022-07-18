@@ -63,7 +63,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_05_02\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_05_03\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -568,8 +568,8 @@ void MainWindow::delayMicro(const int &delay_micro){
 void MainWindow::readDataFromSerial(){
     QByteArray serial_data_ = this->serialPort_->readAll();
     this->serialData.append(serial_data_);
-    QString data_string = QString::fromUtf8(serial_data_.data(),serial_data_.size());
-    this->Message(data_string,1);
+    this->serial_data_string = QString::fromUtf8(serial_data_.data(),serial_data_.size());
+    this->Message(this->serial_data_string ,1);
     this->serialTimeoutTimer.stop();
     this->waitingForData.quit();
 }
@@ -1189,6 +1189,10 @@ DaphneSocket* MainWindow::getSocket(){
 
 void MainWindow::displayMessageBox(const QString &msg){
   QMessageBox::critical(this, tr("Error"), msg);
+}
+
+QString MainWindow::getSerialString(){
+  return this->serial_data_string;
 }
 
 void MainWindow::menuIVCurvePressed(){

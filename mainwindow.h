@@ -120,7 +120,11 @@ public:
     DaphneSocket *getSocket();
     void Message(QString message, int msgCode);
     void displayMessageBox(const QString &msg);
+    void sendCommand(const QString &command);
+    void delayMilli(const int &delay_milli);
+    void delayMicro(const int &delay_micro);
 
+    QString getSerialString();
 private slots:
     void pushButtonConnectPressed();
     void pushButtonDisconnectPressed();
@@ -148,6 +152,7 @@ private slots:
     void menuAcquisitionConfigurationPressed();
     void menuAFEConfigurationPressed();
     void menuIVCurvePressed();
+
 private:
     Ui::MainWindow *ui;
 
@@ -157,6 +162,8 @@ private:
     QEventLoop waitingForData;
     QByteArray serialData;
     QVector<double> ethernetData;
+
+    QString serial_data_string;
 
     uint16_t reg_1_value = 0;
     uint16_t reg_21_value = 0;
@@ -217,7 +224,6 @@ private:
     uint16_t getLNAClampLevelMask();
     void acquireWaveform();
     void readAndPlotDataEthernet();
-    void delayMilli(const int &delay_milli);
     void readAndPlotDataEthernet(const int &channel);
     int getSpyBufferFromChannel(const int &channel);
     void configureEnabledChannels();
@@ -226,10 +232,8 @@ private:
     int readChannelsEthernet(const QVector<bool> &enabledChannels);
     void acquireWaveformEnabled();
     void readMultichannelEthernet_vector(const QVector<bool> &enabledChannels);
-    void delayMicro(const int &delay_micro);
     void setOFFSETGain(const int &i);
     void setAFEConfiguration(const QString &afe_number);
-    void sendCommand(const QString &command);
     void handleNewEthernetSocket();
 };
 #endif // MAINWINDOW_H

@@ -4,6 +4,12 @@
 #include <QDialog>
 #include <QFileDialog>
 #include <QFile>
+#include <QRandomGenerator64>
+#include <algorithm>
+#include <QTextStream>
+#include <QString>
+
+#include "mainwindow.h"
 
 namespace Ui {
 class DialogIVcurve;
@@ -22,12 +28,21 @@ private slots:
   void spinBoxBiasUpperValueChanged();
   void pushButtonSaveDataPressed();
   void pushButtonStartPressed();
+  void pushButtonPausePressed();
+  void pushButtonStopPressed();
 private:
   Ui::DialogIVcurve *ui;
   void initializeWindow();
 
+  int initialPoistion = 0;
+
+  bool pausePressedFLAG = false;
+
+
   QVector<double> xValues;
   QVector<double> yValues;
+
+  QRandomGenerator64 rg;
 };
 
 #endif // DIALOGIVCURVE_H
