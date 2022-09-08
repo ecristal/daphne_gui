@@ -63,7 +63,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_05_08\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_05_09\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -960,6 +960,8 @@ void MainWindow::requestDataFromChannel(const int &channel,const int &length){
     int lastRequestSize = length%minimunDatagramSize;
     int spyBuffer = this->getSpyBufferFromChannel(channel);
 
+    //qDebug() << "Requested channel: " << channel << "spybuffer address: " << spyBuffer;
+
     for(int i = 0; i < numberOfRequest; i++){
       if(i == numberOfRequest - 1 && lastRequestSize != 0){
         this->socket->read(spyBuffer + i*minimunDatagramSize, lastRequestSize);
@@ -1095,16 +1097,16 @@ int MainWindow::getSpyBufferFromChannel(const int &channel){
   if(channel >= 0 && channel< 8){
     afe = 0;
     spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
-  }else if(channel >= 8 && channel< 15){
+  }else if(channel >= 8 && channel< 16){
     afe = 1;
     spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
-  }else if(channel >= 16 && channel< 23){
+  }else if(channel >= 16 && channel< 24){
     afe = 2;
     spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
-  }else if(channel >= 24 && channel< 31){
+  }else if(channel >= 24 && channel< 32){
     afe = 3;
     spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
-  }else if(channel >= 32 && channel< 39){
+  }else if(channel >= 32 && channel< 40){
     afe = 4;
     spyBuffer = spyBuffer + 0x100000*afe + 0x10000*(channel%8);
   }else{
