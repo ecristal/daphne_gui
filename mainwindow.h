@@ -104,6 +104,7 @@
 #include "serialexception.h"
 #include "dialogafeconfiguration.h"
 #include "dialogivcurve.h"
+#include "triggermenudialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -154,6 +155,7 @@ private slots:
     void menuAcquisitionConfigurationPressed();
     void menuAFEConfigurationPressed();
     void menuIVCurvePressed();
+    void menuTriggerPressed();
 
 private:
     Ui::MainWindow *ui;
@@ -184,6 +186,11 @@ private:
     int daphnePortNumber = 2001;
     int computerPortNumber = 58789;
     int received_datagrams, expected_datagrams;
+
+    // TriggerMenu
+    QVector<bool> triggerSource = {false, true, false};
+    int triggerChannel = 0;
+    double triggerLevel = 1.5;
 
     // Acquisition menu
     QVector<bool> channelsEnabledState;

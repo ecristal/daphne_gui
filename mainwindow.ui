@@ -1229,6 +1229,7 @@
     <addaction name="actionEthernet"/>
     <addaction name="actionAcquisition"/>
     <addaction name="actionAFE"/>
+    <addaction name="actionTrigger"/>
    </widget>
    <addaction name="menuTools"/>
    <addaction name="menuConfiguration"/>
@@ -1257,6 +1258,11 @@
   <action name="actionI_V_Curve">
    <property name="text">
     <string>I-V Curve</string>
+   </property>
+  </action>
+  <action name="actionTrigger">
+   <property name="text">
+    <string>Trigger</string>
    </property>
   </action>
  </widget>

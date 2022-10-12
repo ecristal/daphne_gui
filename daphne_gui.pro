@@ -23,7 +23,8 @@ SOURCES += \
     serialexception.cpp \
     dialogafeconfiguration.cpp \
     ethernetudpexception.cpp \
-    dialogivcurve.cpp
+    dialogivcurve.cpp \
+    triggermenudialog.cpp
 
 HEADERS += \
     daphnesocket.h \
@@ -36,7 +37,8 @@ HEADERS += \
     serialexception.h \
     dialogafeconfiguration.h \
     ethernetudpexception.h \
-    dialogivcurve.h
+    dialogivcurve.h \
+    triggermenudialog.h
 
 FORMS += \
     dialogaligment.ui \
@@ -45,7 +47,8 @@ FORMS += \
     dialogethernetconfiguration.ui \
     dialogacquisitionconfiguration.ui \
     dialogafeconfiguration.ui \
-    dialogivcurve.ui
+    dialogivcurve.ui \
+    triggermenudialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

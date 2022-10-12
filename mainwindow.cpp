@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionAcquisition,SIGNAL(triggered(bool)),this,SLOT(menuAcquisitionConfigurationPressed()));
     connect(ui->actionAFE,SIGNAL(triggered(bool)),this,SLOT(menuAFEConfigurationPressed()));
     connect(ui->actionI_V_Curve,SIGNAL(triggered(bool)),this,SLOT(menuIVCurvePressed()));
+    connect(ui->actionTrigger,SIGNAL(triggered(bool)),this,SLOT(menuTriggerPressed()));
 }
 
 MainWindow::~MainWindow()
@@ -63,7 +64,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_05_09\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_06_00\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -909,6 +910,9 @@ void MainWindow::handleNewEthernetSocket(){
 void MainWindow::acquireWaveform(){
     if(ui->checkBoxEnableEthernet->isChecked()){
         int channel = ui->comboBoxChannel->currentText().toInt();
+        if(this->triggerSource[2] == true){
+          this->socket->sendSoftwareTrigger();
+        }
         this->readAndPlotDataEthernet(channel);
     }else{
         this->readAndPlotDataSerial();
@@ -916,6 +920,9 @@ void MainWindow::acquireWaveform(){
 }
 
 void MainWindow::acquireWaveformEnabled(){
+  if(this->triggerSource[2] == true){
+    this->socket->sendSoftwareTrigger();
+  }
   this->readMultichannelEthernet_vector(this->channelsEnabledState);
 }
 
@@ -1218,6 +1225,23 @@ QString MainWindow::getSerialString(){
 void MainWindow::menuIVCurvePressed(){
   DialogIVcurve IVcurve(this);
   IVcurve.exec();
+}
+
+void MainWindow::menuTriggerPressed(){
+  TriggerMenuDialog triggerDialog(this);
+  triggerDialog.setTriggerSource(this->triggerSource);
+  triggerDialog.setTriggerChannel(this->triggerChannel);
+  triggerDialog.setTriggerLevel(this->triggerLevel);
+
+  int exec_code = triggerDialog.exec();
+  if(exec_code){
+    //... accepted config
+    this->triggerSource = triggerDialog.getTriggerSource();
+    this->triggerChannel = triggerDialog.getTriggerChannel();
+    this->triggerLevel = triggerDialog.getTriggerLevel();
+  }else{
+    //... rejected config
+  }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

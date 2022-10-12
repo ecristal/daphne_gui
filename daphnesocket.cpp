@@ -221,6 +221,10 @@ int DaphneSocket::sendSingleCommand(const uint64_t &addr, const uint64_t &data){
     return this->write(addr,1,data_to_send);
 }
 
+void DaphneSocket::sendSoftwareTrigger(){
+    this->sendSingleCommand(0x2000,0x1234);
+}
+
 int DaphneSocket::sendData(const uint64_t &addr, const QVector<uint64_t> &data){
     uint8_t number_data_to_send = data.length();
     uint8_t* data_ = new uint8_t[number_data_to_send*sizeof(uint64_t)];

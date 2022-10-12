@@ -30,6 +30,7 @@ public:
     int sendData(const uint64_t &addr, const QVector<uint64_t> &data);
     void waitForReadyRead();
     QString getBindedToStr(){return this->bindedToAddr;}
+    void sendSoftwareTrigger();
 
 private slots:
     void readyRead_();
