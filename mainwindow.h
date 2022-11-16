@@ -245,5 +245,7 @@ private:
     void setAFEConfiguration(const QString &afe_number);
     void handleNewEthernetSocket();
     void closeEvent(QCloseEvent *event);
+    void sendSoftwareTrigger();
+    void sendSoftwareTriggerDeadTime();
 };
 #endif // MAINWINDOW_H

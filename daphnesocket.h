@@ -31,7 +31,7 @@ public:
     void waitForReadyRead();
     QString getBindedToStr(){return this->bindedToAddr;}
     void sendSoftwareTrigger();
-
+    void sendSoftwareTriggerDeadTime();
 private slots:
     void readyRead_();
 private:

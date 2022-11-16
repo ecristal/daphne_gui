@@ -64,7 +64,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(115200);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V1_06_00\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V1_06_04\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -910,20 +910,30 @@ void MainWindow::handleNewEthernetSocket(){
 void MainWindow::acquireWaveform(){
     if(ui->checkBoxEnableEthernet->isChecked()){
         int channel = ui->comboBoxChannel->currentText().toInt();
-        if(this->triggerSource[2] == true){
-          this->socket->sendSoftwareTrigger();
-        }
+        this->sendSoftwareTriggerDeadTime();
         this->readAndPlotDataEthernet(channel);
+        this->sendSoftwareTriggerDeadTime();
     }else{
         this->readAndPlotDataSerial();
     }
 }
 
-void MainWindow::acquireWaveformEnabled(){
+void MainWindow::sendSoftwareTrigger(){
   if(this->triggerSource[2] == true){
     this->socket->sendSoftwareTrigger();
   }
+}
+
+void MainWindow::sendSoftwareTriggerDeadTime(){
+  if(this->triggerSource[2] == true){
+    this->socket->sendSoftwareTriggerDeadTime();
+  }
+}
+
+void MainWindow::acquireWaveformEnabled(){
+  this->sendSoftwareTriggerDeadTime();
   this->readMultichannelEthernet_vector(this->channelsEnabledState);
+  this->sendSoftwareTriggerDeadTime();
 }
 
 void MainWindow::readAndPlotDataEthernet(){
@@ -1095,6 +1105,7 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
     return receivedData.length();
   }catch(ethernetUDPException &e){
     e.handleException(this);
+    return -99;
   }
 }
 
