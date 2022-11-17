@@ -167,7 +167,7 @@ private:
     QByteArray serialData;
     QVector<double> ethernetData;
 
-    QString serial_data_string;
+    QString serial_data_string, serial_data_string_success;
 
     uint16_t reg_1_value = 0;
     uint16_t reg_21_value = 0;
@@ -245,5 +245,7 @@ private:
     void setAFEConfiguration(const QString &afe_number);
     void handleNewEthernetSocket();
     void closeEvent(QCloseEvent *event);
+    QString parseSerialDataStringSuccess();
+    bool isSerialCommandSuccesful();
 };
 #endif // MAINWINDOW_H

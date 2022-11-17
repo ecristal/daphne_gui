@@ -20,6 +20,9 @@ void serialException::handleException(QWidget *mw){
     case 3:
       mymainwindow->Message("Aborting sending further commands to DAPHNE",2);
       break;
+    case 4:
+      mymainwindow->Message("Reached maximun command retries.\nAborting sending further commands to DAPHNE",2);
+      break;
     default:
       mymainwindow->displayMessageBox("Internal GUI Error:\nUnknown Error");
       //QMessageBox::critical(this, QObject::tr("Error"), "Internal GUI Error:\nUnknown Error");

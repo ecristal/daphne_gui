@@ -61,10 +61,10 @@ void MainWindow::initializeWindow(){
     ui->pushButtonGETCONFIG->setEnabled(true);
     ui->pushButtonConnect->setEnabled(false);
     ui->pushButtonDisconnect->setEnabled(false);
-    ui->spinBoxBaudRate->setValue(115200);
+    ui->spinBoxBaudRate->setValue(921600);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V2_00_00\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V2_00_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -570,6 +570,7 @@ void MainWindow::readDataFromSerial(){
     QByteArray serial_data_ = this->serialPort_->readAll();
     this->serialData.append(serial_data_);
     this->serial_data_string = QString::fromUtf8(serial_data_.data(),serial_data_.size());
+    this->serial_data_string_success = this->serial_data_string_success + this->serial_data_string;
     this->Message(this->serial_data_string ,1);
     this->serialTimeoutTimer.stop();
     this->waitingForData.quit();
@@ -593,7 +594,7 @@ bool MainWindow::sendCommand_(const QString &command){
     if(!this->receivingSerialDataFlag){
        throw(serialException(2));
     }
-    this->delay(1);
+    this->delayMilli(1000);
     return true;
     }catch(serialException &serial_exception){
       serial_exception.handleException(this);
@@ -603,9 +604,51 @@ bool MainWindow::sendCommand_(const QString &command){
 
 void MainWindow::sendCommand(const QString &command){
 
+  this->serial_data_string_success = "";
   if(!this->sendCommand_(command)){
     throw(serialException(3));
   }
+  // reapeat if not success
+  int counter_max_retry = 0;
+  while(!this->isSerialCommandSuccesful()){
+    this->Message("Command Failed: retry n. " + QString::number(counter_max_retry),2);
+    if(counter_max_retry == 4){
+      throw(serialException(4));
+    }else{
+      this->serial_data_string_success = "";
+      if(!this->sendCommand_(command)){
+        throw(serialException(3));
+      }
+      counter_max_retry++;
+    }
+  }
+
+}
+
+bool MainWindow::isSerialCommandSuccesful(){
+  QString str_success = this->parseSerialDataStringSuccess();
+  int is_success = str_success.compare("success");
+  //qDebug() << is_success;
+  int is_updated = str_success.compare("updated");
+  //qDebug() << is_updated;
+  if(((is_success) == 0) || ((is_updated) == 0)){
+    //qDebug() << "success";
+    return true;
+  }else{
+    //qDebug() << "error";
+    return false;
+  }
+}
+
+QString MainWindow::parseSerialDataStringSuccess(){
+
+  QStringList str_sucess_list = this->serial_data_string_success.split("...");
+  QString str_sucess = str_sucess_list.last();
+  str_sucess_list = str_sucess.split("\r");
+  str_sucess = str_sucess_list.first();
+  str_sucess_list = str_sucess.split(" ");
+  str_sucess = str_sucess_list.last();
+  return str_sucess;
 }
 
 void MainWindow::pushButtonInitialPressed(){
