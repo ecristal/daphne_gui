@@ -22,6 +22,7 @@ public:
     int read(const uint64_t &addr,const uint8_t &num);
     int write(const uint64_t &addr,const uint8_t &num, uint8_t *data);
     QString alignAFEs(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr);
+    QString alignAFEsV2(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr);
     int ping(int size);
     int pong(int size);
     QVector<QByteArray> getReceivedData();

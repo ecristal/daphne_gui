@@ -1,6 +1,8 @@
 #include "daphnesocket.h"
 #include "ethernetudpexception.h"
 
+#include "mainwindow.h"
+
 #include <exception>
 
 DaphneSocket::DaphneSocket()
@@ -150,6 +152,73 @@ void DaphneSocket::flushReceivedData(){
 
 void DaphneSocket::waitForReadyRead(){
     this->udpSocket->waitForReadyRead();
+}
+
+QString DaphneSocket::alignAFEsV2(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr){
+  qDebug()<< "Alignment V2";
+  QString output = "Alignment V2";
+
+  this->sendSingleCommand(0x4001, 0x0);
+  this->sendSingleCommand(0x4003, 0x1);
+  //sleep 0.5
+  this->delayMilli(500);
+  this->sendSingleCommand(0x4002, 0x1);
+  //sleep 0.5
+  this->delayMilli(500);
+  this->sendSingleCommand(0x2001, 0x1);
+  this->delayMilli(1000);
+
+  int MINWIDTH = 32;
+  for(int afe = 0; afe<5; afe++){
+      qDebug() << "AFE"<<afe;
+      output = output + "AFE" + QString::number(afe) + "\n";
+      for(int retry_ = 0; retry_ < retry; retry_++){
+          uint64_t x[32] = {0};
+          int w = 0;
+          int c = 0;
+          QString es = "";
+          isAfeAlignedStr[afe] = "";
+          for(int dv = 0; dv < 32; dv++){
+              this->sendSingleCommand(0x2000,0x1234);
+              this->read((0x40000000+(0x100000*afe)+(0x80000) + dv),5);
+              this->waitForReadyRead();
+              this->delayMilli(5);
+              QByteArray rec_data = this->getReceivedData().at(0);
+              this->flushReceivedData();
+              uint64_t *data_ = reinterpret_cast<uint64_t*>(rec_data.begin()+2);
+              x[dv] = data_[1];
+              //qDebug() << QString::number(x[dv],16);
+              this->flushReceivedData();
+          }
+          for(int i = 0; i < 32; i++){
+              if(x[i] == 0x3F80){
+                  w = w + 1;
+                  es = es + "*";
+                  isAfeAlignedStr[afe] = "READ 3F80 ::";
+              }
+              else{
+                  es = es + ".";
+                  isAfeAlignedStr[afe] = " ERROR VALUE ::";
+              }
+          }
+          if(w >= MINWIDTH){
+              qDebug() << es << " ALIGNED OK!";
+              output = output + es + "ALIGNED OK!";
+              isAfeAligned[afe] = 1;
+              isAfeAlignedStr[afe] = isAfeAlignedStr[afe] + " ALIGNED OK!";
+              break;
+          }else{
+              this->sendSingleCommand(0x2001, 0x1);
+              this->delayMilli(1000);
+          }
+          if(retry_ == retry-1)
+              qDebug() << "FAILED!";
+              output = output + "FAILED!\n";
+              isAfeAlignedStr[afe] = isAfeAlignedStr[afe] + " FAILED!";
+      }
+  }
+
+  return output;
 }
 
 QString DaphneSocket::alignAFEs(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr){
