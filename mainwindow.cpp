@@ -12,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->comboBoxAvailableSerialPort,SIGNAL(activated(int)),this,SLOT(comboBoxAvailableSerialPortsValueChanged()));
     connect(ui->pushButtonRefresh,SIGNAL(clicked(bool)),this,SLOT(pushButtonRefreshPressed()));
     connect(this->serialPort_,SIGNAL(readyRead()),this,SLOT(readDataFromSerial()));
-    //connect(ui->pushButtonInitial,SIGNAL(clicked(bool)),this,SLOT(pushButtonInitialPressed()));
     connect(ui->pushButtonRDFPGA,SIGNAL(clicked(bool)),this,SLOT(pushButtonRDFPGAPressed()));
     connect(ui->pushButtonApplyBiasVoltages,SIGNAL(clicked(bool)),this,SLOT(pushButtonApplyBiasVoltages()));
     connect(&this->serialTimeoutTimer,SIGNAL(timeout()),this,SLOT(serialTimeoutTimerTriggered()));
@@ -64,7 +63,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(921600);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V2_00_04\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V2_00_05\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -690,7 +689,7 @@ void MainWindow::pushButtonRDFPGAPressed(){
             }
         }else{
             int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
-            this->dialogReadoutChannelWindow->createFileNames(this->mutliple_waveforms_folder_address,this->channelsEnabledState);
+            this->dialogReadoutChannelWindow->createFileNames(this->multiple_waveforms_folder_address,this->channelsEnabledState);
             for(int i = 0; i< sampling_iterations; i++){
               if(this->dialogReadoutChannelWindow->getWindowStatus() == false){
                 break;
@@ -729,7 +728,7 @@ void MainWindow::pushButtonRDFPGAPressed(){
             this->pushButtonApplyOffsetPressed();
             this->acquireWaveform();
             this->acquireWaveform();
-            this->dialogReadoutChannelWindow->saveContinousWaveform(this->mutliple_waveforms_folder_address,i);
+            this->dialogReadoutChannelWindow->saveContinousWaveform(this->multiple_waveforms_folder_address,i);
             if(break_flag)
                 break;
         }
@@ -925,8 +924,8 @@ void MainWindow::pushButtonSendRawCommandPressed(){
 //}
 
 void MainWindow::pushButtonMultipleWaveformsDirectoryPressed(){
-    this->mutliple_waveforms_folder_address = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), QDir::currentPath());
-    //qDebug()<<this->mutliple_waveforms_folder_address;
+    this->multiple_waveforms_folder_address = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), this->multiple_waveforms_folder_address + "/..");
+    qDebug()<<this->multiple_waveforms_folder_address;
 }
 
 void MainWindow::pushButtonGETCONFIGPressed(){

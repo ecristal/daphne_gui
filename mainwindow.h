@@ -175,7 +175,7 @@ private:
     uint16_t reg_51_value = 0;
     uint16_t reg_52_value = 0;
 
-    QString mutliple_waveforms_folder_address;
+    QString multiple_waveforms_folder_address;
 
     DialogReadoutChannel* dialogReadoutChannelWindow;
 
