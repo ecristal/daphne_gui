@@ -63,7 +63,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(921600);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V2_00_05\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V2_00_06\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -159,14 +159,6 @@ void MainWindow::setConfig(){
     uint16_t adc_format_mask = this->getADCFormatMask();
     eraser = MASK_ERASER_ADC_FORMAT_REG_4;
     this->reg_4_value = this->eraseAndApplyMask(this->reg_4_value,adc_format_mask,eraser);
-
-    if(ui->checkBoxEnableEthernet->isChecked()){
-      if(this->FPGAFilterEnabled){
-        this->socket->sendSingleCommand(0x2023,0x1);
-      }else{
-        this->socket->sendSingleCommand(0x2023,0x0);
-      }
-    }
 
     //qDebug() << "REG 51: " << QString::number(this->reg_51_value, 2) << " :: " << QString::number(this->reg_51_value, 16);
     //qDebug() << "REG 52: " << QString::number(this->reg_52_value, 2) << " :: " << QString::number(this->reg_52_value, 16);
@@ -1252,6 +1244,14 @@ void MainWindow::menuAFEConfigurationPressed(){
 
     eraser = MASK_LOW_FREQ_NOISE_SUPR_REG_1;
     this->reg_1_value = this->eraseAndApplyMask(this->reg_1_value,lowNoiseSupressionEnabled_register,eraser);
+
+    if(ui->checkBoxEnableEthernet->isChecked()){
+      if(this->FPGAFilterEnabled){
+        this->socket->sendSingleCommand(0x2023,0x1);
+      }else{
+        this->socket->sendSingleCommand(0x2023,0x0);
+      }
+    }
 
 //    qDebug() << "Writing on R1: bin" + QString::number(this->reg_1_value, 2) + " :: hex: " + QString::number(this->reg_1_value, 16);
 //    qDebug() << "Writing on R21: bin" + QString::number(this->reg_21_value, 2) + " :: hex: " + QString::number(this->reg_21_value, 16);
