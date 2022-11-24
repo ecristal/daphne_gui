@@ -8,6 +8,8 @@ DialogAligment::DialogAligment(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowTitle("ALIGNMENT");
     connect(ui->pushButtonAlign,SIGNAL(clicked(bool)), this, SLOT(pushButtonAlignPressed()));
+    connect(ui->checkBoxVersion2A,SIGNAL(clicked(bool)),this, SLOT(checkBoxVersion2AClicked()));
+    connect(ui->checkBoxVersion1,SIGNAL(clicked(bool)),this, SLOT(checkBoxVersion1Clicked()));
 }
 
 DialogAligment::~DialogAligment()
@@ -23,7 +25,7 @@ void DialogAligment::pushButtonAlignPressed(){
           //mymainwindow->sendFPGAReset();
           QVector<bool> isAfeAligned({0,0,0,0,0});
           QVector<QString> isAfeAlignedStr({"","","","",""});
-          mymainwindow->getSocket()->alignAFEsV2(100,isAfeAligned,isAfeAlignedStr);
+          this->alignAFEs(mymainwindow->getSocket(), isAfeAligned, isAfeAlignedStr);
           if(this->areAFEsAligned(isAfeAligned)){
               this->writeAlignedLabels(isAfeAlignedStr);
               break;
@@ -54,4 +56,22 @@ void DialogAligment::writeAlignedLabels(const QVector<QString> &isAfeAlignedStr)
     ui->labelAFE2->setText(isAfeAlignedStr[2]);
     ui->labelAFE3->setText(isAfeAlignedStr[3]);
     ui->labelAFE4->setText(isAfeAlignedStr[4]);
+}
+
+void DialogAligment::checkBoxVersion2AClicked(){
+  ui->checkBoxVersion2A->setChecked(true);
+  ui->checkBoxVersion1->setChecked(false);
+}
+
+void DialogAligment::checkBoxVersion1Clicked(){
+  ui->checkBoxVersion2A->setChecked(false);
+  ui->checkBoxVersion1->setChecked(true);
+}
+
+void DialogAligment::alignAFEs(DaphneSocket *socket, QVector<bool> isAfeAligned, QVector<QString> isAfeAlignedStr){
+  if(ui->checkBoxVersion2A->isChecked()){
+    socket->alignAFEsV2A(100,isAfeAligned,isAfeAlignedStr);
+  }else if(ui->checkBoxVersion1->isChecked()){
+    socket->alignAFEsV1(100,isAfeAligned,isAfeAlignedStr);
+  }
 }

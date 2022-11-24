@@ -21,11 +21,14 @@ public:
     ~DialogAligment();
 
 private slots:
-    void pushButtonAlignPressed();
+  void pushButtonAlignPressed();
+  void checkBoxVersion2AClicked();
+  void checkBoxVersion1Clicked();
 private:
     Ui::DialogAligment *ui;
     bool areAFEsAligned(const QVector<bool> &isAfeAligned);
     void writeAlignedLabels(const QVector<QString> &isAfeAlignedStr);
+    void alignAFEs(DaphneSocket *socket, QVector<bool> isAfeAligned, QVector<QString> isAfeAlignedStr);
 };
 
 #endif // DIALOGALIGMENT_H

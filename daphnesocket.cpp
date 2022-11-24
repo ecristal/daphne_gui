@@ -154,7 +154,7 @@ void DaphneSocket::waitForReadyRead(){
     this->udpSocket->waitForReadyRead();
 }
 
-QString DaphneSocket::alignAFEsV2(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr){
+QString DaphneSocket::alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr){
   qDebug()<< "Alignment V2";
   QString output = "Alignment V2";
 
@@ -221,7 +221,7 @@ QString DaphneSocket::alignAFEsV2(const int &retry, QVector<bool> &isAfeAligned,
   return output;
 }
 
-QString DaphneSocket::alignAFEs(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr){
+QString DaphneSocket::alignAFEsV1(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr){
 
    int MINWIDTH = 13;
    qDebug() << "Resetting IDELAY y ISERCES...";
