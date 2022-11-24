@@ -156,7 +156,6 @@ private slots:
     void menuAFEConfigurationPressed();
     void menuIVCurvePressed();
     void menuTriggerPressed();
-
 private:
     Ui::MainWindow *ui;
 
@@ -190,7 +189,10 @@ private:
     // TriggerMenu
     QVector<bool> triggerSource = {false, true, false};
     int triggerChannel = 0;
-    double triggerLevel = 1.5;
+    QVector<int> triggerLevel = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                                 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                                 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                                 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
 
     // Acquisition menu
     QVector<bool> channelsEnabledState;
@@ -199,6 +201,7 @@ private:
 
     //AFE configuration menu
     bool lowNoiseSupressionEnabled = false;
+    bool FPGAFilterEnabled = false;
     uint16_t digitalHPFKValue = 9;
     bool digitalHPFEnabled = false;
 
@@ -247,5 +250,7 @@ private:
     void closeEvent(QCloseEvent *event);
     QString parseSerialDataStringSuccess();
     bool isSerialCommandSuccesful();
+    void sendSoftwareTriggerDeadTime();
+    void sendSoftwareTrigger();
 };
 #endif // MAINWINDOW_H

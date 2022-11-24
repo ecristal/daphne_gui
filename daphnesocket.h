@@ -30,8 +30,11 @@ public:
     int sendSingleCommand(const uint64_t &addr, const uint64_t &data);
     int sendData(const uint64_t &addr, const QVector<uint64_t> &data);
     void waitForReadyRead();
+
+    void delayMilli(int delay_milli);
     QString getBindedToStr(){return this->bindedToAddr;}
     void sendSoftwareTrigger();
+    void sendSoftwareTriggerDeadTime();
 
 private slots:
     void readyRead_();
@@ -46,7 +49,6 @@ private:
 
     QVector<QByteArray> receivedData;
     int processDatagram(QByteArray &datagram);
-    void delayMilli(int delay_milli);
     bool perform_aligment = true;
 
     QString bindedToAddr = "";

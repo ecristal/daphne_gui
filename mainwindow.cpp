@@ -64,7 +64,7 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(921600);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V2_00_02\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V2_00_04\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -160,6 +160,14 @@ void MainWindow::setConfig(){
     uint16_t adc_format_mask = this->getADCFormatMask();
     eraser = MASK_ERASER_ADC_FORMAT_REG_4;
     this->reg_4_value = this->eraseAndApplyMask(this->reg_4_value,adc_format_mask,eraser);
+
+    if(ui->checkBoxEnableEthernet->isChecked()){
+      if(this->FPGAFilterEnabled){
+        this->socket->sendSingleCommand(0x2023,0x1);
+      }else{
+        this->socket->sendSingleCommand(0x2023,0x0);
+      }
+    }
 
     //qDebug() << "REG 51: " << QString::number(this->reg_51_value, 2) << " :: " << QString::number(this->reg_51_value, 16);
     //qDebug() << "REG 52: " << QString::number(this->reg_52_value, 2) << " :: " << QString::number(this->reg_52_value, 16);
@@ -953,20 +961,20 @@ void MainWindow::handleNewEthernetSocket(){
 void MainWindow::acquireWaveform(){
     if(ui->checkBoxEnableEthernet->isChecked()){
         int channel = ui->comboBoxChannel->currentText().toInt();
-        if(this->triggerSource[2] == true){
-          this->socket->sendSoftwareTrigger();
-        }
+        this->sendSoftwareTrigger();
+        this->sendSoftwareTriggerDeadTime();
         this->readAndPlotDataEthernet(channel);
+        this->sendSoftwareTriggerDeadTime();
     }else{
         this->readAndPlotDataSerial();
     }
 }
 
 void MainWindow::acquireWaveformEnabled(){
-  if(this->triggerSource[2] == true){
-    this->socket->sendSoftwareTrigger();
-  }
+  this->sendSoftwareTrigger();
+  this->sendSoftwareTriggerDeadTime();
   this->readMultichannelEthernet_vector(this->channelsEnabledState);
+  this->sendSoftwareTriggerDeadTime();
 }
 
 void MainWindow::readAndPlotDataEthernet(){
@@ -1218,12 +1226,14 @@ void MainWindow::menuAFEConfigurationPressed(){
   afeConfig.setSpinBoxHPFKValue(this->digitalHPFKValue);
   afeConfig.setCheckBoxHPFEnabled(this->digitalHPFEnabled);
   afeConfig.setCheckBoxLFNSupressorEnabled(this->lowNoiseSupressionEnabled);
+  afeConfig.setFPGAFilterEnabled(this->FPGAFilterEnabled);
   int exec_code = afeConfig.exec();
   if(exec_code){
     //... accepted config
     this->digitalHPFKValue = afeConfig.getSpinBoxHPFKValue();
     this->digitalHPFEnabled = afeConfig.getCheckBoxHPFEnabled();
     this->lowNoiseSupressionEnabled = afeConfig.getCheckBoxLFNSupressorEnabled();
+    this->FPGAFilterEnabled = afeConfig.getFPGAFilterEnabled();
 
     uint16_t digitalHPFKValue_register = this->digitalHPFKValue << 1;
     uint16_t lowNoiseSupressionEnabled_register = (uint16_t)this->lowNoiseSupressionEnabled << 11;
@@ -1273,8 +1283,9 @@ void MainWindow::menuIVCurvePressed(){
 void MainWindow::menuTriggerPressed(){
   TriggerMenuDialog triggerDialog(this);
   triggerDialog.setTriggerSource(this->triggerSource);
-  triggerDialog.setTriggerChannel(this->triggerChannel);
   triggerDialog.setTriggerLevel(this->triggerLevel);
+  triggerDialog.setTriggerChannel(this->triggerChannel);
+  triggerDialog.setTriggerEnableChannel(this->channelsEnabledState);
 
   int exec_code = triggerDialog.exec();
   if(exec_code){
@@ -1285,6 +1296,16 @@ void MainWindow::menuTriggerPressed(){
   }else{
     //... rejected config
   }
+}
+
+void MainWindow::sendSoftwareTrigger(){
+  if(this->triggerSource[2] == true){
+    this->socket->sendSoftwareTrigger();
+  }
+}
+
+void MainWindow::sendSoftwareTriggerDeadTime(){
+    this->socket->sendSoftwareTriggerDeadTime();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

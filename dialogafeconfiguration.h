@@ -21,6 +21,8 @@ public:
   void setCheckBoxHPFEnabled(const bool &enabled);
   void setCheckBoxLFNSupressorEnabled(const bool &enabled);
   void setSpinBoxHPFKValue(const uint16_t &value);
+  void setFPGAFilterEnabled(const bool &enabled);
+  bool getFPGAFilterEnabled();
 private:
   Ui::DialogAFEConfiguration *ui;
 };

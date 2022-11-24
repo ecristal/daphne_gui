@@ -162,6 +162,19 @@
      <string>OFFSET remover</string>
     </property>
    </widget>
+   <widget class="QCheckBox" name="checkBoxFpgaFilterEnabled">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>30</y>
+      <width>101</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>FPGA Filter</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QCheckBox" name="checkBox_3">
    <property name="enabled">

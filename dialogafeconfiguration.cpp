@@ -26,6 +26,10 @@ uint16_t DialogAFEConfiguration::getSpinBoxHPFKValue(){
   return (uint16_t)ui->spinBoxK->value();
 }
 
+bool DialogAFEConfiguration::getFPGAFilterEnabled(){
+  return ui->checkBoxFpgaFilterEnabled->isChecked();
+}
+
 void DialogAFEConfiguration::setCheckBoxHPFEnabled(const bool &enabled){
   ui->checkBoxDigitalHPF->setChecked(enabled);
 }
@@ -36,4 +40,8 @@ void DialogAFEConfiguration::setCheckBoxLFNSupressorEnabled(const bool &enabled)
 
 void DialogAFEConfiguration::setSpinBoxHPFKValue(const uint16_t &value){
   ui->spinBoxK->setValue((int)value);
+}
+
+void DialogAFEConfiguration::setFPGAFilterEnabled(const bool &enabled){
+  ui->checkBoxFpgaFilterEnabled->setChecked(enabled);
 }

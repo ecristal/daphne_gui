@@ -9,6 +9,9 @@ TriggerMenuDialog::TriggerMenuDialog(QWidget *parent) :
   connect(ui->checkBoxSourceInternal,SIGNAL(clicked(bool)),this,SLOT(sourceInternalPressed()));
   connect(ui->checkBoxSourceExternal,SIGNAL(clicked(bool)),this,SLOT(sourceExternalPressed()));
   connect(ui->checkBoxSourceSoftware,SIGNAL(clicked(bool)),this,SLOT(sourceSoftwarePressed()));
+  connect(ui->pushButtonSetThreshold,SIGNAL(clicked(bool)),this,SLOT(buttonSetThresholdPressed()));
+  connect(ui->spinBoxChannel,SIGNAL(valueChanged(int)),this,SLOT(spinBoxChannelValueChanged()));
+  connect(ui->spinBoxLevel,SIGNAL(valueChanged(int)),this,SLOT(spinBoxLevelValueChanged()));
 }
 
 TriggerMenuDialog::~TriggerMenuDialog()
@@ -64,12 +67,75 @@ void TriggerMenuDialog::setTriggerChannel(int &channel){
 
 }
 
-double TriggerMenuDialog::getTriggerLevel(){
-  return ui->doubleSpinBoxLevel->value();
+void TriggerMenuDialog::setTriggerEnableChannel(QVector<bool> &triggerEnabled){
+  this->triggerEnabled = triggerEnabled;
 
 }
 
-void TriggerMenuDialog::setTriggerLevel(double &level){
-  ui->doubleSpinBoxLevel->setValue(level);
-
+QVector<int> TriggerMenuDialog::getTriggerLevel(){
+  return this->triggerLevel;
 }
+
+void TriggerMenuDialog::setTriggerLevel(QVector<int> &level){
+  this->triggerLevel = level;
+  ui->spinBoxLevel->setValue(level[ui->spinBoxChannel->value()]);
+}
+
+void TriggerMenuDialog::spinBoxChannelValueChanged(){
+  int value = ui->spinBoxChannel->value();
+  ui->spinBoxLevel->setValue(this->triggerLevel[value]);
+}
+
+void TriggerMenuDialog::spinBoxLevelValueChanged(){
+  this->triggerLevel[ui->spinBoxChannel->value()] = ui->spinBoxLevel->value();
+}
+
+void TriggerMenuDialog::buttonSetThresholdPressed(){
+  MainWindow *mymainwindow = reinterpret_cast<MainWindow*>(this->parent());
+  bool config_all = ui->checkBoxConfigAll->isChecked();
+  try{
+    if(config_all){
+      this->configTresholdAllChannels(mymainwindow->getSocket());
+    }else{
+      uint32_t channel = ui->spinBoxChannel->value();
+      this->configTresholdSingleChannel(channel, mymainwindow->getSocket());
+    }
+    this->configTriggerEnable(mymainwindow->getSocket());
+  }catch(ethernetUDPException &e){
+    e.handleException(mymainwindow);
+  }
+}
+
+void TriggerMenuDialog::configTresholdSingleChannel(const uint32_t &channel, DaphneSocket *socket){
+  int threshold_level = ui->spinBoxLevel->value();
+  uint64_t concat_value = 0;
+  concat_value = concat_value | ((uint64_t)channel << 32);
+  concat_value = concat_value | threshold_level;
+  socket->sendSingleCommand(0x2021,concat_value);
+
+//  socket->delayMilli(100);
+//  QVector<QByteArray> receivedData = socket->getReceivedData();
+
+//  qDebug()<< channel << " :: sended :: "  << QString::number(concat_value,2);
+
+//  qDebug()<< channel << " :: recieved :: "  << receivedData.length();
+}
+
+void TriggerMenuDialog::configTresholdAllChannels(DaphneSocket *socket){
+  for(int i = 0;i <40; i++){
+    this->configTresholdSingleChannel(i,socket);
+  }
+}
+
+void TriggerMenuDialog::configTriggerEnable(DaphneSocket *socket){
+  uint64_t concat_value = 0;
+  uint64_t shft = 1;
+  for(int i = 0;i <40; i++){
+    if(this->triggerEnabled[i]){
+      concat_value = concat_value | ((shft << i));
+      //qDebug()<< i << " :: "  << QString::number(concat_value,2);
+    }
+  }
+  socket->sendSingleCommand(0x2022,concat_value);
+}
+

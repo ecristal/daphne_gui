@@ -3,6 +3,10 @@
 
 #include <QDialog>
 
+#include "mainwindow.h"
+#include "daphnesocket.h"
+#include "ethernetudpexception.h"
+
 namespace Ui {
 class TriggerMenuDialog;
 }
@@ -19,15 +23,23 @@ public:
   void setTriggerSource(QVector<bool> &triggerSource);
   int getTriggerChannel();
   void setTriggerChannel(int &channel);
-  double getTriggerLevel();
-  void setTriggerLevel(double &level);
-
+  QVector<int> getTriggerLevel();
+  void setTriggerLevel(QVector<int> &level);
+  void setTriggerEnableChannel(QVector<bool> &triggerEnabled);
 private slots:
   void sourceInternalPressed();
   void sourceExternalPressed();
   void sourceSoftwarePressed();
+  void buttonSetThresholdPressed();
+  void spinBoxChannelValueChanged();
+  void spinBoxLevelValueChanged();
 private:
   Ui::TriggerMenuDialog *ui;
+  QVector<int> triggerLevel;
+  QVector<bool> triggerEnabled;
+  void configTresholdSingleChannel(const uint32_t &channel, DaphneSocket *socket);
+  void configTresholdAllChannels(DaphneSocket *socket);
+  void configTriggerEnable(DaphneSocket *socket);
 };
 
 #endif // TRIGGERMENUDIALOG_H
