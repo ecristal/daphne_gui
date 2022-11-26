@@ -767,7 +767,7 @@
        <string>2' complement</string>
       </property>
       <property name="checked">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkBoxOffsetBinary">
@@ -781,6 +781,9 @@
       </property>
       <property name="text">
        <string>Offset binary</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkBoxLSBFirst">
@@ -796,7 +799,7 @@
        <string>LSB First</string>
       </property>
       <property name="checked">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkBoxMSBFirst">
@@ -810,6 +813,9 @@
       </property>
       <property name="text">
        <string>MSB First</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
