@@ -40,6 +40,7 @@ void DialogReadoutChannel::plotData(const QByteArray &serial_data,const uint16_t
 
 void DialogReadoutChannel::plot(){
 
+  if(ui->checkBoxEnablePlot->isChecked()){
     double max_daphne_data = *std::max_element(this->daphneData.constBegin(),this->daphneData.constEnd());
     double min_daphne_data = *std::min_element(this->daphneData.constBegin(),this->daphneData.constEnd());
     double max_time_daphne_data = *std::max_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
@@ -48,11 +49,13 @@ void DialogReadoutChannel::plot(){
     ui->widgetDaphneDataGraph->xAxis->setRange(min_time_daphne_data,max_time_daphne_data);
     ui->widgetDaphneDataGraph->graph(0)->setData(this->daphneTime,this->daphneData);
     ui->widgetDaphneDataGraph->replot();
+  }
 
 }
 
 void DialogReadoutChannel::plotMultichannel(){
 
+  if(ui->checkBoxEnablePlot->isChecked()){
     double max_daphne_data = *std::max_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
     double min_daphne_data = *std::min_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
     double max_time_daphne_data = *std::max_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
@@ -61,7 +64,7 @@ void DialogReadoutChannel::plotMultichannel(){
     ui->widgetDaphneDataGraph->xAxis->setRange(min_time_daphne_data,max_time_daphne_data);
     ui->widgetDaphneDataGraph->graph(0)->setData(this->daphneTime,this->daphneDataSingleChannel);
     ui->widgetDaphneDataGraph->replot();
-
+  }
 }
 
 void DialogReadoutChannel::plotDataEthernet(const QVector<double> &ethernet_data){
@@ -69,7 +72,7 @@ void DialogReadoutChannel::plotDataEthernet(const QVector<double> &ethernet_data
     this->daphneData = ethernet_data;
     this->daphneTime.clear();
     int length_data = ethernet_data.length();
-    this->generateTimeVectorEthernet(length_data,1.0/65000000.0);
+    this->generateTimeVectorEthernet(length_data,1.0/62500000.0);
     this->plot();
 }
 
@@ -80,7 +83,7 @@ void DialogReadoutChannel::plotDataMultichannel(const QVector<double> &ethernet_
   this->daphneData = ethernet_data;
   this->daphneTime.clear();
   int length_data = recordLength;
-  this->generateTimeVectorEthernet(length_data,1.0/65000000.0);
+  this->generateTimeVectorEthernet(length_data,1.0/62500000.0);
   for(int i = 0; i < daphneData.length(); i++){
       if(i >= channel*recordLength && i < channel*recordLength + recordLength){
         this->daphneDataSingleChannel.append(daphneData.at(i));

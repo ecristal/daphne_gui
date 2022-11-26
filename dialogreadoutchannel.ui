@@ -78,7 +78,7 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>210</x>
+     <x>170</x>
      <y>446</y>
      <width>101</width>
      <height>16</height>
@@ -96,11 +96,27 @@
   <widget class="QLCDNumber" name="lcdNumberWaveform">
    <property name="geometry">
     <rect>
-     <x>310</x>
+     <x>270</x>
      <y>440</y>
      <width>81</width>
      <height>31</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxEnablePlot">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>440</y>
+     <width>90</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Enable Plot</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>
