@@ -162,12 +162,51 @@
      <rect>
       <x>120</x>
       <y>70</y>
-      <width>91</width>
+      <width>61</width>
       <height>29</height>
      </rect>
     </property>
     <property name="maximum">
      <number>100000</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_12">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>80</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>DWT:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBoxDW">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>70</y>
+      <width>61</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>100000</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_13">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>80</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>us</string>
     </property>
    </widget>
   </widget>

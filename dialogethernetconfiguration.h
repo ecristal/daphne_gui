@@ -24,6 +24,8 @@ public:
   int getDaphnePortNumber();
   int getComputerPortNumber();
 
+  int getDWT();
+  void setDWT(const int &value);
 private slots:
   void pushButtonDefaultPressed();
 private:

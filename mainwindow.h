@@ -95,6 +95,7 @@
 #include <QHostAddress>
 #include <chrono>
 #include <QCloseEvent>
+#include <QElapsedTimer>
 
 #include "dialogreadoutchannel.h"
 #include "daphnesocket.h"
@@ -185,6 +186,7 @@ private:
     int daphnePortNumber = 2001;
     int computerPortNumber = 58789;
     int received_datagrams, expected_datagrams;
+    int udpWaitforDatagram = 0;
 
     // TriggerMenu
     QVector<bool> triggerSource = {false, true, false};
@@ -252,5 +254,6 @@ private:
     bool isSerialCommandSuccesful();
     void sendSoftwareTriggerDeadTime();
     void sendSoftwareTrigger();
+    int getNumberOfExpectedDatagrams();
 };
 #endif // MAINWINDOW_H

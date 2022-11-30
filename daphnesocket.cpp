@@ -97,6 +97,7 @@ int DaphneSocket::read(const uint64_t &addr,const uint8_t &num){
 //    for(int i = 0; i<message_length; i++){
 //        qDebug() << "message["<<i<<"]: " <<(uint8_t)message_[i];
 //    }
+    this->receivedDatagramFlag = false;
     int bytes_written = this->udpSocket->writeDatagram(message_,message_length,this->targetAddr,this->portNumber);
 //    qDebug() << "bytes_written: " << bytes_witten;
     //delete[] data_;
@@ -120,21 +121,31 @@ int DaphneSocket::pong(int size){
 
 void DaphneSocket::readyRead_()
 {
-    int number_of_bytes_received = 0;
-    //while(this->udpSocket->hasPendingDatagrams()){
     QByteArray datagram;
     datagram.resize(this->udpSocket->pendingDatagramSize());
     this->udpSocket->readDatagram(datagram.data(), datagram.size(), &this->hostAddr, &this->socketPortNumber);
-    number_of_bytes_received = number_of_bytes_received + this->processDatagram(datagram);
-    //}
-    //qDebug() << "Received data: ";
+    this->processDatagram(datagram);
+    this->receivedDatagramFlag = true;
 }
 
 int DaphneSocket::processDatagram(QByteArray &datagram){
     if(datagram.length() != 0)
       this->receivedData.append(datagram);
-    if(this->receivedData.length() > 15000)
+    if(this->receivedData.length() > 15000){
         this->receivedData.pop_back();
+        qDebug()<<"received poped back";
+    }
+    return datagram.length();
+}
+
+int DaphneSocket::processDatagramReserved(QByteArray &datagram){
+    if(datagram.length() != 0)
+      this->receivedData[this->datagramCounter] = datagram;
+      this->datagramCounter++;
+    if(this->receivedData.length() > 15000){
+        this->receivedData.pop_back();
+        qDebug()<<"received poped back";
+    }
     return datagram.length();
 }
 
@@ -148,10 +159,14 @@ QVector<QByteArray> DaphneSocket::getReceivedData(){
 
 void DaphneSocket::flushReceivedData(){
     this->receivedData.clear();
+    this->datagramCounter = 0;
 }
 
 void DaphneSocket::waitForReadyRead(){
-    this->udpSocket->waitForReadyRead();
+  this->udpSocket->waitForReadyRead(500);
+  while(this->receivedDatagramFlag == false){
+    QCoreApplication::processEvents();
+  }
 }
 
 QString DaphneSocket::alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr){
@@ -316,3 +331,16 @@ void DaphneSocket::delayMilli(int delay_milli){
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
+int DaphneSocket::getExpectedDatagrams(){
+  return this->expectedDatagrams;
+}
+
+int DaphneSocket::setExpectedDatagrams(const int &value){
+  return this->expectedDatagrams = value;
+}
+
+void DaphneSocket::reserveDatagramSize(const int &value){
+  this->expectedDatagrams = value;
+  this->receivedData.reserve(value);
+  this->receivedData.resize(value);
+}

@@ -36,6 +36,10 @@ public:
     void sendSoftwareTrigger();
     void sendSoftwareTriggerDeadTime();
 
+
+    int getExpectedDatagrams();
+    int setExpectedDatagrams(const int &value);
+    void reserveDatagramSize(const int &value);
 private slots:
     void readyRead_();
 private:
@@ -50,8 +54,13 @@ private:
     QVector<QByteArray> receivedData;
     int processDatagram(QByteArray &datagram);
     bool perform_aligment = true;
+    bool receivedDatagramFlag = false;
+
+    int expectedDatagrams;
+    int datagramCounter = 0;
 
     QString bindedToAddr = "";
+    int processDatagramReserved(QByteArray &datagram);
 };
 
 #endif // DAPHNESOCKET_H

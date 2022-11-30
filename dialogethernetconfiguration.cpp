@@ -47,6 +47,14 @@ int DialogEthernetConfiguration::getComputerPortNumber(){
   return ui->spinBoxComputerPortNumber->value();
 }
 
+int DialogEthernetConfiguration::getDWT(){
+  return ui->spinBoxDW->value();
+}
+
+void DialogEthernetConfiguration::setDWT(const int &value){
+  ui->spinBoxDW->setValue(value);
+}
+
 void DialogEthernetConfiguration::pushButtonDefaultPressed(){
   this->setDaphneIpAddress("192.168.133.12");
   this->setComputerIpAddress("192.168.133.1");

@@ -63,7 +63,9 @@ void MainWindow::initializeWindow(){
     ui->spinBoxBaudRate->setValue(921600);
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
-    this->Message("DAPHNE GUI V2_00_09\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->channelsData.reserve(40);
+    this->channelsData.resize(40);
+    this->Message("DAPHNE GUI V2_00_10\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -540,6 +542,12 @@ void MainWindow::Message(QString message, int msgCode){
         cursor_.insertText(msg,textFormat);
         ui->textEditMessages->setTextCursor(cursor_);
         break;
+    case 3:
+        msg += "Internal GUI Warning: " + message + "\n";
+        textFormat.setForeground(Qt::darkYellow);
+        cursor_.insertText(msg,textFormat);
+        ui->textEditMessages->setTextCursor(cursor_);
+        break;
     default:
     break;
     }
@@ -697,6 +705,7 @@ void MainWindow::pushButtonRDFPGAPressed(){
                 }else{
                   if(i >= 0)
                     i--;
+                    this->Message("Lost datagrams, please consider incresing the Datagram Wait Time DWT\nConfiguration->Ethernet",3);
                   //qDebug() << "rejected";
                 }
                 this->expected_datagrams = 0;
@@ -1021,6 +1030,7 @@ void MainWindow::requestDataFromChannel(const int &channel,const int &length){
       }
       this->expected_datagrams = this->expected_datagrams + 1;
       this->socket->waitForReadyRead();
+      this->delayMicro(this->udpWaitforDatagram);
     }
   }catch(ethernetUDPException &e){
     e.handleException(this);
@@ -1069,7 +1079,7 @@ void MainWindow::readMultichannelEthernet(const QVector<bool> &enabledChannels){
         if(k < this->ethernetData.length()){
           ethernetData_aux.append(this->ethernetData.at(k));
         }else{
-            //qDebug() << "Error ASSERT" << __PRETTY_FUNCTION__ << "k value = " << k << "ethernet data len = " << this->ethernetData.length();
+          //qDebug() << "Error ASSERT" << __PRETTY_FUNCTION__ << "k value = " << k << "ethernet data len = " << this->ethernetData.length();
         }
         k++;
       }
@@ -1084,28 +1094,30 @@ void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledCha
 
   this->received_datagrams = this->readChannelsEthernet(enabledChannels);
 
-  this->channelsData.clear();
+  //this->channelsData.clear(); // fix length to channel size
 
-  QVector<double> ethernetData_aux;
+  QVector<double> ethernetData_aux(this->recordLength); // fix length to channel data size
+  //qDebug()<< "len : " << ethernetData_aux.capacity() << " size : " << ethernetData_aux.size();
 
   int k = 0;
-  for(bool enabledChannel : enabledChannels){
-    ethernetData_aux.clear();
-    if(enabledChannel == false){
-      for(int i = 0; i < this->recordLength; i++){
-        ethernetData_aux.append(-99.0);
-      }
-      this->channelsData.append(ethernetData_aux);
+  for(int ch = 0; ch < enabledChannels.length(); ch++){
+    //ethernetData_aux.clear();
+    if(enabledChannels.at(ch) == false){
+//      for(int i = 0; i < this->recordLength; i++){
+//        ethernetData_aux[i] =  -9999999.0; // unnescesary process; leave default values to zero; mayor speed improvement; check in debug mode
+//      }
+//      this->channelsData[ch] = ethernetData_aux; // change append to fixed size qvector; speed improvment
     }else{
       for(int i = 0; i < this->recordLength; i++){
         if(k < this->ethernetData.length()){
-          ethernetData_aux.append(this->ethernetData.at(k));
+          //ethernetData_aux.insert(i,this->ethernetData.at(k)); // change append to fixed size qvector; speed improvment
+          ethernetData_aux[i] = this->ethernetData.at(k);
         }else{
-            //qDebug() << "Error ASSERT" << __PRETTY_FUNCTION__ << "k value = " << k << "ethernet data len = " << this->ethernetData.length();;
+            qDebug() << "Error ASSERT" << __PRETTY_FUNCTION__ << "k value = " << k << "ethernet data len = " << this->ethernetData.length();;
         }
         k++;
       }
-      this->channelsData.append(ethernetData_aux);
+      this->channelsData[ch] = ethernetData_aux; // change append to fixed size qvector; speed improvment
     }
   }
   this->socket->flushReceivedData();
@@ -1114,15 +1126,20 @@ void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledCha
 int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
 
   try{
+//    QElapsedTimer timer;
+//    timer.start();
+
+    //this->socket->reserveDatagramSize(this->getNumberOfExpectedDatagrams());
     for(int i = 0; i < enabledChannels.length(); i++){
       if(enabledChannels.at(i)){
         this->requestDataFromChannel(i,this->recordLength);
-        this->delayMicro(50);
+        //this->delayMicro(50);
       }
     }
+    //qDebug() << "Elapsed time requesting data: " << timer.nsecsElapsed();
+    //this->delayMilli(8);
 
-    this->delayMilli(8);
-
+    //timer.restart();
     QVector<QByteArray> receivedData = this->socket->getReceivedData();
     int bytes_received = 0;
     //qDebug() << "datagrams Received :" << receivedData.length();
@@ -1134,6 +1151,7 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
             this->ethernetData.append((double)u64_data[i]);
         }
     }
+    //qDebug() << "Elapsed time pre-processing data: " << timer.nsecsElapsed();
     return receivedData.length();
   }catch(ethernetUDPException &e){
     e.handleException(this);
@@ -1179,6 +1197,7 @@ void MainWindow::menuEthernetConfigurationPressed(){
     ethernetConfig.setComputerIpAddress(this->computerIPAddr);
     ethernetConfig.setDaphnePortNumber(this->daphnePortNumber);
     ethernetConfig.setComputerPortNumber(this->computerPortNumber);
+    ethernetConfig.setDWT(this->udpWaitforDatagram);
     int exec_code = ethernetConfig.exec();
     if(exec_code){
         //qDebug()<<__PRETTY_FUNCTION__<< "::Accepted";
@@ -1186,6 +1205,7 @@ void MainWindow::menuEthernetConfigurationPressed(){
         this->daphnePortNumber = ethernetConfig.getDaphnePortNumber();
         this->computerIPAddr = ethernetConfig.getComputerIpAddress();
         this->computerPortNumber = ethernetConfig.getComputerPortNumber();
+        this->udpWaitforDatagram = ethernetConfig.getDWT();
 
         if(ui->checkBoxEnableEthernet->isChecked()){
             this->socket->~DaphneSocket();
@@ -1207,6 +1227,7 @@ void MainWindow::menuAcquisitionConfigurationPressed(){
     //... accepted config
     this->channelsEnabledState = acquisitionConfig.getCheckBoxStates();
     this->recordLength = acquisitionConfig.getRecordLength();
+
   }else{
     //... rejected config
   }
@@ -1319,4 +1340,22 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->accept();
         qApp->quit();
     }
+}
+
+int MainWindow::getNumberOfExpectedDatagrams(){
+  int numberOfRequest = (int)(this->recordLength/128);
+  int lastRequestSize = this->recordLength%128;
+
+  int counter_channels = 0;
+
+  for(bool enabled_ch : this->channelsEnabledState){
+    if(enabled_ch){
+      counter_channels++;
+    }
+  }
+
+  if(lastRequestSize != 0){
+    numberOfRequest++;
+  }
+  return numberOfRequest*counter_channels;
 }
