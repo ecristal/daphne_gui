@@ -21,9 +21,15 @@ public:
   void setCheckBoxStates(const QVector<bool> &states);
   int getRecordLength();
   void setRecordLength(const int &record_length);
+  bool getCheckBoxSaveTextState();
+  bool getCheckBoxSaveBinaryState();
+  void setCheckBoxSaveTextState(const bool &state);
+  void setCheckBoxSaveBinaryState(const bool &state);
 private slots:
   void pushButtonSelectAllPressed();
   void pushButtonUnselectAllPressed();
+  void checkBoxSaveBinaryClicked();
+  void checkBoxSaveTextClicked();
 private:
   Ui::DialogAcquisitionConfiguration *ui;
 

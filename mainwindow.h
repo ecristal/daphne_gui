@@ -200,6 +200,9 @@ private:
     QVector<bool> channelsEnabledState;
     int recordLength = 256;
     QVector<QVector<double>> channelsData;
+    bool saveToTxtState = false;
+    bool saveToBinaryState = true;
+    bool saveFormat = true;
 
     //AFE configuration menu
     bool lowNoiseSupressionEnabled = false;

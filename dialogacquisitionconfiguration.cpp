@@ -9,6 +9,8 @@ DialogAcquisitionConfiguration::DialogAcquisitionConfiguration(QWidget *parent) 
   this->setWindowTitle("ACQUISITION CONFIGURATION");
   connect(ui->pushButtonSelectAll,SIGNAL(clicked(bool)),this,SLOT(pushButtonSelectAllPressed()));
   connect(ui->pushButtonUnselect,SIGNAL(clicked(bool)),this,SLOT(pushButtonUnselectAllPressed()));
+  connect(ui->checkBoxSaveBinary,SIGNAL(clicked(bool)),this,SLOT(checkBoxSaveBinaryClicked()));
+  connect(ui->checkBoxSaveText,SIGNAL(clicked(bool)),this,SLOT(checkBoxSaveTextClicked()));
   configureCheckboxPointers();
 }
 
@@ -89,6 +91,32 @@ void DialogAcquisitionConfiguration::pushButtonUnselectAllPressed(){
   for(QCheckBox *chk : this->ptr_ch_enabled){
     chk->setChecked(false);
   }
+}
+
+bool DialogAcquisitionConfiguration::getCheckBoxSaveTextState(){
+    return ui->checkBoxSaveText->isChecked();
+}
+
+bool DialogAcquisitionConfiguration::getCheckBoxSaveBinaryState(){
+    return ui->checkBoxSaveBinary->isChecked();
+}
+
+void DialogAcquisitionConfiguration::setCheckBoxSaveTextState(const bool &state){
+    ui->checkBoxSaveText->setChecked(state);
+}
+
+void DialogAcquisitionConfiguration::setCheckBoxSaveBinaryState(const bool &state){
+    ui->checkBoxSaveBinary->setChecked(state);
+}
+
+void DialogAcquisitionConfiguration::checkBoxSaveBinaryClicked(){
+    ui->checkBoxSaveBinary->setChecked(true);
+    ui->checkBoxSaveText->setChecked(false);
+}
+
+void DialogAcquisitionConfiguration::checkBoxSaveTextClicked(){
+    ui->checkBoxSaveBinary->setChecked(false);
+    ui->checkBoxSaveText->setChecked(true);
 }
 
 

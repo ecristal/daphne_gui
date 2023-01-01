@@ -356,20 +356,25 @@ void DialogReadoutChannel::createFileNames(const QString &address, const QVector
     this->enabledChannelsNumbers = enabledChannelsNumbers_;
 }
 
-void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const QVector<QVector<double>> &data){
+void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const QVector<QVector<double>> &data, const bool &format){
 
   for(int i = 0; i < this->saveFiles.length(); i++){
     QFile file(this->saveFiles.at(i));
-    file.open(QIODevice::Append);
-    QTextStream writeToFile(&file);
+    file.open(QIODevice::Append); 
     QVector<double> channel_data = data.at(this->enabledChannelsNumbers.at(i));
-    for(double data2write : channel_data){
-      writeToFile << QString::number(data2write)<<"\n";
+    //******saving in binary part ******************////
+    if(format){
+        QDataStream writeToFile_binary(&file);
+        for(double data2write : channel_data){
+          writeToFile_binary << (u_int16_t)data2write;
+        }
+    }else{
+    //*******saving in txt part****************/////
+        QTextStream writeToFile_txt(&file);
+        for(double data2write : channel_data){
+          writeToFile_txt << QString::number(data2write)<<"\n";
+        }
     }
-//    for(int k = this->enabledChannelsNumbers.at(i)*record_length; k < this->enabledChannelsNumbers.at(i)*record_length + record_length; k++){
-//        ////qDebug() << this->daphneData.at(k);
-//        writeToFile << QString::number(this->daphneData.at(k))<<"\n";
-//    }
   }
   ui->lcdNumberWaveform->setPalette(Qt::darkGreen);
   ui->lcdNumberWaveform->display(wave_number);

@@ -65,7 +65,7 @@ void MainWindow::initializeWindow(){
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
     this->channelsData.reserve(40);
     this->channelsData.resize(40);
-    this->Message("DAPHNE GUI V2_00_11\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V2_00_12\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -699,7 +699,7 @@ void MainWindow::pushButtonRDFPGAPressed(){
                 //qDebug() << "expected datagrams :: " << this->expected_datagrams << " :: received datagrams :: " << this->received_datagrams;
                 if(this->received_datagrams == this->expected_datagrams){
                   this->dialogReadoutChannelWindow->plotDataMultichannel(this->channelsData,channel);
-                  this->dialogReadoutChannelWindow->saveMultiChannel(i,this->channelsData);
+                  this->dialogReadoutChannelWindow->saveMultiChannel(i,this->channelsData, this->saveFormat);
                   this->dialogReadoutChannelWindow->show();
                   //qDebug() << "accepted";
                 }else{
@@ -1222,12 +1222,16 @@ void MainWindow::menuAcquisitionConfigurationPressed(){
   DialogAcquisitionConfiguration acquisitionConfig(this);
   acquisitionConfig.setCheckBoxStates(this->channelsEnabledState);
   acquisitionConfig.setRecordLength(this->recordLength);
+  acquisitionConfig.setCheckBoxSaveTextState(this->saveToTxtState);
+  acquisitionConfig.setCheckBoxSaveBinaryState(this->saveToBinaryState);
   int exec_code = acquisitionConfig.exec();
   if(exec_code){
     //... accepted config
     this->channelsEnabledState = acquisitionConfig.getCheckBoxStates();
     this->recordLength = acquisitionConfig.getRecordLength();
-
+    this->saveToTxtState = acquisitionConfig.getCheckBoxSaveTextState();
+    this->saveToBinaryState = acquisitionConfig.getCheckBoxSaveBinaryState();
+    this->saveFormat = this->saveToBinaryState;
   }else{
     //... rejected config
   }
