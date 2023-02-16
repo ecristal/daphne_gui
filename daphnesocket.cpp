@@ -139,9 +139,10 @@ int DaphneSocket::processDatagram(QByteArray &datagram){
 }
 
 int DaphneSocket::processDatagramReserved(QByteArray &datagram){
-    if(datagram.length() != 0)
+    if(datagram.length() != 0){
       this->receivedData[this->datagramCounter] = datagram;
       this->datagramCounter++;
+    }
     if(this->receivedData.length() > 15000){
         this->receivedData.pop_back();
         qDebug()<<"received poped back";
@@ -190,7 +191,6 @@ QString DaphneSocket::alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned
       for(int retry_ = 0; retry_ < retry; retry_++){
           uint64_t x[32] = {0};
           int w = 0;
-          int c = 0;
           QString es = "";
           isAfeAlignedStr[afe] = "";
           for(int dv = 0; dv < 32; dv++){
@@ -226,10 +226,11 @@ QString DaphneSocket::alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned
               this->sendSingleCommand(0x2001, 0x1);
               this->delayMilli(1000);
           }
-          if(retry_ == retry-1)
+          if(retry_ == retry-1){
               qDebug() << "FAILED!";
               output = output + "FAILED!\n";
               isAfeAlignedStr[afe] = isAfeAlignedStr[afe] + " FAILED!";
+          }
       }
   }
 
@@ -288,10 +289,11 @@ QString DaphneSocket::alignAFEsV1(const int &retry, QVector<bool> &isAfeAligned,
                QVector<uint64_t> v({0,1,2,3,4,5,6,7,8});
                this->sendData((0x3000+(0x10*afe)),v);
            }
-           if(retry_ == retry-1)
+           if(retry_ == retry-1){
                qDebug() << "FAILED!";
                output = output + "FAILED!\n";
                isAfeAlignedStr[afe] = isAfeAlignedStr[afe] + " FAILED!";
+           }
        }
    }
    return output;

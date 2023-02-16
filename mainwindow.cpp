@@ -65,14 +65,14 @@ void MainWindow::initializeWindow(){
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
     this->channelsData.reserve(40);
     this->channelsData.resize(40);
-    this->Message("DAPHNE GUI V2_01_00\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V2_01_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
 
     QList<QSerialPortInfo> availablePorts = QSerialPortInfo::availablePorts();
 
-    for(QSerialPortInfo port : availablePorts){
+    for(QSerialPortInfo& port : availablePorts){
         ui->comboBoxAvailableSerialPort->addItem(port.portName());
     }
 }
@@ -702,11 +702,14 @@ void MainWindow::pushButtonRDFPGAPressed(){
                   this->dialogReadoutChannelWindow->saveMultiChannel(i,this->channelsData, this->saveFormat);
                   this->dialogReadoutChannelWindow->show();
                   //qDebug() << "accepted";
+                }else if(this->received_datagrams == -99){
+                    this->Message("Recieved datagram error code -99: Posible lost connection to DAPHNE",2);
                 }else{
-                  if(i >= 0)
+                  if(i >= 0){
                     i--;
                     this->Message("Lost datagrams, please consider incresing the Datagram Wait Time DWT\nConfiguration->Ethernet",3);
                   //qDebug() << "rejected";
+                  }
                 }
                 this->expected_datagrams = 0;
                 //this->dialogReadoutChannelWindow->plotDataMultichannel(this->ethernetData,this->recordLength,channel);
@@ -989,7 +992,7 @@ void MainWindow::readAndPlotDataEthernet(){
     this->delayMilli(5);
     QVector<QByteArray> receivedData = this->socket->getReceivedData();
     int bytes_received = 0;
-    for(QByteArray data : receivedData){
+    for(QByteArray& data : receivedData){
         bytes_received = bytes_received + data.length();
     }
     ////qDebug() << "data[0]: " << (int)receivedData.at(0)[0];
@@ -1155,6 +1158,7 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
     return receivedData.length();
   }catch(ethernetUDPException &e){
     e.handleException(this);
+    return -99; //this could cause problems if not handled correctly
   }
 }
 
