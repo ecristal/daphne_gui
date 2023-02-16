@@ -108,17 +108,38 @@ void TriggerMenuDialog::buttonSetThresholdPressed(){
 
 void TriggerMenuDialog::configTresholdSingleChannel(const uint32_t &channel, DaphneSocket *socket){
   int threshold_level = ui->spinBoxLevel->value();
+  int multiplier = ui->spinBoxMultiplier->value();
+
   uint64_t concat_value = 0;
+  concat_value = concat_value | ((uint64_t)multiplier << 40);
   concat_value = concat_value | ((uint64_t)channel << 32);
   concat_value = concat_value | threshold_level;
   socket->sendSingleCommand(0x2021,concat_value);
+  socket->flushReceivedData();
 
-//  socket->delayMilli(100);
-//  QVector<QByteArray> receivedData = socket->getReceivedData();
+  socket->read(0x2021,1);
+  socket->delayMilli(10);
+  QVector<QByteArray> receivedData = socket->getReceivedData();
 
-//  qDebug()<< channel << " :: sended :: "  << QString::number(concat_value,2);
+  qDebug()<< channel << " :: sended :: "  << QString::number(concat_value,2);
 
-//  qDebug()<< channel << " :: recieved :: "  << receivedData.length();
+  uint64_t u64_data = 0;
+  u64_data = receivedData.at(0).at(2) | (receivedData.at(0).at(3) << 8*1) | (receivedData.at(0).at(4) << 8*2) | (receivedData.at(0).at(5) << 8*3) | (receivedData.at(0).at(6) << 8*4) |
+             (receivedData.at(0).at(7) << 8*5) | (receivedData.at(0).at(8) << 8*6) | (receivedData.at(0).at(9) << 8*7);
+
+  qDebug()<< channel << " :: recieved :: "  << QString::number(u64_data,2);
+  socket->flushReceivedData();
+
+  socket->read(0x2024,1);
+  socket->delayMilli(10);
+  QVector<QByteArray> receivedData2 = socket->getReceivedData();
+
+  uint64_t u64_data2 = 0;
+
+  u64_data2 = receivedData2.at(0).at(2) | (receivedData2.at(0).at(3) << 8*1) | (receivedData2.at(0).at(4) << 8*2) | (receivedData2.at(0).at(5) << 8*3) | (receivedData2.at(0).at(6) << 8*4) |
+             (receivedData2.at(0).at(7) << 8*5) | (receivedData2.at(0).at(8) << 8*6) | (receivedData2.at(0).at(9) << 8*7);
+
+  qDebug()<< channel << " :: recieved :: "  << QString::number(u64_data2,2);
 }
 
 void TriggerMenuDialog::configTresholdAllChannels(DaphneSocket *socket){
@@ -133,9 +154,18 @@ void TriggerMenuDialog::configTriggerEnable(DaphneSocket *socket){
   for(int i = 0;i <40; i++){
     if(this->triggerEnabled[i]){
       concat_value = concat_value | ((shft << i));
-      //qDebug()<< i << " :: "  << QString::number(concat_value,2);
+
     }
   }
+  qDebug() << QString::number(concat_value,2);
   socket->sendSingleCommand(0x2022,concat_value);
+}
+
+void TriggerMenuDialog::setMultiplierValue(uint16_t &multiplier){
+    ui->spinBoxMultiplier->setValue((int)multiplier);
+}
+
+uint16_t TriggerMenuDialog::getMultiplierValue(){
+    return (uint16_t)ui->spinBoxMultiplier->value();
 }
 

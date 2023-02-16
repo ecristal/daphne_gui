@@ -195,6 +195,7 @@ private:
                                  20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
                                  20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
                                  20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
+    uint16_t preTriggerMultiplier = 0;
 
     // Acquisition menu
     QVector<bool> channelsEnabledState;
@@ -209,6 +210,7 @@ private:
     bool FPGAFilterEnabled = false;
     uint16_t digitalHPFKValue = 9;
     bool digitalHPFEnabled = false;
+    uint8_t digitalFilterOutputSelector = 0;
 
     bool ethernetCheckBoxCheckedFlag = false;
 

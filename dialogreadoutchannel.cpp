@@ -365,6 +365,7 @@ void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const QVecto
     //******saving in binary part ******************////
     if(format){
         QDataStream writeToFile_binary(&file);
+        writeToFile_binary.setByteOrder(QDataStream::BigEndian);
         for(double data2write : channel_data){
           writeToFile_binary << (u_int16_t)data2write;
         }
@@ -375,6 +376,7 @@ void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const QVecto
           writeToFile_txt << QString::number(data2write)<<"\n";
         }
     }
+    file.close();
   }
   ui->lcdNumberWaveform->setPalette(Qt::darkGreen);
   ui->lcdNumberWaveform->display(wave_number);

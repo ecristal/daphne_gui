@@ -23,6 +23,8 @@ public:
   void setSpinBoxHPFKValue(const uint16_t &value);
   void setFPGAFilterEnabled(const bool &enabled);
   bool getFPGAFilterEnabled();
+  uint8_t getFPGAFilterOutputValue();
+  void setFPGAFilterOutputValue(uint8_t &value);
 private:
   Ui::DialogAFEConfiguration *ui;
 };

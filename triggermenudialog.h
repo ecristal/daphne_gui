@@ -26,6 +26,8 @@ public:
   QVector<int> getTriggerLevel();
   void setTriggerLevel(QVector<int> &level);
   void setTriggerEnableChannel(QVector<bool> &triggerEnabled);
+  void setMultiplierValue(uint16_t &multiplier);
+  uint16_t getMultiplierValue();
 private slots:
   void sourceInternalPressed();
   void sourceExternalPressed();

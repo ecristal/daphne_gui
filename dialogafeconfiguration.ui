@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>539</width>
-    <height>295</height>
+    <height>323</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -165,7 +165,7 @@
    <widget class="QCheckBox" name="checkBoxFpgaFilterEnabled">
     <property name="geometry">
      <rect>
-      <x>340</x>
+      <x>330</x>
       <y>30</y>
       <width>101</width>
       <height>26</height>
@@ -173,6 +173,32 @@
     </property>
     <property name="text">
      <string>FPGA Filter</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBoxFilterOutputValue">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>60</y>
+      <width>71</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>3</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>60</y>
+      <width>58</width>
+      <height>15</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>*Output :</string>
     </property>
    </widget>
   </widget>
@@ -190,6 +216,23 @@
    </property>
    <property name="text">
     <string>Digital Gain</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>230</y>
+     <width>151</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>* Output Values: 
+ 0: Filt. Ped. Rec.
+1: Mov. Mean. 
+2: Filt. Ped. Rem.
+3: Unfiltered</string>
    </property>
   </widget>
  </widget>

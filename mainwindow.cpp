@@ -65,7 +65,7 @@ void MainWindow::initializeWindow(){
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
     this->channelsData.reserve(40);
     this->channelsData.resize(40);
-    this->Message("DAPHNE GUI V2_00_12\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V2_01_00\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -1243,6 +1243,7 @@ void MainWindow::menuAFEConfigurationPressed(){
   afeConfig.setCheckBoxHPFEnabled(this->digitalHPFEnabled);
   afeConfig.setCheckBoxLFNSupressorEnabled(this->lowNoiseSupressionEnabled);
   afeConfig.setFPGAFilterEnabled(this->FPGAFilterEnabled);
+  afeConfig.setFPGAFilterOutputValue(this->digitalFilterOutputSelector);
   int exec_code = afeConfig.exec();
   if(exec_code){
     //... accepted config
@@ -1250,6 +1251,7 @@ void MainWindow::menuAFEConfigurationPressed(){
     this->digitalHPFEnabled = afeConfig.getCheckBoxHPFEnabled();
     this->lowNoiseSupressionEnabled = afeConfig.getCheckBoxLFNSupressorEnabled();
     this->FPGAFilterEnabled = afeConfig.getFPGAFilterEnabled();
+    this->digitalFilterOutputSelector = afeConfig.getFPGAFilterOutputValue();
 
     uint16_t digitalHPFKValue_register = this->digitalHPFKValue << 1;
     uint16_t lowNoiseSupressionEnabled_register = (uint16_t)this->lowNoiseSupressionEnabled << 11;
@@ -1271,10 +1273,11 @@ void MainWindow::menuAFEConfigurationPressed(){
     this->reg_1_value = this->eraseAndApplyMask(this->reg_1_value,lowNoiseSupressionEnabled_register,eraser);
 
     if(ui->checkBoxEnableEthernet->isChecked()){
+      uint8_t fpgaOutputValue = afeConfig.getFPGAFilterOutputValue();
       if(this->FPGAFilterEnabled){
-        this->socket->sendSingleCommand(0x2023,0x1);
+        this->socket->sendSingleCommand(0x2023,0x1 | (fpgaOutputValue << 1));
       }else{
-        this->socket->sendSingleCommand(0x2023,0x0);
+        this->socket->sendSingleCommand(0x2023,0x0 | (fpgaOutputValue << 1));
       }
     }
 
@@ -1310,13 +1313,14 @@ void MainWindow::menuTriggerPressed(){
   triggerDialog.setTriggerLevel(this->triggerLevel);
   triggerDialog.setTriggerChannel(this->triggerChannel);
   triggerDialog.setTriggerEnableChannel(this->channelsEnabledState);
-
+  triggerDialog.setMultiplierValue(this->preTriggerMultiplier);
   int exec_code = triggerDialog.exec();
   if(exec_code){
     //... accepted config
     this->triggerSource = triggerDialog.getTriggerSource();
     this->triggerChannel = triggerDialog.getTriggerChannel();
     this->triggerLevel = triggerDialog.getTriggerLevel();
+    this->preTriggerMultiplier = triggerDialog.getMultiplierValue();
   }else{
     //... rejected config
   }

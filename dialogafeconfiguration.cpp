@@ -45,3 +45,11 @@ void DialogAFEConfiguration::setSpinBoxHPFKValue(const uint16_t &value){
 void DialogAFEConfiguration::setFPGAFilterEnabled(const bool &enabled){
   ui->checkBoxFpgaFilterEnabled->setChecked(enabled);
 }
+
+uint8_t DialogAFEConfiguration::getFPGAFilterOutputValue(){
+  return (uint8_t)ui->spinBoxFilterOutputValue->value();
+}
+
+void DialogAFEConfiguration::setFPGAFilterOutputValue(uint8_t &value){
+  ui->spinBoxFilterOutputValue->setValue(value);
+}
