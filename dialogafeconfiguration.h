@@ -25,6 +25,8 @@ public:
   bool getFPGAFilterEnabled();
   uint8_t getFPGAFilterOutputValue();
   void setFPGAFilterOutputValue(uint8_t &value);
+  uint8_t getHPFLNALevel();
+  void setHPFLNAlevel(uint8_t &value);
 private:
   Ui::DialogAFEConfiguration *ui;
 };

@@ -124,8 +124,8 @@ void TriggerMenuDialog::configTresholdSingleChannel(const uint32_t &channel, Dap
   qDebug()<< channel << " :: sended :: "  << QString::number(concat_value,2);
 
   uint64_t u64_data = 0;
-  u64_data = receivedData.at(0).at(2) | (receivedData.at(0).at(3) << 8*1) | (receivedData.at(0).at(4) << 8*2) | (receivedData.at(0).at(5) << 8*3) | (receivedData.at(0).at(6) << 8*4) |
-             (receivedData.at(0).at(7) << 8*5) | (receivedData.at(0).at(8) << 8*6) | (receivedData.at(0).at(9) << 8*7);
+  u64_data = (uint64_t)receivedData.at(0).at(2) | ((uint64_t)receivedData.at(0).at(3) << 8*1) | ((uint64_t)receivedData.at(0).at(4) << 8*2) | ((uint64_t)receivedData.at(0).at(5) << 8*3) | ((uint64_t)receivedData.at(0).at(6) << 8*4) |
+             ((uint64_t)receivedData.at(0).at(7) << 8*5) | ((uint64_t)receivedData.at(0).at(8) << 8*6) | ((uint64_t)receivedData.at(0).at(9) << 8*7);
 
   qDebug()<< channel << " :: recieved :: "  << QString::number(u64_data,2);
   socket->flushReceivedData();
@@ -136,8 +136,8 @@ void TriggerMenuDialog::configTresholdSingleChannel(const uint32_t &channel, Dap
 
   uint64_t u64_data2 = 0;
 
-  u64_data2 = receivedData2.at(0).at(2) | (receivedData2.at(0).at(3) << 8*1) | (receivedData2.at(0).at(4) << 8*2) | (receivedData2.at(0).at(5) << 8*3) | (receivedData2.at(0).at(6) << 8*4) |
-             (receivedData2.at(0).at(7) << 8*5) | (receivedData2.at(0).at(8) << 8*6) | (receivedData2.at(0).at(9) << 8*7);
+  u64_data2 = (uint64_t)receivedData2.at(0).at(2) | ((uint64_t)receivedData2.at(0).at(3) << 8*1) | ((uint64_t)receivedData2.at(0).at(4) << 8*2) | ((uint64_t)receivedData2.at(0).at(5) << 8*3) | ((uint64_t)receivedData2.at(0).at(6) << 8*4) |
+             ((uint64_t)receivedData2.at(0).at(7) << 8*5) | ((uint64_t)receivedData2.at(0).at(8) << 8*6) | ((uint64_t)receivedData2.at(0).at(9) << 8*7);
 
   qDebug()<< channel << " :: recieved :: "  << QString::number(u64_data2,2);
 }

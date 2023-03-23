@@ -65,7 +65,7 @@ void MainWindow::initializeWindow(){
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
     this->channelsData.reserve(40);
     this->channelsData.resize(40);
-    this->Message("DAPHNE GUI V2_01_01\nAuthor: Ing. Esteban Cristaldo, MSc",0);
+    this->Message("DAPHNE GUI V2_02_00\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 }
 
 void MainWindow::populateComboBoxAvailableSerialPorts(){
@@ -228,6 +228,14 @@ void MainWindow::setAFEConfiguration(const QString &afe_number){
   command = command + QString::number(this->reg_33_value);
   command = command + "\r\n";
   this->Message("Writing on R33: bin" + QString::number(this->reg_33_value, 2) + " :: hex: " + QString::number(this->reg_33_value, 16),0);
+  this->sendCommand(command);
+
+  command = "WR AFE ";
+  command = command + afe_number;
+  command = command + " REG 59 V ";
+  command = command + QString::number(this->reg_59_value);
+  command = command + "\r\n";
+  this->Message("Writing on R59: bin" + QString::number(this->reg_59_value, 2) + " :: hex: " + QString::number(this->reg_59_value, 16),0);
   this->sendCommand(command);
 
 }
@@ -1050,7 +1058,7 @@ void MainWindow::readAndPlotDataEthernet(const int &channel){
     int bytes_received = 0;
     ////qDebug() << "datagrams Received :" << receivedData.length();
     this->ethernetData.clear();
-    for(QByteArray data : receivedData){
+    for(QByteArray &data : receivedData){
         bytes_received = bytes_received + data.length();
         uint64_t *u64_data = reinterpret_cast<uint64_t*>(data.begin() + 2);
         for(int i = 0; i<(data.length()-2)/8;i++){
@@ -1147,7 +1155,7 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
     int bytes_received = 0;
     //qDebug() << "datagrams Received :" << receivedData.length();
     this->ethernetData.clear();
-    for(QByteArray data : receivedData){
+    for(QByteArray &data : receivedData){
         bytes_received = bytes_received + data.length();
         uint64_t *u64_data = reinterpret_cast<uint64_t*>(data.begin() + 2);
         for(int i = 0; i<(data.length()-2)/8;i++){
@@ -1248,6 +1256,7 @@ void MainWindow::menuAFEConfigurationPressed(){
   afeConfig.setCheckBoxLFNSupressorEnabled(this->lowNoiseSupressionEnabled);
   afeConfig.setFPGAFilterEnabled(this->FPGAFilterEnabled);
   afeConfig.setFPGAFilterOutputValue(this->digitalFilterOutputSelector);
+  afeConfig.setHPFLNAlevel(this->HPFLNAlevel);
   int exec_code = afeConfig.exec();
   if(exec_code){
     //... accepted config
@@ -1256,10 +1265,30 @@ void MainWindow::menuAFEConfigurationPressed(){
     this->lowNoiseSupressionEnabled = afeConfig.getCheckBoxLFNSupressorEnabled();
     this->FPGAFilterEnabled = afeConfig.getFPGAFilterEnabled();
     this->digitalFilterOutputSelector = afeConfig.getFPGAFilterOutputValue();
+    this->HPFLNAlevel = afeConfig.getHPFLNALevel();
 
     uint16_t digitalHPFKValue_register = this->digitalHPFKValue << 1;
     uint16_t lowNoiseSupressionEnabled_register = (uint16_t)this->lowNoiseSupressionEnabled << 11;
     uint16_t digitalHPFEnabled_register = (uint16_t)this->digitalHPFEnabled;
+    uint16_t HPFLNAlevel_register = 0;
+
+    switch(this->HPFLNAlevel){
+        case 0:
+            HPFLNAlevel_register = MASK_HPF_LNA_LEVEL_0_REG59;
+            break;
+        case 1:
+            HPFLNAlevel_register = MASK_HPF_LNA_LEVEL_1_REG59;
+            break;
+        case 2:
+            HPFLNAlevel_register = MASK_HPF_LNA_LEVEL_2_REG59;
+            break;
+        case 3:
+            HPFLNAlevel_register = MASK_HPF_LNA_LEVEL_3_REG59;
+            break;
+        default:
+            HPFLNAlevel_register = MASK_HPF_LNA_LEVEL_0_REG59;
+            break;
+    }
 
     uint16_t eraser = MASK_DIGITAL_HPF_FILTER_CH_1_4_K_VALUE_REG21;
     this->reg_21_value = this->eraseAndApplyMask(this->reg_21_value,digitalHPFKValue_register,eraser);
@@ -1275,6 +1304,9 @@ void MainWindow::menuAFEConfigurationPressed(){
 
     eraser = MASK_LOW_FREQ_NOISE_SUPR_REG_1;
     this->reg_1_value = this->eraseAndApplyMask(this->reg_1_value,lowNoiseSupressionEnabled_register,eraser);
+
+    eraser = MASK_ERASER_HPF_LNA_REG59;
+    this->reg_59_value = this->eraseAndApplyMask(this->reg_59_value,HPFLNAlevel_register,eraser);
 
     if(ui->checkBoxEnableEthernet->isChecked()){
       uint8_t fpgaOutputValue = afeConfig.getFPGAFilterOutputValue();

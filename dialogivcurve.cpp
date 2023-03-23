@@ -35,10 +35,11 @@ void DialogIVcurve::initializeWindow(){
 void DialogIVcurve::spinBoxBiasLowValueChanged(){
   int biasLowValue = ui->spinBoxBiasLow->value();
   int biasUpperValue = ui->spinBoxBiasUpper->value();
-  if(biasLowValue > biasUpperValue)
+  if(biasLowValue > biasUpperValue){
     ui->spinBoxBiasUpper->setValue(biasLowValue+2);
     ui->spinBoxBiasUpper->setMinimum(biasLowValue + 2);
     biasUpperValue = biasLowValue + 2;
+  }
   int biasStepMaximun = (biasUpperValue - biasLowValue)/2;
   ui->spinBoxBiasStep->setMaximum(biasStepMaximun);
 }
@@ -144,23 +145,26 @@ void DialogIVcurve::pushButtonStartPressed(){
       serial_string = serial_split.first();
       double adc_value = serial_string.toDouble();
       //qDebug() << "Serial String :: " << serial_string << "double :: " << adc_value;
+      if(adc_value == 0){
+          i--;
+      }else{
+          this->yValues.append(adc_value);
+          //this->yValues.append(this->rg.generateDouble()*200); // comment out
+          //
 
-      this->yValues.append(adc_value);
-      //this->yValues.append(this->rg.generateDouble()*200); // comment out
-      //
+          double y_min = *std::min_element(this->yValues.begin(),this->yValues.end());
+          double y_max = *std::max_element(this->yValues.begin(),this->yValues.end());
+          double lim = 0.1*std::abs(y_max - y_min);
 
-      double y_min = *std::min_element(this->yValues.begin(),this->yValues.end());
-      double y_max = *std::max_element(this->yValues.begin(),this->yValues.end());
-      double lim = 0.1*std::abs(y_max - y_min);
-
-      ui->widgetIVgraph->yAxis->setRange(y_min - 0.1*lim, y_max + 0.1*lim);
-      x_graph.append(this->xValues.at(i));
-      ui->widgetIVgraph->graph(0)->setData(x_graph,this->yValues);
-      qDebug() << this->xValues.at(i) << "::" << this->yValues.at(i);
-      qDebug() << x_graph.length() << "::" << this->yValues.length();
-      ui->widgetIVgraph->replot();
-      this->initialPoistion++;
-      //mymainwindow->delayMilli(500);
+          ui->widgetIVgraph->yAxis->setRange(y_min - 0.1*lim, y_max + 0.1*lim);
+          x_graph.append(this->xValues.at(i));
+          ui->widgetIVgraph->graph(0)->setData(x_graph,this->yValues);
+          qDebug() << this->xValues.at(i) << "::" << this->yValues.at(i);
+          qDebug() << x_graph.length() << "::" << this->yValues.length();
+          ui->widgetIVgraph->replot();
+          this->initialPoistion++;
+          //mymainwindow->delayMilli(500);
+      }
     }
     if(!this->pausePressedFLAG){
       ui->pushButtonStart->setEnabled(true);

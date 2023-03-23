@@ -53,3 +53,11 @@ uint8_t DialogAFEConfiguration::getFPGAFilterOutputValue(){
 void DialogAFEConfiguration::setFPGAFilterOutputValue(uint8_t &value){
   ui->spinBoxFilterOutputValue->setValue(value);
 }
+
+uint8_t DialogAFEConfiguration::getHPFLNALevel(){
+  return (uint8_t)ui->spinBoxLNAHPFlevel->value();
+}
+
+void DialogAFEConfiguration::setHPFLNAlevel(uint8_t &value){
+    ui->spinBoxLNAHPFlevel->setValue(value);
+}

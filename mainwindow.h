@@ -79,6 +79,12 @@
 #define MASK_ERASER_LNA_GAIN_CONTROL_REG_52 0x6000
 #define MASK_ERASER_LNA_CLAMP_LEVEL_REG_52 0x600
 
+#define MASK_HPF_LNA_LEVEL_0_REG59 0x4
+#define MASK_HPF_LNA_LEVEL_1_REG59 0x0
+#define MASK_HPF_LNA_LEVEL_2_REG59 0xC
+#define MASK_HPF_LNA_LEVEL_3_REG59 0x8
+#define MASK_ERASER_HPF_LNA_REG59 0xC
+
 #include <QMainWindow>
 #include <QDebug>
 #include <QtSerialPort/QSerialPortInfo>
@@ -175,6 +181,7 @@ private:
     uint16_t reg_4_value = 0;
     uint16_t reg_51_value = 0;
     uint16_t reg_52_value = 0;
+    uint16_t reg_59_value = 0;
 
     QString multiple_waveforms_folder_address;
 
@@ -211,6 +218,7 @@ private:
     uint16_t digitalHPFKValue = 9;
     bool digitalHPFEnabled = false;
     uint8_t digitalFilterOutputSelector = 0;
+    uint8_t HPFLNAlevel = 0;
 
     bool ethernetCheckBoxCheckedFlag = false;
 

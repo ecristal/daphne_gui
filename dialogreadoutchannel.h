@@ -36,6 +36,7 @@ private slots:
     void pushButtonSaveToTxtPressed();
 
     void cancelButtonPressed();
+    void pushButtonAutoSetPressed();
 private:
     Ui::DialogReadoutChannel *ui;
 

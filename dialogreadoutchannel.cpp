@@ -13,8 +13,9 @@ DialogReadoutChannel::DialogReadoutChannel(QWidget *parent) :
     this->setWindowTitle("READOUT");
     this->window_status = true;
     ui->widgetDaphneDataGraph->addGraph();
-    connect(ui->pushButtonTxt,SIGNAL(clicked(bool)),this,SLOT(pushButtonSaveToTxtPressed()));
+    //connect(ui->pushButtonTxt,SIGNAL(clicked(bool)),this,SLOT(pushButtonSaveToTxtPressed())); //Uncomment to have this function connected to any other signal, removed pushbutton
     connect(ui->buttonBox,SIGNAL(rejected()),this,SLOT(cancelButtonPressed()));
+    connect(ui->pushButtonAutoSet,SIGNAL(clicked(bool)),this,SLOT(pushButtonAutoSetPressed()));
 }
 
 DialogReadoutChannel::~DialogReadoutChannel()
@@ -38,15 +39,22 @@ void DialogReadoutChannel::plotData(const QByteArray &serial_data,const uint16_t
     this->plot();
 }
 
+void DialogReadoutChannel::pushButtonAutoSetPressed(){
+    double max_daphne_data = *std::max_element(this->daphneData.constBegin(),this->daphneData.constEnd());
+    double min_daphne_data = *std::min_element(this->daphneData.constBegin(),this->daphneData.constEnd());
+    ui->spinBoxPosition->setValue((max_daphne_data+min_daphne_data)/2);
+    ui->spinBoxScale->setValue((max_daphne_data-min_daphne_data)/2);
+}
+
 void DialogReadoutChannel::plot(){
 
   if(ui->checkBoxEnablePlot->isChecked()){
-    double max_daphne_data = *std::max_element(this->daphneData.constBegin(),this->daphneData.constEnd());
-    double min_daphne_data = *std::min_element(this->daphneData.constBegin(),this->daphneData.constEnd());
-    double max_time_daphne_data = *std::max_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
-    double min_time_daphne_data = *std::min_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
-    ui->widgetDaphneDataGraph->yAxis->setRange(min_daphne_data,max_daphne_data);
-    ui->widgetDaphneDataGraph->xAxis->setRange(min_time_daphne_data,max_time_daphne_data);
+    //double max_daphne_data = *std::max_element(this->daphneData.constBegin(),this->daphneData.constEnd());
+    //double min_daphne_data = *std::min_element(this->daphneData.constBegin(),this->daphneData.constEnd());
+    //double max_time_daphne_data = *std::max_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
+    //double min_time_daphne_data = *std::min_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
+    ui->widgetDaphneDataGraph->yAxis->setRange(ui->spinBoxPosition->value()-ui->spinBoxScale->value(),ui->spinBoxPosition->value()+ui->spinBoxScale->value());
+    ui->widgetDaphneDataGraph->xAxis->setRange(16e-9*ui->spinBoxMinTime->value(),16e-9*ui->spinBoxMaxTime->value());
     ui->widgetDaphneDataGraph->graph(0)->setData(this->daphneTime,this->daphneData);
     ui->widgetDaphneDataGraph->replot();
   }
@@ -56,12 +64,12 @@ void DialogReadoutChannel::plot(){
 void DialogReadoutChannel::plotMultichannel(){
 
   if(ui->checkBoxEnablePlot->isChecked()){
-    double max_daphne_data = *std::max_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
-    double min_daphne_data = *std::min_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
-    double max_time_daphne_data = *std::max_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
-    double min_time_daphne_data = *std::min_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
-    ui->widgetDaphneDataGraph->yAxis->setRange(min_daphne_data,max_daphne_data);
-    ui->widgetDaphneDataGraph->xAxis->setRange(min_time_daphne_data,max_time_daphne_data);
+    //double max_daphne_data = *std::max_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
+    //double min_daphne_data = *std::min_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
+    //double max_time_daphne_data = *std::max_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
+    //double min_time_daphne_data = *std::min_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
+    ui->widgetDaphneDataGraph->yAxis->setRange(ui->spinBoxPosition->value()-ui->spinBoxScale->value(),ui->spinBoxPosition->value()+ui->spinBoxScale->value());
+    ui->widgetDaphneDataGraph->xAxis->setRange(16e-9*ui->spinBoxMinTime->value(),16e-9*ui->spinBoxMaxTime->value());
     ui->widgetDaphneDataGraph->graph(0)->setData(this->daphneTime,this->daphneDataSingleChannel);
     ui->widgetDaphneDataGraph->replot();
   }
@@ -365,7 +373,7 @@ void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const QVecto
     //******saving in binary part ******************////
     if(format){
         QDataStream writeToFile_binary(&file);
-        writeToFile_binary.setByteOrder(QDataStream::BigEndian);
+        writeToFile_binary.setByteOrder(QDataStream::LittleEndian);
         for(double data2write : channel_data){
           writeToFile_binary << (u_int16_t)data2write;
         }
