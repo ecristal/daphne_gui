@@ -102,6 +102,7 @@
 #include <chrono>
 #include <QCloseEvent>
 #include <QElapsedTimer>
+#include <chrono>
 
 #include "dialogreadoutchannel.h"
 #include "daphnesocket.h"
@@ -193,7 +194,7 @@ private:
     int daphnePortNumber = 2001;
     int computerPortNumber = 58789;
     int received_datagrams, expected_datagrams;
-    int udpWaitforDatagram = 0;
+    int udpWaitforDatagram = 50;
 
     // TriggerMenu
     QVector<bool> triggerSource = {false, true, false};

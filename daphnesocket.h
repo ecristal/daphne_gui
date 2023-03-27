@@ -40,6 +40,7 @@ public:
     int getExpectedDatagrams();
     int setExpectedDatagrams(const int &value);
     void reserveDatagramSize(const int &value);
+    int processDatagram(const int &expected_datagrams_);
 private slots:
     void readyRead_();
 private:
