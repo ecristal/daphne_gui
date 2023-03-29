@@ -10,6 +10,10 @@
 #include <QTime>
 #include <QEventLoop>
 #include <QCoreApplication>
+#include <QThread>
+#include <chrono>
+
+#include "udpthread.h"
 
 class DaphneSocket : public QObject
 {
@@ -35,15 +39,19 @@ public:
     QString getBindedToStr(){return this->bindedToAddr;}
     void sendSoftwareTrigger();
     void sendSoftwareTriggerDeadTime();
-
-
     int getExpectedDatagrams();
     int setExpectedDatagrams(const int &value);
     void reserveDatagramSize(const int &value);
     int processDatagram(const int &expected_datagrams_);
+    void flushBuffer();
+    int receivedDataLength();
+    void stopUdpThread();
+    void startUdpThread();
 private slots:
     void readyRead_();
 private:
+
+    UdpThread receivedDataThread;
     uint16_t portNumber;
     uint16_t socketPortNumber;
     QString ipAddr;

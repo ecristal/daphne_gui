@@ -14,15 +14,16 @@ DaphneSocket::DaphneSocket()
     this->hostAddr.setAddress(this->ipAddr);
     this->targetAddr.setAddress(this->targetIpAddr);
     this->udpSocket = new QUdpSocket(this);
+    this->receivedDataThread.setSocket(this->udpSocket);
+    this->receivedDataThread.setReceivedData(&this->receivedData);
+    this->receivedDataThread.setHostAddr(&this->hostAddr);
+    this->receivedDataThread.setSocketPortNumber(&this->socketPortNumber);
 
     if(!this->udpSocket->bind(this->hostAddr,this->socketPortNumber))
     {
-       //qDebug() << "Failed to bind UDP socket:" << this->udpSocket->errorString();
        throw ethernetUDPException(2, "Failed to bind UDP socket: \n" + this->udpSocket->errorString());
     }else{
-       //qDebug() << "UDP socket binded to: " << this->hostAddr.toString() << "::" << this->socketPortNumber;
       this->bindedToAddr = "UDP socket binded to: " + this->hostAddr.toString() + "::" + this->socketPortNumber;
-      //connect(this->udpSocket, SIGNAL(readyRead()), this, SLOT(readyRead_()));
     }
 }
 
@@ -35,21 +36,37 @@ DaphneSocket::DaphneSocket(const QString &ipAddr, const QString &targetIpAddr, c
     this->hostAddr.setAddress(this->ipAddr);
     this->targetAddr.setAddress(this->targetIpAddr);
     this->udpSocket = new QUdpSocket(this);
+    this->receivedDataThread.setSocket(this->udpSocket);
+    this->receivedDataThread.setReceivedData(&this->receivedData);
+    this->receivedDataThread.setHostAddr(&this->hostAddr);
+    this->receivedDataThread.setSocketPortNumber(&this->socketPortNumber);
 
     if(!this->udpSocket->bind(this->hostAddr,this->socketPortNumber))
     {
        //qDebug() << "Failed to bind UDP socket:" << this->udpSocket->errorString();
        throw ethernetUDPException(2, "Failed to bind UDP socket:\n" + this->udpSocket->errorString());
     }else{
-       //qDebug() << "UDP socket binded to: " << this->hostAddr.toString() << "::" << this->socketPortNumber;
       this->bindedToAddr = "UDP socket binded to: " + this->hostAddr.toString() + "::" + this->socketPortNumber;
-      //connect(this->udpSocket, SIGNAL(readyRead()), this, SLOT(readyRead_()), Qt::QueuedConnection);
     }
 }
 
 DaphneSocket::~DaphneSocket(){
     //disconnect(this->udpSocket, SIGNAL(readyRead()), this, SLOT(readyRead_()));
+    this->stopUdpThread();
     delete this->udpSocket;
+}
+
+void DaphneSocket::startUdpThread(){
+    this->receivedDataThread.enterRunFunction();
+    this->receivedDataThread.start();
+}
+
+void DaphneSocket::stopUdpThread(){
+    if(this->receivedDataThread.isRunning()){
+        this->receivedDataThread.exitRunFunction();
+        this->receivedDataThread.quit();
+        this->receivedDataThread.wait();
+    }
 }
 
 int DaphneSocket::write(const uint64_t &addr,const uint8_t &num, uint8_t *data){
@@ -140,17 +157,7 @@ int DaphneSocket::processDatagram(QByteArray &datagram){
 
 int DaphneSocket::processDatagram(const int &expected_datagrams_){
     while(this->receivedData.length() < expected_datagrams_){
-        while(this->udpSocket->hasPendingDatagrams()){
-            QByteArray datagram;
-            datagram.resize(this->udpSocket->pendingDatagramSize());
-            this->udpSocket->readDatagram(datagram.data(), datagram.size(), &this->hostAddr, &this->socketPortNumber);
-            if(datagram.length() != 0)
-              this->receivedData.append(datagram);
-            if(this->receivedData.length() > 15000){
-                this->receivedData.pop_back();
-                qDebug()<<"received poped back";
-            }
-        }
+
     }
     return this->receivedData.length();
 }
@@ -180,6 +187,10 @@ void DaphneSocket::flushReceivedData(){
     this->datagramCounter = 0;
 }
 
+void DaphneSocket::flushBuffer(){
+    this->udpSocket->flush();
+}
+
 void DaphneSocket::waitForReadyRead(){
   this->udpSocket->waitForReadyRead(500);
   while(this->receivedDatagramFlag == false){
@@ -190,7 +201,7 @@ void DaphneSocket::waitForReadyRead(){
 QString DaphneSocket::alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr){
   qDebug()<< "Alignment V2";
   QString output = "Alignment V2";
-
+  this->startUdpThread();
   this->sendSingleCommand(0x4001, 0x0);
   this->sendSingleCommand(0x4003, 0x1);
   //sleep 0.5
@@ -211,13 +222,15 @@ QString DaphneSocket::alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned
           QString es = "";
           isAfeAlignedStr[afe] = "";
           for(int dv = 0; dv < 32; dv++){
+              this->flushReceivedData();
               this->sendSingleCommand(0x2000,0x1234);
               this->read((0x40000000+(0x100000*afe)+(0x80000) + dv),5);
-              this->processDatagram(1);
+              //this->processDatagram(1);
               //this->waitForReadyRead();
-              //this->delayMilli(5);
+              while(this->receivedDataLength() < 1){
+
+              }
               QByteArray rec_data = this->getReceivedData().at(0);
-              this->flushReceivedData();
               uint64_t *data_ = reinterpret_cast<uint64_t*>(rec_data.begin()+2);
               x[dv] = data_[1] & 0x000000000000FFFF;
               //qDebug() << QString::number(x[dv],16);
@@ -251,7 +264,7 @@ QString DaphneSocket::alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned
           }
       }
   }
-
+  this->stopUdpThread();
   return output;
 }
 
@@ -364,6 +377,10 @@ void DaphneSocket::reserveDatagramSize(const int &value){
   this->expectedDatagrams = value;
   this->receivedData.reserve(value);
   this->receivedData.resize(value);
+}
+
+int DaphneSocket::receivedDataLength(){
+    return this->receivedData.length();
 }
 
 

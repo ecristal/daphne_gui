@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#define GUI_VERSION "V2_02_02"
+
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
 #define MASK_CHANNEL_OFFSET_SUBSTRACTION_ENABLE_REG3 0x100
@@ -255,7 +257,7 @@ private:
     void readAndPlotDataEthernet(const int &channel);
     int getSpyBufferFromChannel(const int &channel);
     void configureEnabledChannels();
-    void requestDataFromChannel(const int &channel, const int &length);
+    int requestDataFromChannel(const int &channel,const int &length, int &requested_data);
     void readMultichannelEthernet(const QVector<bool> &enabledChannels);
     int readChannelsEthernet(const QVector<bool> &enabledChannels);
     void acquireWaveformEnabled();

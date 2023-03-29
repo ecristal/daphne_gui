@@ -24,7 +24,8 @@ SOURCES += \
     dialogafeconfiguration.cpp \
     ethernetudpexception.cpp \
     dialogivcurve.cpp \
-    triggermenudialog.cpp
+    triggermenudialog.cpp \
+    udpthread.cpp
 
 HEADERS += \
     daphnesocket.h \
@@ -38,7 +39,8 @@ HEADERS += \
     dialogafeconfiguration.h \
     ethernetudpexception.h \
     dialogivcurve.h \
-    triggermenudialog.h
+    triggermenudialog.h \
+    udpthread.h
 
 FORMS += \
     dialogaligment.ui \

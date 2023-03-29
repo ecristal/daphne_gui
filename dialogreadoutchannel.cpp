@@ -39,9 +39,9 @@ void DialogReadoutChannel::plotData(const QByteArray &serial_data,const uint16_t
     this->plot();
 }
 
-void DialogReadoutChannel::pushButtonAutoSetPressed(){
-    double max_daphne_data = *std::max_element(this->daphneData.constBegin(),this->daphneData.constEnd());
-    double min_daphne_data = *std::min_element(this->daphneData.constBegin(),this->daphneData.constEnd());
+void DialogReadoutChannel::pushButtonAutoSetPressed(){ 
+    double max_daphne_data = *std::max_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
+    double min_daphne_data = *std::min_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
     ui->spinBoxPosition->setValue((max_daphne_data+min_daphne_data)/2);
     ui->spinBoxScale->setValue((max_daphne_data-min_daphne_data)/2);
 }
@@ -58,7 +58,6 @@ void DialogReadoutChannel::plot(){
     ui->widgetDaphneDataGraph->graph(0)->setData(this->daphneTime,this->daphneData);
     ui->widgetDaphneDataGraph->replot();
   }
-
 }
 
 void DialogReadoutChannel::plotMultichannel(){
@@ -369,18 +368,18 @@ void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const QVecto
   for(int i = 0; i < this->saveFiles.length(); i++){
     QFile file(this->saveFiles.at(i));
     file.open(QIODevice::Append); 
-    QVector<double> channel_data = data.at(this->enabledChannelsNumbers.at(i));
+    //QVector<double> channel_data = data.at(this->enabledChannelsNumbers.at(i));
     //******saving in binary part ******************////
     if(format){
         QDataStream writeToFile_binary(&file);
         writeToFile_binary.setByteOrder(QDataStream::LittleEndian);
-        for(double data2write : channel_data){
+        for(double data2write : data.at(this->enabledChannelsNumbers.at(i))){
           writeToFile_binary << (u_int16_t)data2write;
         }
     }else{
     //*******saving in txt part****************/////
         QTextStream writeToFile_txt(&file);
-        for(double data2write : channel_data){
+        for(double data2write : data.at(this->enabledChannelsNumbers.at(i))){
           writeToFile_txt << QString::number(data2write)<<"\n";
         }
     }
