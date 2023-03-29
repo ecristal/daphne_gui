@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_02_02"
+#define GUI_VERSION "V2_02_03"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -196,7 +196,7 @@ private:
     int daphnePortNumber = 2001;
     int computerPortNumber = 58789;
     int received_datagrams, expected_datagrams;
-    int udpWaitforDatagram = 50;
+    int udpWaitforDatagram = 5;
 
     // TriggerMenu
     QVector<bool> triggerSource = {false, true, false};
@@ -271,5 +271,6 @@ private:
     void sendSoftwareTriggerDeadTime();
     void sendSoftwareTrigger();
     int getNumberOfExpectedDatagrams();
+    void initializeChannelsData();
 };
 #endif // MAINWINDOW_H

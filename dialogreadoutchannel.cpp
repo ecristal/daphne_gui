@@ -39,9 +39,13 @@ void DialogReadoutChannel::plotData(const QByteArray &serial_data,const uint16_t
     this->plot();
 }
 
+int DialogReadoutChannel::getSpinBoxPlotEveryWaveformsValue(){
+    return ui->spinBoxPlotEveryWaveform->value();
+}
+
 void DialogReadoutChannel::pushButtonAutoSetPressed(){ 
-    double max_daphne_data = *std::max_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
-    double min_daphne_data = *std::min_element(this->daphneDataSingleChannel.constBegin(),this->daphneDataSingleChannel.constEnd());
+    double max_daphne_data = *std::max_element(this->plot_ethernet_data->at(*this->plot_channel).constBegin(),this->plot_ethernet_data->at(*this->plot_channel).constEnd());
+    double min_daphne_data = *std::min_element(this->plot_ethernet_data->at(*this->plot_channel).constBegin(),this->plot_ethernet_data->at(*this->plot_channel).constEnd());
     ui->spinBoxPosition->setValue((max_daphne_data+min_daphne_data)/2);
     ui->spinBoxScale->setValue((max_daphne_data-min_daphne_data)/2);
 }
@@ -69,8 +73,10 @@ void DialogReadoutChannel::plotMultichannel(){
     //double min_time_daphne_data = *std::min_element(this->daphneTime.constBegin(),this->daphneTime.constEnd());
     ui->widgetDaphneDataGraph->yAxis->setRange(ui->spinBoxPosition->value()-ui->spinBoxScale->value(),ui->spinBoxPosition->value()+ui->spinBoxScale->value());
     ui->widgetDaphneDataGraph->xAxis->setRange(16e-9*ui->spinBoxMinTime->value(),16e-9*ui->spinBoxMaxTime->value());
-    ui->widgetDaphneDataGraph->graph(0)->setData(this->daphneTime,this->daphneDataSingleChannel);
+    ui->widgetDaphneDataGraph->graph(0)->setData(this->daphneTime,this->plot_ethernet_data->at(*this->plot_channel));
     ui->widgetDaphneDataGraph->replot();
+    ui->lcdNumberWaveform->setPalette(Qt::darkGreen);
+    ui->lcdNumberWaveform->display(*this->wave_number);
   }
 }
 
@@ -103,23 +109,21 @@ void DialogReadoutChannel::plotDataMultichannel(const QVector<double> &ethernet_
 }
 
 void DialogReadoutChannel::plotDataMultichannel(const QVector<QVector<double>> &ethernet_data, const int &channel){
-
-  //this->daphneData.clear();
   this->daphneDataSingleChannel.clear();
-  //this->daphneData = ethernet_data;
   this->daphneTime.clear();
   int length_data = ethernet_data.at(channel).length();
-  this->generateTimeVectorEthernet(length_data,1.0/65000000.0);
+  this->generateTimeVectorEthernet(length_data,1.0/62500000.0);
   this->daphneDataSingleChannel = ethernet_data.at(channel);
+  this->plotMultichannel();
+}
 
-//  for(int i = 0; i < daphneData.length(); i++){
-//      if(i >= channel*recordLength && i < channel*recordLength + recordLength){
-//        this->daphneDataSingleChannel.append(daphneData.at(i));
-//      }
-//  }
-  //qDebug() << "daphnedata::length : " << this->daphneData.length();
-  //qDebug() << "daphnetime::length : " << this->daphneTime.length();
-  //qDebug() << "daphneDataSingleChannel::length : " << this->daphneDataSingleChannel.length();
+void DialogReadoutChannel::plotDataMultichannel(){
+
+  if(this->plot_ethernet_data->at(*this->plot_channel).length() != this->daphneTime.length()){
+      this->daphneTime.clear();
+      int length_data = this->plot_ethernet_data->at(*this->plot_channel).length();
+      this->generateTimeVectorEthernet(length_data,1.0/62500000.0);
+  }
   this->plotMultichannel();
 }
 
@@ -363,7 +367,7 @@ void DialogReadoutChannel::createFileNames(const QString &address, const QVector
     this->enabledChannelsNumbers = enabledChannelsNumbers_;
 }
 
-void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const QVector<QVector<double>> &data, const bool &format){
+void DialogReadoutChannel::saveMultiChannel(const QVector<QVector<double>> &data, const bool &format){
 
   for(int i = 0; i < this->saveFiles.length(); i++){
     QFile file(this->saveFiles.at(i));
@@ -385,6 +389,16 @@ void DialogReadoutChannel::saveMultiChannel(const int &wave_number, const QVecto
     }
     file.close();
   }
-  ui->lcdNumberWaveform->setPalette(Qt::darkGreen);
-  ui->lcdNumberWaveform->display(wave_number);
+}
+
+void DialogReadoutChannel::setEthernetDataForThreadedPlotting(QVector<QVector<double> > *ethernet_data){
+    this->plot_ethernet_data = ethernet_data;
+}
+
+void DialogReadoutChannel::setChannelForThreadedPlotting(int *channel){
+    this->plot_channel = channel;
+}
+
+void DialogReadoutChannel::setWaveNumberPointer(int *wave_number){
+    this->wave_number = wave_number;
 }

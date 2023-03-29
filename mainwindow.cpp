@@ -65,6 +65,8 @@ void MainWindow::initializeWindow(){
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
     this->channelsData.reserve(40);
     this->channelsData.resize(40);
+    this->initializeChannelsData();
+    this->dialogReadoutChannelWindow->setEthernetDataForThreadedPlotting(&this->channelsData);
     this->Message("DAPHNE GUI TOOL\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 #ifdef QT_NO_DEBUG
     this->Message("Release " + QString::fromUtf8(GUI_VERSION) + "\n",0);
@@ -701,50 +703,49 @@ void MainWindow::pushButtonRDFPGAPressed(){
         int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
         this->dialogReadoutChannelWindow->createFileNames(this->multiple_waveforms_folder_address,this->channelsEnabledState);
         int lost_datagram_counter = 0;
+        int channel = -1;
+        this->dialogReadoutChannelWindow->show();
         this->socket->startUdpThread();
+        float duration1 = 0, duration2 = 0;
         for(int i = 0; i< sampling_iterations; i++){
           if(this->dialogReadoutChannelWindow->getWindowStatus() == false){
             break;
           }
-            int channel = ui->comboBoxChannel->currentText().toInt();
             this->acquireWaveformEnabled();
             //qDebug() << "expected datagrams :: " << this->expected_datagrams << " :: received datagrams :: " << this->received_datagrams;
             if(this->received_datagrams == this->expected_datagrams){
             #ifdef QT_DEBUG
                 auto timing_start = std::chrono::high_resolution_clock::now();
             #endif
-
-              this->dialogReadoutChannelWindow->plotDataMultichannel(this->channelsData,channel);
+                if(i%this->dialogReadoutChannelWindow->getSpinBoxPlotEveryWaveformsValue() == 0){
+                    channel = ui->comboBoxChannel->currentText().toInt();
+                    this->dialogReadoutChannelWindow->setChannelForThreadedPlotting(&channel);
+                    this->dialogReadoutChannelWindow->setWaveNumberPointer(&i);
+                    this->dialogReadoutChannelWindow->plotDataMultichannel();
+                }
             lost_datagram_counter = 0;
             #ifdef QT_DEBUG
-                qDebug()<< "********** Timing acquisition *******************";
+                //qDebug()<< "********** Timing acquisition *******************";
                 auto timing_stop = std::chrono::high_resolution_clock::now();
                 auto duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-                qDebug()<< "Function this->dialogReadoutChannelWindow->plotDataMultichannel(this->channelsData,channel) took: " << duration.count() << " us";
+                duration1 = duration1 + duration.count();
+                qDebug()<< "Function this->dialogReadoutChannelWindow->plotDataMultichannel(this->channelsData,channel) took: " << duration1/(i+1) << " us";
                 timing_start = std::chrono::high_resolution_clock::now();
             #endif
               if(ui->spinBoxMultipleWaveformsContinous->isChecked()){
                 i--;
               }else{
-                this->dialogReadoutChannelWindow->saveMultiChannel(i,this->channelsData, this->saveFormat);
+                this->dialogReadoutChannelWindow->saveMultiChannel(this->channelsData, this->saveFormat);
               }
             #ifdef QT_DEBUG
-                qDebug()<< "********** Timing acquisition *******************";
+                //qDebug()<< "********** Timing acquisition *******************";
                 timing_stop = std::chrono::high_resolution_clock::now();
                 duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-                qDebug()<< "Function this->dialogReadoutChannelWindow->saveMultiChannel(i,this->channelsData, this->saveFormat); took: " << duration.count() << " us";
+                duration2 = duration2 + duration.count();
+                qDebug()<< "Function this->dialogReadoutChannelWindow->saveMultiChannel(i,this->channelsData, this->saveFormat); took: " << duration2/(i+1) << " us";
                 timing_start = std::chrono::high_resolution_clock::now();
             #endif
 
-              this->dialogReadoutChannelWindow->show();
-
-            #ifdef QT_DEBUG
-                qDebug()<< "********** Timing acquisition *******************";
-                timing_stop = std::chrono::high_resolution_clock::now();
-                duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-                qDebug()<< "Function this->dialogReadoutChannelWindow->show(); took: " << duration.count() << " us";
-                timing_start = std::chrono::high_resolution_clock::now();
-            #endif
               //qDebug() << "accepted";8192
             }else if(this->received_datagrams == -99){
                 this->Message("Recieved datagram error code -99: Posible lost connection to DAPHNE",2);
@@ -1084,7 +1085,7 @@ int MainWindow::requestDataFromChannel(const int &channel,const int &length, int
       //this->expected_datagrams = this->expected_datagrams + 1;
       //this->socket->waitForReadyRead();
 
-      if(requested_data%7 == 0 || requested_data%numberOfRequest == 0){
+      if(requested_data%6 == 0 || requested_data%numberOfRequest == 0){
           while(rec_dat - requested_data != 0){
             rec_dat = this->socket->receivedDataLength();
           }
@@ -1159,10 +1160,10 @@ void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledCha
   this->received_datagrams = this->readChannelsEthernet(enabledChannels);
 
 #ifdef QT_DEBUG
-    qDebug()<< "********** Timing acquisition *******************";
+    //qDebug()<< "********** Timing acquisition *******************";
     auto timing_stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-    qDebug()<< "Function this->readChannelsEthernet(enabledChannels) took: " << duration.count() << " us";
+    //qDebug()<< "Function this->readChannelsEthernet(enabledChannels) took: " << duration.count() << " us";
     timing_start = std::chrono::high_resolution_clock::now();
 #endif
   //this->channelsData.clear(); // fix length to channel size
@@ -1195,7 +1196,7 @@ void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledCha
 #ifdef QT_DEBUG
    timing_stop = std::chrono::high_resolution_clock::now();
    duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-   qDebug()<< "moving data to QVector took: " << duration.count() << " us";
+   //qDebug()<< "moving data to QVector took: " << duration.count() << " us";
 #endif
 }
 
@@ -1208,7 +1209,7 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
     //this->socket->reserveDatagramSize(this->getNumberOfExpectedDatagrams());
 #ifdef QT_DEBUG
     auto timing_start = std::chrono::high_resolution_clock::now();
-    qDebug()<< "----------- INSIDE readChannelsEthernet: ----------";
+    //qDebug()<< "----------- INSIDE readChannelsEthernet: ----------";
 #endif
     this->expected_datagrams = 0;
     this->socket->flushReceivedData();
@@ -1221,7 +1222,7 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
 #ifdef QT_DEBUG
    auto timing_stop = std::chrono::high_resolution_clock::now();
    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-   qDebug()<< "requesting data took: " << duration.count() << " us";
+   //qDebug()<< "requesting data took: " << duration.count() << " us";
    timing_start = std::chrono::high_resolution_clock::now();
 #endif
     QVector<QByteArray> receivedData = this->socket->getReceivedData();
@@ -1237,7 +1238,7 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
 #ifdef QT_DEBUG
    timing_stop = std::chrono::high_resolution_clock::now();
    duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-   qDebug()<< "parsing data took: " << duration.count() << " us\n -------------END----------------";
+   //qDebug()<< "parsing data took: " << duration.count() << " us\n -------------END----------------";
 #endif
     return receivedData.length();
   }catch(ethernetUDPException &e){
@@ -1320,6 +1321,8 @@ void MainWindow::menuAcquisitionConfigurationPressed(){
     this->saveToTxtState = acquisitionConfig.getCheckBoxSaveTextState();
     this->saveToBinaryState = acquisitionConfig.getCheckBoxSaveBinaryState();
     this->saveFormat = this->saveToBinaryState;
+    this->initializeChannelsData();
+    this->dialogReadoutChannelWindow->setEthernetDataForThreadedPlotting(&this->channelsData);
   }else{
     //... rejected config
   }
@@ -1468,7 +1471,7 @@ int MainWindow::getNumberOfExpectedDatagrams(){
 
   int counter_channels = 0;
 
-  for(bool enabled_ch : this->channelsEnabledState){
+  for(bool &enabled_ch : this->channelsEnabledState){
     if(enabled_ch){
       counter_channels++;
     }
@@ -1478,4 +1481,15 @@ int MainWindow::getNumberOfExpectedDatagrams(){
     numberOfRequest++;
   }
   return numberOfRequest*counter_channels;
+}
+
+void MainWindow::initializeChannelsData(){
+    QVector<double> init_value;
+    init_value.resize(this->recordLength);
+    for(int i = 0; i < init_value.length(); i++){
+        init_value[i] = 0.0;
+    }
+    for(QVector<double> &channel_: this->channelsData){
+        channel_ = init_value;
+    }
 }

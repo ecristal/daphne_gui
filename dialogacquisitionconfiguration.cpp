@@ -21,37 +21,24 @@ DialogAcquisitionConfiguration::~DialogAcquisitionConfiguration()
 
 void DialogAcquisitionConfiguration::configureCheckboxPointers(){
 
-//  for(QWidget *gbAFE : ui->groupBoxEnabledChannels->children()){
-//    if(gbAFE->isClassType == "QGroupBox")
-//    for(QObject *obj : ui->groupBoxAFE0->children()){
-//      QCheckBox *checkbox = reinterpret_cast<QCheckBox*>(obj);
-//      qDebug() << checkbox->objectName();
-//      this->ptr_ch_enabled.append(checkbox);
-//    }
-//  }
     for(QObject *obj : ui->groupBoxAFE0->children()){
       QCheckBox *checkbox = reinterpret_cast<QCheckBox*>(obj);
-      qDebug() << checkbox->objectName();
       this->ptr_ch_enabled.append(checkbox);
     }
     for(QObject *obj : ui->groupBoxAFE1->children()){
       QCheckBox *checkbox = reinterpret_cast<QCheckBox*>(obj);
-      qDebug() << checkbox->objectName();
       this->ptr_ch_enabled.append(checkbox);
     }
     for(QObject *obj : ui->groupBoxAFE2->children()){
       QCheckBox *checkbox = reinterpret_cast<QCheckBox*>(obj);
-      qDebug() << checkbox->objectName();
       this->ptr_ch_enabled.append(checkbox);
     }
     for(QObject *obj : ui->groupBoxAFE3->children()){
       QCheckBox *checkbox = reinterpret_cast<QCheckBox*>(obj);
-      qDebug() << checkbox->objectName();
       this->ptr_ch_enabled.append(checkbox);
     }
     for(QObject *obj : ui->groupBoxAFE4->children()){
       QCheckBox *checkbox = reinterpret_cast<QCheckBox*>(obj);
-      qDebug() << checkbox->objectName();
       this->ptr_ch_enabled.append(checkbox);
     }
 }

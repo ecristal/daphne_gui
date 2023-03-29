@@ -14,6 +14,9 @@ class DialogReadoutChannel : public QDialog
 {
     Q_OBJECT
 
+public slots:
+    void plotDataMultichannel();
+
 public:
     explicit DialogReadoutChannel(QWidget *parent = nullptr);
     void plotData(const QByteArray &serial_data,const uint16_t &format);
@@ -30,8 +33,13 @@ public:
     void plotDataEthernet(const QVector<double> &ethernet_data);
     void createFileNames(const QString &address, const QVector<bool> &enabledChannels);
     void plotDataMultichannel(const QVector<double> &ethernet_data, const int &recordLength, const int &channel);
-    void plotDataMultichannel(const QVector<QVector<double> > &ethernet_data, const int &channel);
-    void saveMultiChannel(const int &wave_number, const QVector<QVector<double> > &data, const bool &format);
+    void plotDataMultichannel(const QVector<QVector<double>> &ethernet_data, const int &channel);
+    void saveMultiChannel(const QVector<QVector<double> > &data, const bool &format);
+    void setEthernetDataForThreadedPlotting(QVector<QVector<double>> *ethernet_data);
+    void setChannelForThreadedPlotting(int *channel);
+    void setWaveNumberPointer(int *wave_number);
+    int getSpinBoxPlotEveryWaveformsValue();
+
 private slots:
     void pushButtonSaveToTxtPressed();
 
@@ -48,6 +56,9 @@ private:
     QVector<int> enabledChannelsNumbers;
 
     bool window_status;
+    QVector<QVector<double>> *plot_ethernet_data;
+    int *plot_channel;
+    int *wave_number;
 
     int16_t formatData2CompLSB(const uint16_t &data);
     int16_t formatData2CompMSB(const uint16_t &data);
