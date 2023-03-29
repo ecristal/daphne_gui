@@ -20,6 +20,7 @@ SOURCES += \
     qcustomplot.cpp \
     dialogethernetconfiguration.cpp \
     dialogacquisitionconfiguration.cpp \
+    savedatathread.cpp \
     serialexception.cpp \
     dialogafeconfiguration.cpp \
     ethernetudpexception.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     qcustomplot.h \
     dialogethernetconfiguration.h \
     dialogacquisitionconfiguration.h \
+    savedatathread.h \
     serialexception.h \
     dialogafeconfiguration.h \
     ethernetudpexception.h \

@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_02_03"
+#define GUI_VERSION "V2_02_04"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -105,6 +105,8 @@
 #include <QCloseEvent>
 #include <QElapsedTimer>
 #include <chrono>
+#include <QQueue>
+#include <QMutex>
 
 #include "dialogreadoutchannel.h"
 #include "daphnesocket.h"
@@ -115,6 +117,7 @@
 #include "dialogafeconfiguration.h"
 #include "dialogivcurve.h"
 #include "triggermenudialog.h"
+#include "savedatathread.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -190,6 +193,9 @@ private:
 
     DialogReadoutChannel* dialogReadoutChannelWindow;
 
+    saveDataThread saveThread;
+    QMutex saveMutex;
+
     DaphneSocket *socket;
     QString daphneIPAddr = "192.168.133.12";
     QString computerIPAddr = "192.168.133.1";
@@ -211,6 +217,7 @@ private:
     QVector<bool> channelsEnabledState;
     int recordLength = 256;
     QVector<QVector<double>> channelsData;
+    QQueue<QVector<QVector<double>>> channelsData_queue;
     bool saveToTxtState = false;
     bool saveToBinaryState = true;
     bool saveFormat = true;

@@ -67,6 +67,9 @@ void MainWindow::initializeWindow(){
     this->channelsData.resize(40);
     this->initializeChannelsData();
     this->dialogReadoutChannelWindow->setEthernetDataForThreadedPlotting(&this->channelsData);
+    this->saveThread.setChannelsDataQueuePointer(&this->channelsData_queue);
+    this->saveThread.setFormatPointer(&this->saveFormat);
+    this->saveThread.setMutexPointer(&this->saveMutex);
     this->Message("DAPHNE GUI TOOL\nAuthor: Ing. Esteban Cristaldo, MSc",0);
 #ifdef QT_NO_DEBUG
     this->Message("Release " + QString::fromUtf8(GUI_VERSION) + "\n",0);
@@ -701,11 +704,13 @@ void MainWindow::pushButtonRDFPGAPressed(){
     if(ui->spinBoxMultipleWaveformsEnable->isChecked()){
 
         int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
-        this->dialogReadoutChannelWindow->createFileNames(this->multiple_waveforms_folder_address,this->channelsEnabledState);
+        //this->dialogReadoutChannelWindow->createFileNames(this->multiple_waveforms_folder_address,this->channelsEnabledState);
+        this->saveThread.createFileNames(this->multiple_waveforms_folder_address,this->channelsEnabledState);
         int lost_datagram_counter = 0;
         int channel = -1;
         this->dialogReadoutChannelWindow->show();
         this->socket->startUdpThread();
+        this->saveThread.startSaveThread();
         float duration1 = 0, duration2 = 0;
         for(int i = 0; i< sampling_iterations; i++){
           if(this->dialogReadoutChannelWindow->getWindowStatus() == false){
@@ -735,7 +740,10 @@ void MainWindow::pushButtonRDFPGAPressed(){
               if(ui->spinBoxMultipleWaveformsContinous->isChecked()){
                 i--;
               }else{
-                this->dialogReadoutChannelWindow->saveMultiChannel(this->channelsData, this->saveFormat);
+                this->saveMutex.lock();
+                this->channelsData_queue.enqueue(this->channelsData);
+                this->saveMutex.unlock();
+                //this->dialogReadoutChannelWindow->saveMultiChannel(this->channelsData, this->saveFormat);
               }
             #ifdef QT_DEBUG
                 //qDebug()<< "********** Timing acquisition *******************";
@@ -767,6 +775,7 @@ void MainWindow::pushButtonRDFPGAPressed(){
             //this->dialogReadoutChannelWindow->show();
         }
         this->socket->stopUdpThread();
+        this->saveThread.stopSaveThread();
      }else if(ui->checkBoxEnableChannelOffsetSweep->isChecked()){
         int start_value = ui->spinBoxChannelOffsetSweepStartValue->value();
         int end_value = ui->spinBoxChannelOffsetSweepEndValue->value();
@@ -1196,7 +1205,7 @@ void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledCha
 #ifdef QT_DEBUG
    timing_stop = std::chrono::high_resolution_clock::now();
    duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-   //qDebug()<< "moving data to QVector took: " << duration.count() << " us";
+   qDebug()<< "moving data to QVector took: " << duration.count() << " us";
 #endif
 }
 
@@ -1222,7 +1231,7 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
 #ifdef QT_DEBUG
    auto timing_stop = std::chrono::high_resolution_clock::now();
    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-   //qDebug()<< "requesting data took: " << duration.count() << " us";
+   qDebug()<< "requesting data took: " << duration.count() << " us";
    timing_start = std::chrono::high_resolution_clock::now();
 #endif
     QVector<QByteArray> receivedData = this->socket->getReceivedData();
@@ -1238,7 +1247,7 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
 #ifdef QT_DEBUG
    timing_stop = std::chrono::high_resolution_clock::now();
    duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-   //qDebug()<< "parsing data took: " << duration.count() << " us\n -------------END----------------";
+   qDebug()<< "parsing data took: " << duration.count() << " us\n -------------END----------------";
 #endif
     return receivedData.length();
   }catch(ethernetUDPException &e){
