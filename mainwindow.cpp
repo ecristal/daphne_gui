@@ -1003,13 +1003,15 @@ void MainWindow::handleNewEthernetSocket(){
   try{
     if(this->ethernetCheckBoxCheckedFlag == false){
         this->socket = new DaphneSocket(this->computerIPAddr, this->daphneIPAddr, this->computerPortNumber, this->daphnePortNumber);
-        //this->Message(this->socket->getBindedToStr(),2);
+        this->Message(this->socket->getBindedToStr(),0);
         this->ethernetCheckBoxCheckedFlag = true;
         ui->menuAlignment->setEnabled(true);
+        ui->actionEthernet->setEnabled(false);
     }else{
         this->ethernetCheckBoxCheckedFlag = false;
         this->socket->~DaphneSocket();
         ui->menuAlignment->setEnabled(false);
+        ui->actionEthernet->setEnabled(false);
     }
   }catch(ethernetUDPException &e){
     e.handleException(this);

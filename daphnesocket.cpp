@@ -23,7 +23,7 @@ DaphneSocket::DaphneSocket()
     {
        throw ethernetUDPException(2, "Failed to bind UDP socket: \n" + this->udpSocket->errorString());
     }else{
-      this->bindedToAddr = "UDP socket binded to: " + this->hostAddr.toString() + "::" + this->socketPortNumber;
+      this->bindedToAddr = "UDP socket binded to: " + this->hostAddr.toString() + "::" + QString::number(this->socketPortNumber);
     }
 }
 
@@ -46,7 +46,7 @@ DaphneSocket::DaphneSocket(const QString &ipAddr, const QString &targetIpAddr, c
        //qDebug() << "Failed to bind UDP socket:" << this->udpSocket->errorString();
        throw ethernetUDPException(2, "Failed to bind UDP socket:\n" + this->udpSocket->errorString());
     }else{
-      this->bindedToAddr = "UDP socket binded to: " + this->hostAddr.toString() + "::" + this->socketPortNumber;
+      this->bindedToAddr = "UDP socket binded to: " + this->hostAddr.toString() + "::" + QString::number(this->socketPortNumber);
     }
 }
 

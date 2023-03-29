@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_02_04"
+#define GUI_VERSION "V2_02_05"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
