@@ -33,11 +33,18 @@ void UdpThread::enterRunFunction(){
 void UdpThread::run(){
     while(this->keepRunning){
         while(this->socket->hasPendingDatagrams()){
-            QByteArray datagram;
+            QByteArray datagram, datagram_data;
             datagram.resize(this->socket->pendingDatagramSize());
             this->socket->readDatagram(datagram.data(), datagram.size(), this->hostAddr, this->socketPortNumber);
             if(datagram.length() != 0){
-              this->receivedData->append(datagram);
+              datagram.remove(0,2);
+              for(int i=0; i < datagram.length(); i++){
+                  if(i%8 == 0){
+                      datagram_data.append(datagram.at(i));
+                      datagram_data.append(datagram.at(i+1));
+                  }
+              }
+              this->receivedData->append(datagram_data);
             }
             if(this->receivedData->length() > 15000){
                 this->receivedData->pop_back();

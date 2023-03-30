@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_02_06"
+#define GUI_VERSION "V2_02_07"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -277,5 +277,6 @@ private:
     void sendSoftwareTrigger();
     int getNumberOfExpectedDatagrams();
     void initializeChannelsData();
+    void parseEthernetData();
 };
 #endif // MAINWINDOW_H

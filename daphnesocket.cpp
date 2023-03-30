@@ -174,9 +174,9 @@ int DaphneSocket::processDatagramReserved(QByteArray &datagram){
     return datagram.length();
 }
 
-QVector<QByteArray> DaphneSocket::getReceivedData(){
+QVector<QByteArray>* DaphneSocket::getReceivedData(){
   if(this->receivedData.length() != 0){
-    return this->receivedData;
+    return &this->receivedData;
   }else{
     throw ethernetUDPException(1);
   }
@@ -230,7 +230,7 @@ QString DaphneSocket::alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned
               while(this->receivedDataLength() < 1){
 
               }
-              QByteArray rec_data = this->getReceivedData().at(0);
+              QByteArray rec_data = this->getReceivedData()->at(0);
               uint64_t *data_ = reinterpret_cast<uint64_t*>(rec_data.begin()+2);
               x[dv] = data_[1] & 0x000000000000FFFF;
               //qDebug() << QString::number(x[dv],16);
@@ -290,7 +290,7 @@ QString DaphneSocket::alignAFEsV1(const int &retry, QVector<bool> &isAfeAligned,
                //this->waitForReadyRead();
                //this->delayMilli(5);
                this->processDatagram(1);
-               QByteArray rec_data = this->getReceivedData().at(0);
+               QByteArray rec_data = this->getReceivedData()->at(0);
                this->flushReceivedData();
                uint64_t *data_ = reinterpret_cast<uint64_t*>(rec_data.begin()+2);
                x[dv] = data_[1];

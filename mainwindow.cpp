@@ -1047,22 +1047,12 @@ int MainWindow::requestDataFromChannel(const int &channel,const int &length, int
 
 void MainWindow::readAndPlotDataEthernet(const int &channel){
   try{
+    this->socket->flushReceivedData();
     this->expected_datagrams = 0;
     this->socket->startUdpThread();
     this->requestDataFromChannel(channel,this->recordLength,this->expected_datagrams);
     this->socket->stopUdpThread();
-
-    QVector<QByteArray> receivedData = this->socket->getReceivedData();
-    int bytes_received = 0;
-    ////qDebug() << "datagrams Received :" << receivedData.length();
-    this->ethernetData.clear();
-    for(QByteArray &data : receivedData){
-        bytes_received = bytes_received + data.length();
-        uint64_t *u64_data = reinterpret_cast<uint64_t*>(data.begin() + 2);
-        for(int i = 0; i<(data.length()-2)/8;i++){
-            this->ethernetData.append((double)u64_data[i]);
-        }
-    }
+    this->parseEthernetData();
     this->dialogReadoutChannelWindow->show();
     this->dialogReadoutChannelWindow->plotDataEthernet(this->ethernetData);
     this->socket->flushReceivedData();
@@ -1128,24 +1118,27 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
    qDebug()<< "requesting data took: " << duration.count() << " us";
    timing_start = std::chrono::high_resolution_clock::now();
 #endif
-    QVector<QByteArray> receivedData = this->socket->getReceivedData();
-    this->ethernetData.clear();
-    for(QByteArray &data : receivedData){
-        uint64_t *u64_data = reinterpret_cast<uint64_t*>(data.begin() + 2);
-        for(int i = 0; i<(data.length()-2)/8;i++){
-            this->ethernetData.append((double)u64_data[i]);
-        }
-    }
+   this->parseEthernetData();
 #ifdef QT_DEBUG
    timing_stop = std::chrono::high_resolution_clock::now();
    duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
    qDebug()<< "parsing data took: " << duration.count() << " us\n -------------END----------------";
 #endif
-    return receivedData.length();
+    return this->socket->getReceivedData()->length();
   }catch(ethernetUDPException &e){
     e.handleException(this);
     return -99; //this could cause problems if not handled correctly
   }
+}
+
+void MainWindow::parseEthernetData(){
+    this->ethernetData.clear();
+    for(QByteArray &data : *this->socket->getReceivedData()){
+        uint16_t *u64_data = reinterpret_cast<uint16_t*>(data.begin());
+        for(int i = 0; i<(data.length())/2;i++){
+            this->ethernetData.append((double)u64_data[i]);
+        }
+    }
 }
 
 int MainWindow::getSpyBufferFromChannel(const int &channel){

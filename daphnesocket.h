@@ -29,7 +29,7 @@ public:
     QString alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr);
     int ping(int size);
     int pong(int size);
-    QVector<QByteArray> getReceivedData();
+    QVector<QByteArray> *getReceivedData();
     void flushReceivedData();
     int sendSingleCommand(const uint64_t &addr, const uint64_t &data);
     int sendData(const uint64_t &addr, const QVector<uint64_t> &data);
