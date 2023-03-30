@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_02_05"
+#define GUI_VERSION "V2_02_06"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -260,12 +260,10 @@ private:
     void populateComboBoxLNAClampLevel();
     uint16_t getLNAClampLevelMask();
     void acquireWaveform();
-    void readAndPlotDataEthernet();
     void readAndPlotDataEthernet(const int &channel);
     int getSpyBufferFromChannel(const int &channel);
     void configureEnabledChannels();
     int requestDataFromChannel(const int &channel,const int &length, int &requested_data);
-    void readMultichannelEthernet(const QVector<bool> &enabledChannels);
     int readChannelsEthernet(const QVector<bool> &enabledChannels);
     void acquireWaveformEnabled();
     void readMultichannelEthernet_vector(const QVector<bool> &enabledChannels);
