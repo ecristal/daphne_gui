@@ -286,5 +286,6 @@ private:
     void mainWaveformsAcquisition();
     void offsetSweepWaveformsAcquisitions();
     void displayWarningMessageBox(const QString &msg);
+    void enabledFunctionsDuringDatataking(const bool &enable);
 };
 #endif // MAINWINDOW_H

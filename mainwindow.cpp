@@ -696,7 +696,6 @@ void MainWindow::mainWaveformsAcquisition(){
     int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
     this->saveThread.createFileNames(this->multiple_waveforms_folder_address,this->channelsEnabledState);
     int lost_datagram_counter = 0;
-    int channel = -1;
     this->dialogReadoutChannelWindow->show();
     this->socket->startUdpThread();
     this->saveThread.startSaveThread(ui->checkBoxSaveWaveforms->isChecked());
@@ -781,15 +780,19 @@ void MainWindow::offsetSweepWaveformsAcquisitions(){
     }
 }
 
+void MainWindow::enabledFunctionsDuringDatataking(const bool &enable){
+    ui->pushButtonRDFPGA->setEnabled(enable);
+    ui->checkBoxSaveWaveforms->setEnabled(enable);
+    ui->checkBoxEnableEthernet->setEnabled(enable);
+    this->dialogReadoutChannelWindow->getOKButtonPointer()->setEnabled(enable);
+    ui->actionI_V_Curve->setEnabled(enable);
+    ui->actionTrigger->setEnabled(enable);
+    ui->actionAFE->setEnabled(enable);
+}
+
 void MainWindow::pushButtonRDFPGAPressed(){
     try{
-        ui->pushButtonRDFPGA->setEnabled(false);
-        ui->checkBoxSaveWaveforms->setEnabled(false);
-        ui->checkBoxEnableEthernet->setEnabled(false);
-        this->dialogReadoutChannelWindow->getOKButtonPointer()->setEnabled(false);
-        ui->actionI_V_Curve->setEnabled(false);
-        ui->actionTrigger->setEnabled(false);
-        ui->actionAFE->setEnabled(false);
+        this->enabledFunctionsDuringDatataking(false);
         this->dialogReadoutChannelWindow->setWindowStatus(true);
         if(!ui->checkBoxEnableEthernet->isChecked()){
             throw ethernetUDPException(3);
@@ -797,25 +800,30 @@ void MainWindow::pushButtonRDFPGAPressed(){
         if(ui->checkBoxEnableChannelOffsetSweep->isChecked()){
             this->offsetSweepWaveformsAcquisitions();
         }else{
-            this->mainWaveformsAcquisition();
-            this->dialogReadoutChannelWindow->show();
+            if(ui->checkBoxSaveWaveforms->isChecked() && ui->checkBoxMultipleWaveformsContinous->isChecked()){
+                int ret = QMessageBox::warning(this, tr("Warning"),
+                                               tr("Checkbox Save and Continous are checked.\nData will be saved until the user cancels datataking.\n"
+                                                  "Do you still want to proceed?"),
+                                               QMessageBox::No | QMessageBox::Yes,
+                                               QMessageBox::No);
+                switch (ret) {
+                case QMessageBox::Yes:
+                    this->mainWaveformsAcquisition();
+                    this->dialogReadoutChannelWindow->show();
+                    break;
+                default:
+                    //do nothing
+                    break;
+                }
+            }else{
+                this->mainWaveformsAcquisition();
+                this->dialogReadoutChannelWindow->show();
+            }
         }
-        ui->pushButtonRDFPGA->setEnabled(true);
-        ui->checkBoxSaveWaveforms->setEnabled(true);
-        ui->checkBoxEnableEthernet->setEnabled(true);
-        this->dialogReadoutChannelWindow->getOKButtonPointer()->setEnabled(true);
-        ui->actionI_V_Curve->setEnabled(true);
-        ui->actionTrigger->setEnabled(true);
-        ui->actionAFE->setEnabled(true);
+        this->enabledFunctionsDuringDatataking(true);
     }catch(ethernetUDPException &e){
         e.handleException(this);
-        ui->pushButtonRDFPGA->setEnabled(true);
-        ui->checkBoxSaveWaveforms->setEnabled(true);
-        ui->checkBoxEnableEthernet->setEnabled(true);
-        this->dialogReadoutChannelWindow->getOKButtonPointer()->setEnabled(true);
-        ui->actionI_V_Curve->setEnabled(true);
-        ui->actionTrigger->setEnabled(true);
-        ui->actionAFE->setEnabled(true);
+        this->enabledFunctionsDuringDatataking(true);
     }
 }
 
@@ -1330,7 +1338,7 @@ void MainWindow::menuAFEConfigurationPressed(){
         this->socket->sendSingleCommand(0x2023,0x0 | (fpgaOutputValue << 1));
       }
     }else{
-      this->displayWarningMessageBox("FPGA filter was not configured.\n Pleases ensure there is a valid Ethernet connection.");
+      this->displayWarningMessageBox("FPGA filter was not configured.\nPlease ensure there is a valid Ethernet connection.");
     }
 
   }else{
