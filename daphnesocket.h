@@ -47,6 +47,7 @@ public:
     int receivedDataLength();
     void stopUdpThread();
     void startUdpThread();
+    void setDataIs64bits2Thread(const bool &dataIs64bits_);
 private slots:
     void readyRead_();
 private:

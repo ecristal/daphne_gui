@@ -22,10 +22,12 @@ public:
     void setSocketPortNumber(uint16_t *socketPortNumber_);
     void exitRunFunction();
     void enterRunFunction();
+    void setDataIs64bits(const bool &dataIs64bits_);
 private:
     uint16_t *socketPortNumber;
     QHostAddress *hostAddr;
     bool keepRunning = true;
+    bool dataIs64bits = false;
     QUdpSocket* socket;
     QVector<QByteArray>* receivedData;
 };

@@ -505,7 +505,7 @@ void MainWindow::pushButtonConnectPressed(){
     this->serialPort_->setPortName(portName);
     this->serialPort_->setBaudRate(baudRate);
     if (this->serialPort_->open(QIODevice::ReadWrite)) {
-        QMessageBox::information(this, tr("Success"), "Success in opening the port");
+        QMessageBox::information(this, tr("Success"), "Successfully opened port: " + this->serialPort_->portName());
         ui->pushButtonConnect->setEnabled(false);
         ui->pushButtonDisconnect->setEnabled(true);
     } else {
@@ -787,6 +787,9 @@ void MainWindow::pushButtonRDFPGAPressed(){
         ui->checkBoxSaveWaveforms->setEnabled(false);
         ui->checkBoxEnableEthernet->setEnabled(false);
         this->dialogReadoutChannelWindow->getOKButtonPointer()->setEnabled(false);
+        ui->actionI_V_Curve->setEnabled(false);
+        ui->actionTrigger->setEnabled(false);
+        ui->actionAFE->setEnabled(false);
         this->dialogReadoutChannelWindow->setWindowStatus(true);
         if(!ui->checkBoxEnableEthernet->isChecked()){
             throw ethernetUDPException(3);
@@ -801,12 +804,18 @@ void MainWindow::pushButtonRDFPGAPressed(){
         ui->checkBoxSaveWaveforms->setEnabled(true);
         ui->checkBoxEnableEthernet->setEnabled(true);
         this->dialogReadoutChannelWindow->getOKButtonPointer()->setEnabled(true);
+        ui->actionI_V_Curve->setEnabled(true);
+        ui->actionTrigger->setEnabled(true);
+        ui->actionAFE->setEnabled(true);
     }catch(ethernetUDPException &e){
         e.handleException(this);
         ui->pushButtonRDFPGA->setEnabled(true);
         ui->checkBoxSaveWaveforms->setEnabled(true);
         ui->checkBoxEnableEthernet->setEnabled(true);
         this->dialogReadoutChannelWindow->getOKButtonPointer()->setEnabled(true);
+        ui->actionI_V_Curve->setEnabled(true);
+        ui->actionTrigger->setEnabled(true);
+        ui->actionAFE->setEnabled(true);
     }
 }
 
@@ -1311,6 +1320,8 @@ void MainWindow::menuAFEConfigurationPressed(){
     eraser = MASK_ERASER_HPF_LNA_REG59;
     this->reg_59_value = this->eraseAndApplyMask(this->reg_59_value,HPFLNAlevel_register,eraser);
 
+    this->Message("AFE registers changes will take effect after SET CONFIG button is pressed.",3);
+
     if(ui->checkBoxEnableEthernet->isChecked()){
       uint8_t fpgaOutputValue = afeConfig.getFPGAFilterOutputValue();
       if(this->FPGAFilterEnabled){
@@ -1318,6 +1329,8 @@ void MainWindow::menuAFEConfigurationPressed(){
       }else{
         this->socket->sendSingleCommand(0x2023,0x0 | (fpgaOutputValue << 1));
       }
+    }else{
+      this->displayWarningMessageBox("FPGA filter was not configured.\n Pleases ensure there is a valid Ethernet connection.");
     }
 
   }else{
@@ -1329,8 +1342,12 @@ DaphneSocket* MainWindow::getSocket(){
     return this->socket;
 }
 
-void MainWindow::displayMessageBox(const QString &msg){
+void MainWindow::displayErrorMessageBox(const QString &msg){
   QMessageBox::critical(this, tr("Error"), msg);
+}
+
+void MainWindow::displayWarningMessageBox(const QString &msg){
+  QMessageBox::warning(this, tr("Warning"), msg);
 }
 
 QString MainWindow::getSerialString(){
@@ -1416,7 +1433,7 @@ void MainWindow::initializeChannelsData(){
 
 void MainWindow::checkBoxSaveWaveformsClicked(){
     if(this->multiple_waveforms_folder_address.isEmpty()){
-        this->displayMessageBox("Please select a valid directory to save waveforms.");
+        this->displayErrorMessageBox("Please select a valid directory to save waveforms.");
         ui->checkBoxSaveWaveforms->setChecked(false);
     }
 }
@@ -1424,3 +1441,8 @@ void MainWindow::checkBoxSaveWaveformsClicked(){
 void MainWindow::comboBoxChannelTextChanged(){
     this->currentChannel = ui->comboBoxChannel->currentText().toInt();
 }
+
+const QCheckBox *MainWindow::getEthernetCheckboxPointer(){
+    return ui->checkBoxEnableEthernet;
+}
+

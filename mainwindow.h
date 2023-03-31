@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_02_09"
+#define GUI_VERSION "V2_02_10"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -134,13 +134,14 @@ public:
 
     DaphneSocket *getSocket();
     void Message(QString message, int msgCode);
-    void displayMessageBox(const QString &msg);
+    void displayErrorMessageBox(const QString &msg);
     void sendCommand(const QString &command);
     void delayMilli(const int &delay_milli);
     void delayMicro(const int &delay_micro);
 
     QString getSerialString();
     int getAFENumberFromChannelNumber(const int &channelNumber);
+    const QCheckBox *getEthernetCheckboxPointer();
 private slots:
     void pushButtonConnectPressed();
     void pushButtonDisconnectPressed();
@@ -284,5 +285,6 @@ private:
     void parseEthernetData();
     void mainWaveformsAcquisition();
     void offsetSweepWaveformsAcquisitions();
+    void displayWarningMessageBox(const QString &msg);
 };
 #endif // MAINWINDOW_H

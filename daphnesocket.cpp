@@ -183,6 +183,7 @@ QVector<QByteArray>* DaphneSocket::getReceivedData(){
 }
 
 void DaphneSocket::flushReceivedData(){
+    this->flushBuffer();
     this->receivedData.clear();
     this->datagramCounter = 0;
 }
@@ -381,6 +382,10 @@ void DaphneSocket::reserveDatagramSize(const int &value){
 
 int DaphneSocket::receivedDataLength(){
     return this->receivedData.length();
+}
+
+void DaphneSocket::setDataIs64bits2Thread(const bool &dataIs64bits_){
+    this->receivedDataThread.setDataIs64bits(dataIs64bits_);
 }
 
 

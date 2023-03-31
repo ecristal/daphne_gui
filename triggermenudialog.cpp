@@ -94,6 +94,9 @@ void TriggerMenuDialog::buttonSetThresholdPressed(){
   MainWindow *mymainwindow = reinterpret_cast<MainWindow*>(this->parent());
   bool config_all = ui->checkBoxConfigAll->isChecked();
   try{
+    if(!mymainwindow->getEthernetCheckboxPointer()->isChecked()){
+        throw ethernetUDPException(3);
+    }
     if(config_all){
       this->configTresholdAllChannels(mymainwindow->getSocket());
     }else{
@@ -109,23 +112,25 @@ void TriggerMenuDialog::buttonSetThresholdPressed(){
 void TriggerMenuDialog::configTresholdSingleChannel(const uint32_t &channel, DaphneSocket *socket){
   int threshold_level = ui->spinBoxLevel->value();
   int multiplier = ui->spinBoxMultiplier->value();
-
+  socket->setDataIs64bits2Thread(true);
+  socket->startUdpThread();
+  socket->flushReceivedData();
   uint64_t concat_value = 0;
   concat_value = concat_value | ((uint64_t)multiplier << 40);
   concat_value = concat_value | ((uint64_t)channel << 32);
   concat_value = concat_value | threshold_level;
   socket->sendSingleCommand(0x2021,concat_value);
-  socket->flushReceivedData();
 
   socket->read(0x2021,1);
   socket->delayMilli(10);
+
   QVector<QByteArray>* receivedData = socket->getReceivedData();
 
   qDebug()<< channel << " :: sended :: "  << QString::number(concat_value,2);
 
   uint64_t u64_data = 0;
-  u64_data = (uint64_t)receivedData->at(0).at(2) | ((uint64_t)receivedData->at(0).at(3) << 8*1) | ((uint64_t)receivedData->at(0).at(4) << 8*2) | ((uint64_t)receivedData->at(0).at(5) << 8*3) | ((uint64_t)receivedData->at(0).at(6) << 8*4) |
-             ((uint64_t)receivedData->at(0).at(7) << 8*5) | ((uint64_t)receivedData->at(0).at(8) << 8*6) | ((uint64_t)receivedData->at(0).at(9) << 8*7);
+  u64_data = (uint64_t)receivedData->at(0).at(0) | ((uint64_t)receivedData->at(0).at(1) << 8*1) | ((uint64_t)receivedData->at(0).at(2) << 8*2) | ((uint64_t)receivedData->at(0).at(3) << 8*3) | ((uint64_t)receivedData->at(0).at(4) << 8*4) |
+             ((uint64_t)receivedData->at(0).at(5) << 8*5) | ((uint64_t)receivedData->at(0).at(6) << 8*6) | ((uint64_t)receivedData->at(0).at(7) << 8*7);
 
   qDebug()<< channel << " :: recieved :: "  << QString::number(u64_data,2);
   socket->flushReceivedData();
@@ -133,13 +138,15 @@ void TriggerMenuDialog::configTresholdSingleChannel(const uint32_t &channel, Dap
   socket->read(0x2024,1);
   socket->delayMilli(10);
   QVector<QByteArray>* receivedData2 = socket->getReceivedData();
-
+  socket->stopUdpThread();
+  socket->setDataIs64bits2Thread(false);
   uint64_t u64_data2 = 0;
 
-  u64_data2 = (uint64_t)receivedData2->at(0).at(2) | ((uint64_t)receivedData2->at(0).at(3) << 8*1) | ((uint64_t)receivedData2->at(0).at(4) << 8*2) | ((uint64_t)receivedData2->at(0).at(5) << 8*3) | ((uint64_t)receivedData2->at(0).at(6) << 8*4) |
-             ((uint64_t)receivedData2->at(0).at(7) << 8*5) | ((uint64_t)receivedData2->at(0).at(8) << 8*6) | ((uint64_t)receivedData2->at(0).at(9) << 8*7);
+  u64_data2 = (uint64_t)receivedData2->at(0).at(0) | ((uint64_t)receivedData2->at(0).at(1) << 8*1) | ((uint64_t)receivedData2->at(0).at(2) << 8*2) | ((uint64_t)receivedData2->at(0).at(3) << 8*3) | ((uint64_t)receivedData2->at(0).at(4) << 8*4) |
+             ((uint64_t)receivedData2->at(0).at(5) << 8*5) | ((uint64_t)receivedData2->at(0).at(6) << 8*6) | ((uint64_t)receivedData2->at(0).at(7) << 8*7);
 
   qDebug()<< channel << " :: recieved :: "  << QString::number(u64_data2,2);
+  socket->flushReceivedData();
 }
 
 void TriggerMenuDialog::configTresholdAllChannels(DaphneSocket *socket){

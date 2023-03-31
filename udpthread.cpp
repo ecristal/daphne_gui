@@ -30,6 +30,10 @@ void UdpThread::enterRunFunction(){
     this->keepRunning = true;
 }
 
+void UdpThread::setDataIs64bits(const bool &dataIs64bits_){
+    this->dataIs64bits = dataIs64bits_;
+}
+
 void UdpThread::run(){
     while(this->keepRunning){
         while(this->socket->hasPendingDatagrams()){
@@ -44,7 +48,11 @@ void UdpThread::run(){
                       datagram_data.append(datagram.at(i+1));
                   }
               }
-              this->receivedData->append(datagram_data);
+              if(this->dataIs64bits){
+                this->receivedData->append(datagram);
+              }else{
+                this->receivedData->append(datagram_data);
+              }
             }
             if(this->receivedData->length() > 15000){
                 this->receivedData->pop_back();
