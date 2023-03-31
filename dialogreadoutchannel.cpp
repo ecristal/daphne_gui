@@ -14,7 +14,7 @@ DialogReadoutChannel::DialogReadoutChannel(QWidget *parent) :
     this->window_status = true;
     ui->widgetDaphneDataGraph->addGraph();
     //connect(ui->pushButtonTxt,SIGNAL(clicked(bool)),this,SLOT(pushButtonSaveToTxtPressed())); //Uncomment to have this function connected to any other signal, removed pushbutton
-    connect(ui->buttonBox,SIGNAL(rejected()),this,SLOT(cancelButtonPressed()));
+    connect(ui->buttonBoxCancelOk,SIGNAL(rejected()),this,SLOT(cancelButtonPressed()));
     connect(ui->pushButtonAutoSet,SIGNAL(clicked(bool)),this,SLOT(pushButtonAutoSetPressed()));
     connect(ui->spinBoxMinTime,SIGNAL(valueChanged(int)),this,SLOT(spinBoxPositionSCaleValueChanged()));
     connect(ui->spinBoxMaxTime,SIGNAL(valueChanged(int)),this,SLOT(spinBoxPositionSCaleValueChanged()));
@@ -52,6 +52,7 @@ void DialogReadoutChannel::pushButtonAutoSetPressed(){
     double min_daphne_data = *std::min_element(this->plot_ethernet_data->at(*this->plot_channel).constBegin(),this->plot_ethernet_data->at(*this->plot_channel).constEnd());
     ui->spinBoxPosition->setValue((max_daphne_data+min_daphne_data)/2);
     ui->spinBoxScale->setValue((max_daphne_data-min_daphne_data)/2);
+    ui->widgetDaphneDataGraph->replot();
 }
 
 void DialogReadoutChannel::spinBoxPositionSCaleValueChanged(){
@@ -314,4 +315,8 @@ void DialogReadoutChannel::setChannelForThreadedPlotting(int *channel){
 
 void DialogReadoutChannel::setWaveNumberPointer(int *wave_number){
     this->wave_number = wave_number;
+}
+
+QPushButton* DialogReadoutChannel::getOKButtonPointer(){
+    return ui->buttonBoxCancelOk->button(QDialogButtonBox::Ok);
 }

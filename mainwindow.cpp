@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionI_V_Curve,SIGNAL(triggered(bool)),this,SLOT(menuIVCurvePressed()));
     connect(ui->actionTrigger,SIGNAL(triggered(bool)),this,SLOT(menuTriggerPressed()));
     connect(ui->checkBoxSaveWaveforms,SIGNAL(clicked(bool)),this,SLOT(checkBoxSaveWaveformsClicked()));
+    connect(ui->comboBoxChannel,SIGNAL(currentTextChanged(QString)),this,SLOT(comboBoxChannelTextChanged()));
 }
 
 MainWindow::~MainWindow()
@@ -58,6 +59,7 @@ void MainWindow::initializeWindow(){
     this->populateComboBoxLNAClampLevel();
     this->serialTimeoutTimer.setSingleShot(true);
     this->configureEnabledChannels();
+    this->currentChannel = ui->comboBoxChannel->currentText().toInt();
     ui->pushButtonGETCONFIG->setEnabled(false);
     ui->pushButtonConnect->setEnabled(false);
     ui->pushButtonDisconnect->setEnabled(false);
@@ -69,6 +71,7 @@ void MainWindow::initializeWindow(){
     this->channelsData.resize(40);
     this->initializeChannelsData();
     this->dialogReadoutChannelWindow->setEthernetDataForThreadedPlotting(&this->channelsData);
+    this->dialogReadoutChannelWindow->setChannelForThreadedPlotting(&this->currentChannel);
     this->saveThread.setChannelsDataQueuePointer(&this->channelsData_queue);
     this->saveThread.setFormatPointer(&this->saveFormat);
     this->saveThread.setMutexPointer(&this->saveMutex);
@@ -708,10 +711,9 @@ void MainWindow::mainWaveformsAcquisition(){
             auto timing_start = std::chrono::high_resolution_clock::now();
         #endif
             if(i%this->dialogReadoutChannelWindow->getSpinBoxPlotEveryWaveformsValue() == 0){
-                channel = ui->comboBoxChannel->currentText().toInt();
-                this->dialogReadoutChannelWindow->setChannelForThreadedPlotting(&channel);
                 this->dialogReadoutChannelWindow->setWaveNumberPointer(&i);
                 this->dialogReadoutChannelWindow->plotDataMultichannel();
+                this->delayMicro(this->udpWaitforDatagram);
             }
         lost_datagram_counter = 0;
         #ifdef QT_DEBUG
@@ -782,6 +784,9 @@ void MainWindow::offsetSweepWaveformsAcquisitions(){
 void MainWindow::pushButtonRDFPGAPressed(){
     try{
         ui->pushButtonRDFPGA->setEnabled(false);
+        ui->checkBoxSaveWaveforms->setEnabled(false);
+        ui->checkBoxEnableEthernet->setEnabled(false);
+        this->dialogReadoutChannelWindow->getOKButtonPointer()->setEnabled(false);
         this->dialogReadoutChannelWindow->setWindowStatus(true);
         if(!ui->checkBoxEnableEthernet->isChecked()){
             throw ethernetUDPException(3);
@@ -790,11 +795,18 @@ void MainWindow::pushButtonRDFPGAPressed(){
             this->offsetSweepWaveformsAcquisitions();
         }else{
             this->mainWaveformsAcquisition();
+            this->dialogReadoutChannelWindow->show();
         }
         ui->pushButtonRDFPGA->setEnabled(true);
+        ui->checkBoxSaveWaveforms->setEnabled(true);
+        ui->checkBoxEnableEthernet->setEnabled(true);
+        this->dialogReadoutChannelWindow->getOKButtonPointer()->setEnabled(true);
     }catch(ethernetUDPException &e){
         e.handleException(this);
         ui->pushButtonRDFPGA->setEnabled(true);
+        ui->checkBoxSaveWaveforms->setEnabled(true);
+        ui->checkBoxEnableEthernet->setEnabled(true);
+        this->dialogReadoutChannelWindow->getOKButtonPointer()->setEnabled(true);
     }
 }
 
@@ -999,7 +1011,7 @@ void MainWindow::handleNewEthernetSocket(){
         this->ethernetCheckBoxCheckedFlag = false;
         this->socket->~DaphneSocket();
         ui->menuAlignment->setEnabled(false);
-        ui->actionEthernet->setEnabled(false);
+        ui->actionEthernet->setEnabled(true);
     }
   }catch(ethernetUDPException &e){
     e.handleException(this);
@@ -1041,12 +1053,14 @@ int MainWindow::requestDataFromChannel(const int &channel,const int &length, int
       if(i == numberOfRequest - 1 && lastRequestSize != 0){
         this->socket->read(spyBuffer + i*minimunDatagramSize, lastRequestSize);
         requested_data++;
+        //this->delayMicro(this->udpWaitforDatagram);
       }else{
         this->socket->read(spyBuffer + i*minimunDatagramSize,minimunDatagramSize);
         requested_data++;
+        //this->delayMicro(this->udpWaitforDatagram);
       }
 
-      if(requested_data%6 == 0 || requested_data%numberOfRequest == 0){
+      if(requested_data%3 == 0 || requested_data%numberOfRequest == 0){
           while(rec_dat - requested_data != 0){
             rec_dat = this->socket->receivedDataLength();
           }
@@ -1126,7 +1140,6 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
     for(int i = 0; i < enabledChannels.length(); i++){
       if(enabledChannels.at(i)){
         this->requestDataFromChannel(i,this->recordLength,this->expected_datagrams);
-        this->delayMicro(this->udpWaitforDatagram);
       }
     }
 #ifdef QT_DEBUG
@@ -1406,4 +1419,8 @@ void MainWindow::checkBoxSaveWaveformsClicked(){
         this->displayMessageBox("Please select a valid directory to save waveforms.");
         ui->checkBoxSaveWaveforms->setChecked(false);
     }
+}
+
+void MainWindow::comboBoxChannelTextChanged(){
+    this->currentChannel = ui->comboBoxChannel->currentText().toInt();
 }

@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
+  <widget class="QDialogButtonBox" name="buttonBoxCancelOk">
    <property name="geometry">
     <rect>
      <x>460</x>
@@ -293,7 +293,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>buttonBoxCancelOk</sender>
    <signal>accepted()</signal>
    <receiver>DialogReadoutChannel</receiver>
    <slot>accept()</slot>
@@ -309,7 +309,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>buttonBoxCancelOk</sender>
    <signal>rejected()</signal>
    <receiver>DialogReadoutChannel</receiver>
    <slot>reject()</slot>

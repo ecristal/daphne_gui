@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_02_08"
+#define GUI_VERSION "V2_02_09"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -170,6 +170,7 @@ private slots:
     void menuIVCurvePressed();
     void menuTriggerPressed();
     void checkBoxSaveWaveformsClicked();
+    void comboBoxChannelTextChanged();
 private:
     Ui::MainWindow *ui;
 
@@ -188,6 +189,8 @@ private:
     uint16_t reg_51_value = 0;
     uint16_t reg_52_value = 0;
     uint16_t reg_59_value = 0;
+
+    int currentChannel;
 
     QString multiple_waveforms_folder_address;
 

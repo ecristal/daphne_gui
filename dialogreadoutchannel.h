@@ -35,6 +35,7 @@ public:
     void setWaveNumberPointer(int *wave_number);
     int getSpinBoxPlotEveryWaveformsValue();
 
+    QPushButton *getOKButtonPointer();
 private slots:
     void pushButtonSaveToTxtPressed();
 
