@@ -88,6 +88,7 @@ void TriggerMenuDialog::spinBoxChannelValueChanged(){
 
 void TriggerMenuDialog::spinBoxLevelValueChanged(){
   this->triggerLevel[ui->spinBoxChannel->value()] = ui->spinBoxLevel->value();
+  ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 }
 
 void TriggerMenuDialog::buttonSetThresholdPressed(){
@@ -104,6 +105,7 @@ void TriggerMenuDialog::buttonSetThresholdPressed(){
       this->configTresholdSingleChannel(channel, mymainwindow->getSocket());
     }
     this->configTriggerEnable(mymainwindow->getSocket());
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
   }catch(ethernetUDPException &e){
     e.handleException(mymainwindow);
   }
@@ -175,4 +177,5 @@ void TriggerMenuDialog::setMultiplierValue(uint16_t &multiplier){
 uint16_t TriggerMenuDialog::getMultiplierValue(){
     return (uint16_t)ui->spinBoxMultiplier->value();
 }
+
 

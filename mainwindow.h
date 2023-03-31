@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_02_12"
+#define GUI_VERSION "V2_02_13"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -211,10 +211,10 @@ private:
     // TriggerMenu
     QVector<bool> triggerSource = {false, true, false};
     int triggerChannel = 0;
-    QVector<int> triggerLevel = {99999, 99999, 99999, 99999, 99999, 99999, 99999, 9999, 9999, 99999,
-                                 99999, 99999, 99999, 99999, 99999, 99999, 99999, 9999, 9999, 99999,
-                                 99999, 99999, 99999, 99999, 99999, 99999, 99999, 9999, 9999, 99999,
-                                 99999, 99999, 99999, 99999, 99999, 99999, 99999, 9999, 9999, 99999};
+    QVector<int> triggerLevel = {99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999,
+                                 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999,
+                                 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999,
+                                 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999};
     uint16_t preTriggerMultiplier = 0;
 
     // Acquisition menu
