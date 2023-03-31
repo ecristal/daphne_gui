@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionAFE,SIGNAL(triggered(bool)),this,SLOT(menuAFEConfigurationPressed()));
     connect(ui->actionI_V_Curve,SIGNAL(triggered(bool)),this,SLOT(menuIVCurvePressed()));
     connect(ui->actionTrigger,SIGNAL(triggered(bool)),this,SLOT(menuTriggerPressed()));
+    connect(ui->checkBoxSaveWaveforms,SIGNAL(clicked(bool)),this,SLOT(checkBoxSaveWaveformsClicked()));
 }
 
 MainWindow::~MainWindow()
@@ -61,6 +62,7 @@ void MainWindow::initializeWindow(){
     ui->pushButtonConnect->setEnabled(false);
     ui->pushButtonDisconnect->setEnabled(false);
     ui->spinBoxBaudRate->setValue(921600);
+    ui->labelWorkingDirectory->setText("Working Directory: ");
     this->serialPort_ = new QSerialPort(this);
     this->dialogReadoutChannelWindow = new DialogReadoutChannel();
     this->channelsData.reserve(40);
@@ -687,106 +689,113 @@ void MainWindow::readAndPlotDataSerial(){
     }
 }
 
-void MainWindow::pushButtonRDFPGAPressed(){
-
-    //***************** SERIAL/ETHERNET **********************//
-    ui->pushButtonRDFPGA->setEnabled(false);
-    this->dialogReadoutChannelWindow->setWindowStatus(true);
-    if(ui->spinBoxMultipleWaveformsEnable->isChecked()){
-
-        int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
-        this->saveThread.createFileNames(this->multiple_waveforms_folder_address,this->channelsEnabledState);
-        int lost_datagram_counter = 0;
-        int channel = -1;
-        this->dialogReadoutChannelWindow->show();
-        this->socket->startUdpThread();
-        this->saveThread.startSaveThread();
-        float duration1 = 0, duration2 = 0;
-        for(int i = 0; i< sampling_iterations; i++){
-          if(this->dialogReadoutChannelWindow->getWindowStatus() == false){
-            break;
+void MainWindow::mainWaveformsAcquisition(){
+    int sampling_iterations = ui->spinBoxMultipleWaveforms->value();
+    this->saveThread.createFileNames(this->multiple_waveforms_folder_address,this->channelsEnabledState);
+    int lost_datagram_counter = 0;
+    int channel = -1;
+    this->dialogReadoutChannelWindow->show();
+    this->socket->startUdpThread();
+    this->saveThread.startSaveThread(ui->checkBoxSaveWaveforms->isChecked());
+    float duration1 = 0, duration2 = 0;
+    for(int i = 0; i< sampling_iterations; i++){
+      if(this->dialogReadoutChannelWindow->getWindowStatus() == false){
+        break;
+      }
+        this->acquireWaveformEnabled();
+        if(this->received_datagrams == this->expected_datagrams){
+        #ifdef QT_DEBUG
+            auto timing_start = std::chrono::high_resolution_clock::now();
+        #endif
+            if(i%this->dialogReadoutChannelWindow->getSpinBoxPlotEveryWaveformsValue() == 0){
+                channel = ui->comboBoxChannel->currentText().toInt();
+                this->dialogReadoutChannelWindow->setChannelForThreadedPlotting(&channel);
+                this->dialogReadoutChannelWindow->setWaveNumberPointer(&i);
+                this->dialogReadoutChannelWindow->plotDataMultichannel();
+            }
+        lost_datagram_counter = 0;
+        #ifdef QT_DEBUG
+            //qDebug()<< "********** Timing acquisition *******************";
+            auto timing_stop = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
+            duration1 = duration1 + duration.count();
+            qDebug()<< "Function this->dialogReadoutChannelWindow->plotDataMultichannel(this->channelsData,channel) took: " << duration1/(i+1) << " us";
+            timing_start = std::chrono::high_resolution_clock::now();
+        #endif
+          if(ui->checkBoxMultipleWaveformsContinous->isChecked()){
+            i--;
           }
-            this->acquireWaveformEnabled();
-            if(this->received_datagrams == this->expected_datagrams){
-            #ifdef QT_DEBUG
-                auto timing_start = std::chrono::high_resolution_clock::now();
-            #endif
-                if(i%this->dialogReadoutChannelWindow->getSpinBoxPlotEveryWaveformsValue() == 0){
-                    channel = ui->comboBoxChannel->currentText().toInt();
-                    this->dialogReadoutChannelWindow->setChannelForThreadedPlotting(&channel);
-                    this->dialogReadoutChannelWindow->setWaveNumberPointer(&i);
-                    this->dialogReadoutChannelWindow->plotDataMultichannel();
-                }
-            lost_datagram_counter = 0;
-            #ifdef QT_DEBUG
-                //qDebug()<< "********** Timing acquisition *******************";
-                auto timing_stop = std::chrono::high_resolution_clock::now();
-                auto duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-                duration1 = duration1 + duration.count();
-                qDebug()<< "Function this->dialogReadoutChannelWindow->plotDataMultichannel(this->channelsData,channel) took: " << duration1/(i+1) << " us";
-                timing_start = std::chrono::high_resolution_clock::now();
-            #endif
-              if(ui->spinBoxMultipleWaveformsContinous->isChecked()){
-                i--;
-              }else{
-                this->saveMutex.lock();
-                this->channelsData_queue.enqueue(this->channelsData);
-                this->saveMutex.unlock();
-              }
-            #ifdef QT_DEBUG
-                //qDebug()<< "********** Timing acquisition *******************";
-                timing_stop = std::chrono::high_resolution_clock::now();
-                duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
-                duration2 = duration2 + duration.count();
-                qDebug()<< "Function this->dialogReadoutChannelWindow->saveMultiChannel(i,this->channelsData, this->saveFormat); took: " << duration2/(i+1) << " us";
-                timing_start = std::chrono::high_resolution_clock::now();
-            #endif
+          if(ui->checkBoxSaveWaveforms->isChecked()){
+            this->saveMutex.lock();
+            this->channelsData_queue.enqueue(this->channelsData);
+            this->saveMutex.unlock();
+          }
+        #ifdef QT_DEBUG
+            //qDebug()<< "********** Timing acquisition *******************";
+            timing_stop = std::chrono::high_resolution_clock::now();
+            duration = std::chrono::duration_cast<std::chrono::microseconds>(timing_stop - timing_start);
+            duration2 = duration2 + duration.count();
+            qDebug()<< "Function this->dialogReadoutChannelWindow->saveMultiChannel(i,this->channelsData, this->saveFormat); took: " << duration2/(i+1) << " us";
+            timing_start = std::chrono::high_resolution_clock::now();
+        #endif
 
-            }else if(this->received_datagrams == -99){
-                this->Message("Recieved datagram error code -99: Posible lost connection to DAPHNE",2);
-            }else{
-              if(i >= 0){
-                i--;
-                lost_datagram_counter++;
-                this->Message("Lost datagrams, please consider incresing the Datagram Wait Time DWT\nConfiguration->Ethernet",3);
-              }
-            }
-            if(lost_datagram_counter > 20){
-                this->Message("Too many lost datagrams, please consider incresing the Datagram Wait Time DWT\nConfiguration->Ethernet\nAborting..",2);
-                break;
-            }
-            this->expected_datagrams = 0;
+        }else if(this->received_datagrams == -99){
+            this->Message("Recieved datagram error code -99: Posible lost connection to DAPHNE",2);
+        }else{
+          if(i >= 0){
+            i--;
+            lost_datagram_counter++;
+            this->Message("Lost datagrams, please consider incresing the Datagram Wait Time DWT\nConfiguration->Ethernet",3);
+          }
         }
-        this->socket->stopUdpThread();
-        this->saveThread.stopSaveThread();
-     }else if(ui->checkBoxEnableChannelOffsetSweep->isChecked()){
-        int start_value = ui->spinBoxChannelOffsetSweepStartValue->value();
-        int end_value = ui->spinBoxChannelOffsetSweepEndValue->value();
-        int step = ui->spinBoxChannelOffsetSweepStep->value();
-        bool break_flag = false;
-        for(int i = start_value;i <= (end_value + step); i+= step){
-            if(i > end_value){
-                i = end_value;
-                break_flag = true;
-            }
-            ui->spinBoxOffsetVoltage->setValue(i);
-            this->pushButtonApplyOffsetPressed();
-            this->acquireWaveform();
-            this->acquireWaveform();
-            this->dialogReadoutChannelWindow->saveContinousWaveform(this->multiple_waveforms_folder_address,i);
-            if(break_flag)
-                break;
+        if(lost_datagram_counter > 20){
+            this->Message("Too many lost datagrams, please consider incresing the Datagram Wait Time DWT\nConfiguration->Ethernet\nAborting..",2);
+            break;
         }
-     }else{
+        this->expected_datagrams = 0;
+    }
+    this->socket->stopUdpThread();
+    this->saveThread.stopSaveThread();
+}
+
+void MainWindow::offsetSweepWaveformsAcquisitions(){
+    int start_value = ui->spinBoxChannelOffsetSweepStartValue->value();
+    int end_value = ui->spinBoxChannelOffsetSweepEndValue->value();
+    int step = ui->spinBoxChannelOffsetSweepStep->value();
+    bool break_flag = false;
+    for(int i = start_value;i <= (end_value + step); i+= step){
+        if(i > end_value){
+            i = end_value;
+            break_flag = true;
+        }
+        ui->spinBoxOffsetVoltage->setValue(i);
+        this->pushButtonApplyOffsetPressed();
         this->acquireWaveform();
-        bool test = false;
-        if(test){
-            this->dialogReadoutChannelWindow->show();
-            this->dialogReadoutChannelWindow->plotData(this->dialogReadoutChannelWindow->generateDaphneTestData(300), this->reg_4_value);
+        this->acquireWaveform();
+        this->dialogReadoutChannelWindow->saveContinousWaveform(this->multiple_waveforms_folder_address,i);
+        if(break_flag){
+            break;
         }
     }
-    ui->pushButtonRDFPGA->setEnabled(true);
-    //**************END SERIAL *********************/
+}
+
+void MainWindow::pushButtonRDFPGAPressed(){
+    try{
+        ui->pushButtonRDFPGA->setEnabled(false);
+        this->dialogReadoutChannelWindow->setWindowStatus(true);
+        if(!ui->checkBoxEnableEthernet->isChecked()){
+            throw ethernetUDPException(3);
+        }
+        if(ui->checkBoxEnableChannelOffsetSweep->isChecked()){
+            this->offsetSweepWaveformsAcquisitions();
+        }else{
+            this->mainWaveformsAcquisition();
+        }
+        ui->pushButtonRDFPGA->setEnabled(true);
+    }catch(ethernetUDPException &e){
+        e.handleException(this);
+        ui->pushButtonRDFPGA->setEnabled(true);
+    }
 }
 
 void MainWindow::sendFPGAReset(){
@@ -962,8 +971,12 @@ void MainWindow::pushButtonSendRawCommandPressed(){
 }
 
 void MainWindow::pushButtonMultipleWaveformsDirectoryPressed(){
-    this->multiple_waveforms_folder_address = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), this->multiple_waveforms_folder_address + "/..");
-    qDebug()<<this->multiple_waveforms_folder_address;
+    QString QFileDialog_returned_string = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), this->multiple_waveforms_folder_address + "/..");
+    if(!QFileDialog_returned_string.isEmpty()){
+        this->multiple_waveforms_folder_address = QFileDialog_returned_string;
+        ui->labelWorkingDirectory->setText("Working Directory: " + this->multiple_waveforms_folder_address);
+    }
+    //qDebug()<<this->multiple_waveforms_folder_address;
 }
 
 void MainWindow::pushButtonGETCONFIGPressed(){
@@ -1054,7 +1067,11 @@ void MainWindow::readAndPlotDataEthernet(const int &channel){
     this->socket->stopUdpThread();
     this->parseEthernetData();
     this->dialogReadoutChannelWindow->show();
-    this->dialogReadoutChannelWindow->plotDataEthernet(this->ethernetData);
+    int channel = ui->comboBoxChannel->currentText().toInt();
+    int wave_number = 0;
+    this->dialogReadoutChannelWindow->setChannelForThreadedPlotting(&channel);
+    this->dialogReadoutChannelWindow->setWaveNumberPointer(&wave_number);
+    this->dialogReadoutChannelWindow->plotDataMultichannel();
     this->socket->flushReceivedData();
   }catch(ethernetUDPException &e){
     e.handleException(this);
@@ -1076,7 +1093,7 @@ void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledCha
     timing_start = std::chrono::high_resolution_clock::now();
 #endif
 
-  QVector<double> ethernetData_aux(this->recordLength);
+  QVector<uint16_t> ethernetData_aux(this->recordLength);
 
   int k = 0;
   for(int ch = 0; ch < enabledChannels.length(); ch++){
@@ -1134,9 +1151,9 @@ int MainWindow::readChannelsEthernet(const QVector<bool> &enabledChannels){
 void MainWindow::parseEthernetData(){
     this->ethernetData.clear();
     for(QByteArray &data : *this->socket->getReceivedData()){
-        uint16_t *u64_data = reinterpret_cast<uint16_t*>(data.begin());
+        uint16_t *u16_data = reinterpret_cast<uint16_t*>(data.begin());
         for(int i = 0; i<(data.length())/2;i++){
-            this->ethernetData.append((double)u64_data[i]);
+            this->ethernetData.append(u16_data[i]);
         }
     }
 }
@@ -1374,12 +1391,19 @@ int MainWindow::getNumberOfExpectedDatagrams(){
 }
 
 void MainWindow::initializeChannelsData(){
-    QVector<double> init_value;
+    QVector<uint16_t> init_value;
     init_value.resize(this->recordLength);
     for(int i = 0; i < init_value.length(); i++){
         init_value[i] = 0.0;
     }
-    for(QVector<double> &channel_: this->channelsData){
+    for(QVector<uint16_t> &channel_: this->channelsData){
         channel_ = init_value;
+    }
+}
+
+void MainWindow::checkBoxSaveWaveformsClicked(){
+    if(this->multiple_waveforms_folder_address.isEmpty()){
+        this->displayMessageBox("Please select a valid directory to save waveforms.");
+        ui->checkBoxSaveWaveforms->setChecked(false);
     }
 }

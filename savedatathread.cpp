@@ -3,7 +3,7 @@
 saveDataThread::saveDataThread()
 {}
 
-void saveDataThread::setChannelsDataQueuePointer(QQueue<QVector<QVector<double> > > *channelsData_queue_){
+void saveDataThread::setChannelsDataQueuePointer(QQueue<QVector<QVector<uint16_t> > > *channelsData_queue_){
     this->channelsData_queue = channelsData_queue_;
 }
 
@@ -23,23 +23,22 @@ void saveDataThread::setMutexPointer(QMutex *saveMutex_){
     this->saveMutex = saveMutex_;
 }
 
-void saveDataThread::saveMultiChannel(const QVector<QVector<double>> &data, const bool &format){
+void saveDataThread::saveMultiChannel(const QVector<QVector<uint16_t>> &data, const bool &format){
 
   for(int i = 0; i < this->saveFiles.length(); i++){
     QFile file(this->saveFiles.at(i));
     file.open(QIODevice::Append);
-    //QVector<double> channel_data = data.at(this->enabledChannelsNumbers.at(i));
     //******saving in binary part ******************////
     if(format){
         QDataStream writeToFile_binary(&file);
         writeToFile_binary.setByteOrder(QDataStream::LittleEndian);
-        for(double data2write : data.at(this->enabledChannelsNumbers.at(i))){
-          writeToFile_binary << (u_int16_t)data2write;
+        for(uint16_t data2write : data.at(this->enabledChannelsNumbers.at(i))){
+          writeToFile_binary << data2write;
         }
     }else{
     //*******saving in txt part****************/////
         QTextStream writeToFile_txt(&file);
-        for(double data2write : data.at(this->enabledChannelsNumbers.at(i))){
+        for(uint16_t data2write : data.at(this->enabledChannelsNumbers.at(i))){
           writeToFile_txt << QString::number(data2write)<<"\n";
         }
     }
@@ -66,9 +65,11 @@ void saveDataThread::createFileNames(const QString &address, const QVector<bool>
     this->enabledChannelsNumbers = enabledChannelsNumbers_;
 }
 
-void saveDataThread::startSaveThread(){
-    this->enterRunFunction();
-    this->start();
+void saveDataThread::startSaveThread(const bool &isSaveEnabled){
+    if(isSaveEnabled){
+        this->enterRunFunction();
+        this->start();
+    }
 }
 
 void saveDataThread::stopSaveThread(){
@@ -83,9 +84,7 @@ void saveDataThread::run(){
     while(this->keepRunning){
         this->saveMutex->lock();
         while(!this->channelsData_queue->isEmpty()){
-            QVector<QVector<double>> data_ = this->channelsData_queue->dequeue();
-            //this->saveMutex->unlock();
-            this->saveMultiChannel(data_,*this->saveFormat);
+            this->saveMultiChannel(this->channelsData_queue->dequeue(),*this->saveFormat);
         }
         this->saveMutex->unlock();
     }

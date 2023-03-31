@@ -30,12 +30,7 @@ public:
     void saveContinousWaveform(const QString &address, int &wave_number);
     bool getWindowStatus();
     void setWindowStatus(bool status);
-    void plotDataEthernet(const QVector<double> &ethernet_data);
-    void createFileNames(const QString &address, const QVector<bool> &enabledChannels);
-    void plotDataMultichannel(const QVector<double> &ethernet_data, const int &recordLength, const int &channel);
-    void plotDataMultichannel(const QVector<QVector<double>> &ethernet_data, const int &channel);
-    void saveMultiChannel(const QVector<QVector<double> > &data, const bool &format);
-    void setEthernetDataForThreadedPlotting(QVector<QVector<double>> *ethernet_data);
+    void setEthernetDataForThreadedPlotting(QVector<QVector<uint16_t>> *ethernet_data);
     void setChannelForThreadedPlotting(int *channel);
     void setWaveNumberPointer(int *wave_number);
     int getSpinBoxPlotEveryWaveformsValue();
@@ -45,18 +40,18 @@ private slots:
 
     void cancelButtonPressed();
     void pushButtonAutoSetPressed();
+    void spinBoxPositionSCaleValueChanged();
 private:
     Ui::DialogReadoutChannel *ui;
 
     QVector<double> daphneTime;
     QVector<double> daphneData;
-    QVector<double> daphneDataSingleChannel;
     QString saveDir;
     QVector<QString> saveFiles;
     QVector<int> enabledChannelsNumbers;
 
     bool window_status;
-    QVector<QVector<double>> *plot_ethernet_data;
+    QVector<QVector<uint16_t>> *plot_ethernet_data;
     int *plot_channel;
     int *wave_number;
 
@@ -65,7 +60,6 @@ private:
     uint16_t formatDataOFFSETBinaryLSB(const uint16_t &data);
     uint16_t formatDataOFFSETBinaryMSB(const uint16_t &data);
     void writeDataToFile();
-    void plot();
     void generateTimeVectorEthernet(const int &length, double Tm);
     void plotMultichannel();
 };

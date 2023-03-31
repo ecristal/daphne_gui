@@ -21,6 +21,9 @@ void ethernetUDPException::handleException(QWidget *mw){
     case 2:
       mymainwindow->displayMessageBox(this->error_str);
       break;
+    case 3:
+      mymainwindow->displayMessageBox("Ethernet checkbox is not enabled.\n");
+      break;
     default:
       mymainwindow->displayMessageBox("Internal GUI Error:\nUnknown Error");
       //QMessageBox::critical(this, QObject::tr("Error"), "Internal GUI Error:\nUnknown Error");

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>809</width>
-    <height>806</height>
+    <height>820</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -884,6 +884,9 @@
      </widget>
     </widget>
     <widget class="QGroupBox" name="groupBoxSweepChannelOffset">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -1136,7 +1139,7 @@
     <property name="title">
      <string>Take Multiple Waveforms</string>
     </property>
-    <widget class="QCheckBox" name="spinBoxMultipleWaveformsEnable">
+    <widget class="QCheckBox" name="checkBoxSaveWaveforms">
      <property name="geometry">
       <rect>
        <x>90</x>
@@ -1146,7 +1149,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Enable</string>
+      <string>Save</string>
      </property>
     </widget>
     <widget class="QSpinBox" name="spinBoxMultipleWaveforms">
@@ -1178,7 +1181,7 @@
       <string>Directory</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="spinBoxMultipleWaveformsContinous">
+    <widget class="QCheckBox" name="checkBoxMultipleWaveformsContinous">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1194,22 +1197,24 @@
       <string>Cont.</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="spinBoxMutipleChannels">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>56</y>
-       <width>70</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Mult. CH</string>
-     </property>
-    </widget>
+   </widget>
+   <widget class="QLabel" name="labelWorkingDirectory">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>760</y>
+      <width>781</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Working Directoryr: &lt;Folder Addr&gt;</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

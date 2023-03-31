@@ -231,7 +231,7 @@ QString DaphneSocket::alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned
 
               }
               QByteArray rec_data = this->getReceivedData()->at(0);
-              uint64_t *data_ = reinterpret_cast<uint64_t*>(rec_data.begin()+2);
+              uint16_t *data_ = reinterpret_cast<uint16_t*>(rec_data.begin());
               x[dv] = data_[1] & 0x000000000000FFFF;
               //qDebug() << QString::number(x[dv],16);
               this->flushReceivedData();

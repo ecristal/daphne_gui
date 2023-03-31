@@ -14,18 +14,18 @@ protected:
     void run() override;
 public:
     saveDataThread();
-    void setChannelsDataQueuePointer(QQueue<QVector<QVector<double>>> *channelsData_queue_);
+    void setChannelsDataQueuePointer(QQueue<QVector<QVector<uint16_t>>> *channelsData_queue_);
     void setFormatPointer(bool *saveFormat_);
     void setMutexPointer(QMutex *saveMutex_);
     void exitRunFunction();
     void enterRunFunction();
     void createFileNames(const QString &address, const QVector<bool> &enabledChannels);
-    void startSaveThread();
+    void startSaveThread(const bool &isSaveEnabled);
     void stopSaveThread();
 private:
     bool keepRunning = true;
     QVector<bool> *channelsEnabledState;
-    QQueue<QVector<QVector<double>>> *channelsData_queue;
+    QQueue<QVector<QVector<uint16_t>>> *channelsData_queue;
     QMutex *saveMutex;
 
     bool *saveFormat;
@@ -33,6 +33,6 @@ private:
     QVector<QString> saveFiles;
     QVector<int> enabledChannelsNumbers;
 
-    void saveMultiChannel(const QVector<QVector<double>> &data, const bool &format);
+    void saveMultiChannel(const QVector<QVector<uint16_t>> &data, const bool &format);
 };
 #endif // SAVEDATATHREAD_H

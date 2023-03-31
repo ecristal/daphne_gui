@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_02_07"
+#define GUI_VERSION "V2_02_08"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -169,6 +169,7 @@ private slots:
     void menuAFEConfigurationPressed();
     void menuIVCurvePressed();
     void menuTriggerPressed();
+    void checkBoxSaveWaveformsClicked();
 private:
     Ui::MainWindow *ui;
 
@@ -177,7 +178,6 @@ private:
     QTimer serialTimeoutTimer;
     QEventLoop waitingForData;
     QByteArray serialData;
-    QVector<double> ethernetData;
 
     QString serial_data_string, serial_data_string_success;
 
@@ -207,17 +207,18 @@ private:
     // TriggerMenu
     QVector<bool> triggerSource = {false, true, false};
     int triggerChannel = 0;
-    QVector<int> triggerLevel = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-                                 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-                                 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-                                 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
+    QVector<int> triggerLevel = {99999, 99999, 99999, 99999, 99999, 99999, 99999, 9999, 9999, 99999,
+                                 99999, 99999, 99999, 99999, 99999, 99999, 99999, 9999, 9999, 99999,
+                                 99999, 99999, 99999, 99999, 99999, 99999, 99999, 9999, 9999, 99999,
+                                 99999, 99999, 99999, 99999, 99999, 99999, 99999, 9999, 9999, 99999};
     uint16_t preTriggerMultiplier = 0;
 
     // Acquisition menu
     QVector<bool> channelsEnabledState;
     int recordLength = 256;
-    QVector<QVector<double>> channelsData;
-    QQueue<QVector<QVector<double>>> channelsData_queue;
+    QVector<uint16_t> ethernetData;
+    QVector<QVector<uint16_t>> channelsData;
+    QQueue<QVector<QVector<uint16_t>>> channelsData_queue;
     bool saveToTxtState = false;
     bool saveToBinaryState = true;
     bool saveFormat = true;
@@ -278,5 +279,7 @@ private:
     int getNumberOfExpectedDatagrams();
     void initializeChannelsData();
     void parseEthernetData();
+    void mainWaveformsAcquisition();
+    void offsetSweepWaveformsAcquisitions();
 };
 #endif // MAINWINDOW_H
