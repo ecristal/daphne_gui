@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>809</width>
-    <height>820</height>
+    <height>837</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>10</pointsize>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="title">
@@ -42,7 +42,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>13</pointsize>
+       <pointsize>11</pointsize>
       </font>
      </property>
      <property name="text">
@@ -112,7 +112,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>11</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="text">
@@ -184,7 +184,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="text">
@@ -200,6 +200,11 @@
        <height>22</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
     </widget>
     <widget class="QGroupBox" name="groupBoxBiasVoltage">
      <property name="geometry">
@@ -209,6 +214,11 @@
        <width>161</width>
        <height>121</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
      </property>
      <property name="title">
       <string>Bias Voltage</string>
@@ -237,7 +247,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>9</pointsize>
        </font>
       </property>
       <property name="text">
@@ -255,7 +265,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>9</pointsize>
        </font>
       </property>
       <property name="text">
@@ -311,6 +321,11 @@
        <height>81</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
      <property name="title">
       <string>Gain</string>
      </property>
@@ -325,7 +340,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>8</pointsize>
        </font>
       </property>
       <property name="text">
@@ -343,7 +358,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>8</pointsize>
        </font>
       </property>
       <property name="text">
@@ -379,6 +394,11 @@
        <width>131</width>
        <height>51</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
      </property>
      <property name="title">
       <string>Integrator (HPF)</string>
@@ -419,6 +439,11 @@
        <height>101</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
      <property name="title">
       <string>Active Termination</string>
      </property>
@@ -427,7 +452,7 @@
        <rect>
         <x>10</x>
         <y>30</y>
-        <width>61</width>
+        <width>81</width>
         <height>17</height>
        </rect>
       </property>
@@ -444,13 +469,18 @@
         <height>22</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
      </widget>
      <widget class="QLabel" name="label_4">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>50</y>
-        <width>61</width>
+        <width>81</width>
         <height>16</height>
        </rect>
       </property>
@@ -468,6 +498,11 @@
        <height>23</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>RD FPGA</string>
      </property>
@@ -481,6 +516,11 @@
        <height>101</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
      <property name="title">
       <string>LPF</string>
      </property>
@@ -493,6 +533,11 @@
         <height>22</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
      </widget>
      <widget class="QLabel" name="label_5">
       <property name="geometry">
@@ -502,6 +547,11 @@
         <width>71</width>
         <height>16</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="text">
        <string>Cut-off freq:</string>
@@ -516,6 +566,11 @@
        <width>80</width>
        <height>23</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>SET CONFIG</string>
@@ -533,6 +588,11 @@
        <height>23</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>GET CONFIG</string>
      </property>
@@ -545,6 +605,11 @@
        <width>311</width>
        <height>61</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
      </property>
      <property name="title">
       <string>Channel Offset</string>
@@ -560,7 +625,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>8</pointsize>
        </font>
       </property>
       <property name="text">
@@ -591,7 +656,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>8</pointsize>
        </font>
       </property>
       <property name="text">
@@ -616,7 +681,7 @@
        <rect>
         <x>133</x>
         <y>24</y>
-        <width>61</width>
+        <width>71</width>
         <height>17</height>
        </rect>
       </property>
@@ -627,7 +692,7 @@
      <widget class="QCheckBox" name="checkBoxAllAFEChannelOffsetGAIN">
       <property name="geometry">
        <rect>
-        <x>198</x>
+        <x>200</x>
         <y>31</y>
         <width>61</width>
         <height>17</height>
@@ -660,6 +725,11 @@
        <height>61</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
      <property name="title">
       <string>V GAIN</string>
      </property>
@@ -674,7 +744,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>8</pointsize>
        </font>
       </property>
       <property name="text">
@@ -705,7 +775,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>8</pointsize>
        </font>
       </property>
       <property name="text">
@@ -717,7 +787,7 @@
        <rect>
         <x>123</x>
         <y>33</y>
-        <width>61</width>
+        <width>71</width>
         <height>17</height>
        </rect>
       </property>
@@ -750,6 +820,11 @@
        <width>221</width>
        <height>81</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
      </property>
      <property name="title">
       <string>ADC Format</string>
@@ -830,7 +905,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="text">
@@ -846,6 +921,11 @@
        <height>22</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
     </widget>
     <widget class="QGroupBox" name="groupBoxPGAClamp">
      <property name="geometry">
@@ -855,6 +935,11 @@
        <width>121</width>
        <height>61</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
      </property>
      <property name="title">
       <string>PGA Clamp</string>
@@ -897,7 +982,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="title">
@@ -914,7 +999,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>8</pointsize>
        </font>
       </property>
       <property name="text">
@@ -963,8 +1048,8 @@
      <widget class="QCheckBox" name="checkBoxEnableChannelOffsetSweep">
       <property name="geometry">
        <rect>
-        <x>380</x>
-        <y>30</y>
+        <x>376</x>
+        <y>32</y>
         <width>71</width>
         <height>17</height>
        </rect>
@@ -1009,6 +1094,11 @@
        <height>61</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
      <property name="title">
       <string>LNA Clamp</string>
      </property>
@@ -1047,7 +1137,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="title">
@@ -1056,11 +1146,16 @@
      <widget class="QCheckBox" name="checkBoxEnableEthernet">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>10</x>
         <y>30</y>
-        <width>60</width>
+        <width>71</width>
         <height>17</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="text">
        <string>Enable</string>
@@ -1075,6 +1170,11 @@
        <width>71</width>
        <height>17</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>All AFEs</string>
@@ -1092,7 +1192,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>10</pointsize>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="title">
@@ -1133,7 +1233,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>10</pointsize>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="title">
@@ -1209,7 +1309,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>10</pointsize>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="text">
@@ -1223,7 +1323,7 @@
      <x>0</x>
      <y>0</y>
      <width>809</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuTools">
