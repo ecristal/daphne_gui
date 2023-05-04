@@ -71,6 +71,7 @@ private:
 
     QString bindedToAddr = "";
     int processDatagramReserved(QByteArray &datagram);
+    void delayMicro(const int &delay_micro);
 };
 
 #endif // DAPHNESOCKET_H

@@ -229,7 +229,10 @@ QString DaphneSocket::alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned
               //this->processDatagram(1);
               //this->waitForReadyRead();
               while(this->receivedDataLength() < 1){
-
+                  this->flushReceivedData();
+                  this->sendSingleCommand(0x2000,0x1234);
+                  this->read((0x40000000+(0x100000*afe)+(0x80000) + dv),5);
+                  this->delayMicro(50);
               }
               QByteArray rec_data = this->getReceivedData()->at(0);
               uint16_t *data_ = reinterpret_cast<uint16_t*>(rec_data.begin());
@@ -386,6 +389,14 @@ int DaphneSocket::receivedDataLength(){
 
 void DaphneSocket::setDataIs64bits2Thread(const bool &dataIs64bits_){
     this->receivedDataThread.setDataIs64bits(dataIs64bits_);
+}
+
+void DaphneSocket::delayMicro(const int &delay_micro){
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+    auto dieTime = std::chrono::duration_cast<std::chrono::microseconds>(duration).count() + delay_micro;
+    while(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() < dieTime)
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
 

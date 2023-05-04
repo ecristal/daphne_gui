@@ -80,7 +80,7 @@ void MainWindow::initializeWindow(){
     this->Message("Release " + QString::fromUtf8(GUI_VERSION) + "\n",0);
 #endif
 #ifdef QT_DEBUG
-    this->Message("Release " + QString::fromUtf8(GUI_VERSION) + "\n",0);
+    this->Message("Debug " + QString::fromUtf8(GUI_VERSION) + "\n",0);
 #endif
 }
 
