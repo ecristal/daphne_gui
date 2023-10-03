@@ -1232,6 +1232,7 @@
     </property>
     <addaction name="menuAlignment"/>
     <addaction name="actionI_V_Curve"/>
+    <addaction name="actionCalibration"/>
    </widget>
    <widget class="QMenu" name="menuConfiguration">
     <property name="title">
@@ -1274,6 +1275,11 @@
   <action name="actionTrigger">
    <property name="text">
     <string>Trigger</string>
+   </property>
+  </action>
+  <action name="actionCalibration">
+   <property name="text">
+    <string>Calibration</string>
    </property>
   </action>
  </widget>

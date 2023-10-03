@@ -118,6 +118,7 @@
 #include "dialogivcurve.h"
 #include "triggermenudialog.h"
 #include "savedatathread.h"
+#include "dialogcalibration.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -172,6 +173,7 @@ private slots:
     void menuTriggerPressed();
     void checkBoxSaveWaveformsClicked();
     void comboBoxChannelTextChanged();
+    void menuCalibrationPressed();
 private:
     Ui::MainWindow *ui;
 

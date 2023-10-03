@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionAFE,SIGNAL(triggered(bool)),this,SLOT(menuAFEConfigurationPressed()));
     connect(ui->actionI_V_Curve,SIGNAL(triggered(bool)),this,SLOT(menuIVCurvePressed()));
     connect(ui->actionTrigger,SIGNAL(triggered(bool)),this,SLOT(menuTriggerPressed()));
+    connect(ui->actionCalibration,SIGNAL(triggered(bool)),this,SLOT(menuCalibrationPressed()));
     connect(ui->checkBoxSaveWaveforms,SIGNAL(clicked(bool)),this,SLOT(checkBoxSaveWaveformsClicked()));
     connect(ui->comboBoxChannel,SIGNAL(currentTextChanged(QString)),this,SLOT(comboBoxChannelTextChanged()));
 }
@@ -1365,6 +1366,11 @@ QString MainWindow::getSerialString(){
 void MainWindow::menuIVCurvePressed(){
   DialogIVcurve IVcurve(this);
   IVcurve.exec();
+}
+
+void MainWindow::menuCalibrationPressed(){
+  dialogCalibration calibrationDialog(this);
+  calibrationDialog.exec();
 }
 
 void MainWindow::menuTriggerPressed(){

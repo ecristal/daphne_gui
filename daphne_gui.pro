@@ -5,7 +5,10 @@ QT += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++17
+
+INCLUDEPATH += /home/ecristal/root/root_build/include
+LIBS += -L/home/ecristal/root/root_build/lib -lCore -lRIO -lHist -lGraf -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -14,6 +17,7 @@ CONFIG += c++11
 SOURCES += \
     daphnesocket.cpp \
     dialogaligment.cpp \
+    dialogcalibration.cpp \
     dialogreadoutchannel.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -31,6 +35,7 @@ SOURCES += \
 HEADERS += \
     daphnesocket.h \
     dialogaligment.h \
+    dialogcalibration.h \
     dialogreadoutchannel.h \
     mainwindow.h \
     qcustomplot.h \
@@ -46,6 +51,7 @@ HEADERS += \
 
 FORMS += \
     dialogaligment.ui \
+    dialogcalibration.ui \
     dialogreadoutchannel.ui \
     mainwindow.ui \
     dialogethernetconfiguration.ui \
