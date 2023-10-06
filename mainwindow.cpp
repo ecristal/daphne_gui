@@ -34,7 +34,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionAFE,SIGNAL(triggered(bool)),this,SLOT(menuAFEConfigurationPressed()));
     connect(ui->actionI_V_Curve,SIGNAL(triggered(bool)),this,SLOT(menuIVCurvePressed()));
     connect(ui->actionTrigger,SIGNAL(triggered(bool)),this,SLOT(menuTriggerPressed()));
+    connect(ui->actionBias,SIGNAL(triggered(bool)),this,SLOT(menuBiasPressed()));
     connect(ui->checkBoxSaveWaveforms,SIGNAL(clicked(bool)),this,SLOT(checkBoxSaveWaveformsClicked()));
+
     connect(ui->comboBoxChannel,SIGNAL(currentTextChanged(QString)),this,SLOT(comboBoxChannelTextChanged()));
 }
 
@@ -283,6 +285,7 @@ void MainWindow::pushButtonApplyOffsetPressed(){
         command = command + QString::number(ui->spinBoxOffsetVoltage->value());
         command = command + "\r\n";
         this->sendCommand(command);
+        this->OFFSETSetValue[i] = ui->spinBoxOffsetVoltage->value();
       }
     }else{
       if(ui->checkBoxAllAFEChannelOffset->isChecked()){
@@ -294,6 +297,7 @@ void MainWindow::pushButtonApplyOffsetPressed(){
           command = command + QString::number(ui->spinBoxOffsetVoltage->value());
           command = command + "\r\n";
           this->sendCommand(command);
+          this->OFFSETSetValue[ui->comboBoxChannel->itemText(i).toInt()] = ui->spinBoxOffsetVoltage->value();
         }
       }else{
         this->setOFFSETGain(ui->comboBoxChannel->currentText().toInt());
@@ -303,6 +307,7 @@ void MainWindow::pushButtonApplyOffsetPressed(){
         command = command + QString::number(ui->spinBoxOffsetVoltage->value());
         command = command + "\r\n";
         this->sendCommand(command);
+        this->OFFSETSetValue[this->currentChannel] = ui->spinBoxOffsetVoltage->value();
       }
     }
   }catch(serialException &e){
@@ -320,6 +325,7 @@ void MainWindow::pushButtonApplyVGAINPressed(){
         command = command + QString::number(this->calculateVGainReferenceValue());
         command = command + "\r\n";
         this->sendCommand(command);
+        this->VGAINSetValue[i] = ui->spinBoxVGainValues->value();
       }
     }else{
       QString command = "WR AFE ";
@@ -328,6 +334,7 @@ void MainWindow::pushButtonApplyVGAINPressed(){
       command = command + QString::number(this->calculateVGainReferenceValue());
       command = command + "\r\n";
       this->sendCommand(command);
+      this->VGAINSetValue[this->currentAFE] = ui->spinBoxVGainValues->value();
     }
   }catch(serialException &e){
     e.handleException(this);
@@ -339,6 +346,20 @@ int MainWindow::calculateVGainReferenceValue(){
     double vGain_value = ui->spinBoxVGainValues->value();
     vGain_value = ((2.49 + 1.5)/1.5)*vGain_value;
     return (int)(vGain_value*1000.0);
+}
+
+int MainWindow::calculateBIASReferenceValue(){
+
+    double bias_value = ui->spinBoxBiasVoltage->value();
+    bias_value = 1000*bias_value/39.314;
+    return (int)(bias_value);
+}
+
+int MainWindow::calculateBIAS_CTRLReferenceValue(){
+
+    double biascontrol_value = this->biasControlValue;
+    biascontrol_value = 1000*biascontrol_value/74;
+    return (int)(biascontrol_value);
 }
 
 uint16_t MainWindow::eraseAndApplyMask(uint16_t &reg, uint16_t &mask, uint16_t &eraser){
@@ -841,21 +862,24 @@ void MainWindow::pushButtonApplyBiasVoltages(){
       command = command + QString::number(ui->spinBoxTrim->value());
       command = command + "\r\n";
       this->sendCommand(command);
+      this->trimSetValue[this->currentChannel] = (uint16_t)ui->spinBoxTrim->value();
     }else{
-      QString command = "WR VBIASCTRL V 1100\r\n";
-      this->sendCommand(command);
-      command = "WR AFE ";
+      //QString command = "WR VBIASCTRL V 1100\r\n";
+      //this->sendCommand(command);
+      QString command = "WR AFE ";
       command = command + ui->comboBoxAFE->currentText();
       command = command + " BIASSET V ";
-      command = command + QString::number(ui->spinBoxBiasVoltage->value());
+      command = command + QString::number(this->calculateBIASReferenceValue());
       command = command + "\r\n";
       this->sendCommand(command);
+      this->biasSetValue[this->currentAFE] = ui->spinBoxBiasVoltage->value();
       command = "WR TRIM CH ";
       command = command + ui->comboBoxChannel->currentText();
       command = command + " V ";
       command = command + QString::number(ui->spinBoxTrim->value());
       command = command + "\r\n";
       this->sendCommand(command);
+      this->trimSetValue[this->currentChannel] = (uint16_t)ui->spinBoxTrim->value();
     }
   }catch(serialException &e){
     e.handleException(this);
@@ -1269,6 +1293,27 @@ void MainWindow::menuAcquisitionConfigurationPressed(){
   }
 }
 
+void MainWindow::menuBiasPressed(){
+  DialogBiasConfiguration biasConfig(this);
+  biasConfig.setBiasControlValue(this->biasControlValue);
+  int exec_code = biasConfig.exec();
+  if(exec_code){
+    //... accepted config
+    this->biasControlValue = biasConfig.getBiasControlValue();
+    // calculation of biascontrol voltage
+    uint16_t biasControltoSet = (uint16_t)(this->calculateBIAS_CTRLReferenceValue());
+    qDebug() << "bias control value " << this->biasControlValue << "V :: Value to set " << biasControltoSet;
+    QString command = "WR VBIASCTRL V " + QString::number(biasControltoSet) + "\r\n";
+    try{
+        this->sendCommand(command);
+    }catch(serialException &e){
+      e.handleException(this);
+    }
+  }else{
+    //... rejected config
+  }
+}
+
 void MainWindow::menuAFEConfigurationPressed(){
   DialogAFEConfiguration afeConfig(this);
   afeConfig.setSpinBoxHPFKValue(this->digitalHPFKValue);
@@ -1448,6 +1493,12 @@ void MainWindow::checkBoxSaveWaveformsClicked(){
 
 void MainWindow::comboBoxChannelTextChanged(){
     this->currentChannel = ui->comboBoxChannel->currentText().toInt();
+    this->currentAFE = ui->comboBoxAFE->currentText().toInt();
+    //populate current bias and trim configurations
+    ui->spinBoxBiasVoltage->setValue(this->biasSetValue[this->currentAFE]);
+    ui->spinBoxTrim->setValue(this->trimSetValue[this->currentChannel]);
+    ui->spinBoxOffsetVoltage->setValue(this->OFFSETSetValue[this->currentChannel]);
+    ui->spinBoxVGainValues->setValue(this->VGAINSetValue[this->currentAFE]);
 }
 
 const QCheckBox *MainWindow::getEthernetCheckboxPointer(){

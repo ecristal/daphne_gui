@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_02_14"
+#define GUI_VERSION "V2_03_02"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -118,6 +118,8 @@
 #include "dialogivcurve.h"
 #include "triggermenudialog.h"
 #include "savedatathread.h"
+#include "dialogbiasconfiguration.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -172,6 +174,7 @@ private slots:
     void menuTriggerPressed();
     void checkBoxSaveWaveformsClicked();
     void comboBoxChannelTextChanged();
+    void menuBiasPressed();
 private:
     Ui::MainWindow *ui;
 
@@ -191,7 +194,17 @@ private:
     uint16_t reg_52_value = 0;
     uint16_t reg_59_value = 0;
 
-    int currentChannel;
+    // main window menu
+
+    int currentChannel = 0;
+    int currentAFE = 0;
+    QVector<double> VGAINSetValue = {0.89,0.89,0.89,0.89,0.89}; //default value aprox. for 2000 P.E.
+    QVector<uint16_t> OFFSETSetValue = {2100,2100,2100,2100,2100,2100,2100,2100,2100,2100,
+                                        2100,2100,2100,2100,2100,2100,2100,2100,2100,2100,
+                                        2100,2100,2100,2100,2100,2100,2100,2100,2100,2100,
+                                        2100,2100,2100,2100,2100,2100,2100,2100,2100,2100}; //dafault value aprox. for center offset.
+
+
 
     QString multiple_waveforms_folder_address;
 
@@ -200,6 +213,7 @@ private:
     saveDataThread saveThread;
     QMutex saveMutex;
 
+    // Ethernet menu
     DaphneSocket *socket;
     QString daphneIPAddr = "192.168.133.12";
     QString computerIPAddr = "192.168.133.1";
@@ -234,6 +248,14 @@ private:
     bool digitalHPFEnabled = false;
     uint8_t digitalFilterOutputSelector = 0;
     uint8_t HPFLNAlevel = 0;
+
+    //Bias configuration menu
+    double biasControlValue = 0;
+    QVector<double> biasSetValue = {0.0,0.0,0.0,0.0,0.0};
+    QVector<uint16_t> trimSetValue = {0,0,0,0,0,0,0,0,0,0,
+                                      0,0,0,0,0,0,0,0,0,0,
+                                      0,0,0,0,0,0,0,0,0,0,
+                                      0,0,0,0,0,0,0,0,0,0};
 
     bool ethernetCheckBoxCheckedFlag = false;
 
@@ -287,5 +309,7 @@ private:
     void offsetSweepWaveformsAcquisitions();
     void displayWarningMessageBox(const QString &msg);
     void enabledFunctionsDuringDatataking(const bool &enable);
+    int calculateBIASReferenceValue();
+    int calculateBIAS_CTRLReferenceValue();
 };
 #endif // MAINWINDOW_H

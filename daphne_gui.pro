@@ -14,6 +14,7 @@ CONFIG += c++11
 SOURCES += \
     daphnesocket.cpp \
     dialogaligment.cpp \
+    dialogbiasconfiguration.cpp \
     dialogreadoutchannel.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
 HEADERS += \
     daphnesocket.h \
     dialogaligment.h \
+    dialogbiasconfiguration.h \
     dialogreadoutchannel.h \
     mainwindow.h \
     qcustomplot.h \
@@ -46,6 +48,7 @@ HEADERS += \
 
 FORMS += \
     dialogaligment.ui \
+    dialogbiasconfiguration.ui \
     dialogreadoutchannel.ui \
     mainwindow.ui \
     dialogethernetconfiguration.ui \

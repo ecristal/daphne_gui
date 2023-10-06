@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>809</width>
+    <width>831</width>
     <height>820</height>
    </rect>
   </property>
@@ -138,7 +138,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>781</width>
+      <width>811</width>
       <height>371</height>
      </rect>
     </property>
@@ -150,7 +150,7 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>761</width>
+       <width>791</width>
        <height>331</height>
       </rect>
      </property>
@@ -161,7 +161,7 @@
      <rect>
       <x>240</x>
       <y>390</y>
-      <width>561</width>
+      <width>581</width>
       <height>361</height>
      </rect>
     </property>
@@ -206,14 +206,14 @@
       <rect>
        <x>10</x>
        <y>50</y>
-       <width>161</width>
+       <width>171</width>
        <height>121</height>
       </rect>
      </property>
      <property name="title">
       <string>Bias Voltage</string>
      </property>
-     <widget class="QSpinBox" name="spinBoxBiasVoltage">
+     <widget class="QDoubleSpinBox" name="spinBoxBiasVoltage">
       <property name="geometry">
        <rect>
         <x>60</x>
@@ -223,7 +223,7 @@
        </rect>
       </property>
       <property name="maximum">
-       <number>2000</number>
+       <double>60.000000000000000</double>
       </property>
      </widget>
      <widget class="QLabel" name="labelChannel_2">
@@ -272,7 +272,7 @@
        </rect>
       </property>
       <property name="maximum">
-       <number>5000</number>
+       <number>4096</number>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButtonApplyBiasVoltages">
@@ -301,11 +301,37 @@
        <string>Only Trim</string>
       </property>
      </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>60</y>
+        <width>21</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>mV</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_16">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>30</y>
+        <width>21</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>V</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>200</x>
        <y>50</y>
        <width>131</width>
        <height>81</height>
@@ -374,7 +400,7 @@
     <widget class="QGroupBox" name="groupBox_3">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>200</x>
        <y>130</y>
        <width>131</width>
        <height>51</height>
@@ -413,7 +439,7 @@
     <widget class="QGroupBox" name="groupBox_4">
      <property name="geometry">
       <rect>
-       <x>330</x>
+       <x>340</x>
        <y>50</y>
        <width>120</width>
        <height>101</height>
@@ -450,7 +476,7 @@
        <rect>
         <x>10</x>
         <y>50</y>
-        <width>61</width>
+        <width>81</width>
         <height>16</height>
        </rect>
       </property>
@@ -462,7 +488,7 @@
     <widget class="QPushButton" name="pushButtonRDFPGA">
      <property name="geometry">
       <rect>
-       <x>467</x>
+       <x>490</x>
        <y>27</y>
        <width>75</width>
        <height>23</height>
@@ -475,9 +501,9 @@
     <widget class="QGroupBox" name="groupBox_5">
      <property name="geometry">
       <rect>
-       <x>460</x>
+       <x>470</x>
        <y>50</y>
-       <width>91</width>
+       <width>101</width>
        <height>101</height>
       </rect>
      </property>
@@ -489,7 +515,7 @@
        <rect>
         <x>10</x>
         <y>60</y>
-        <width>69</width>
+        <width>81</width>
         <height>22</height>
        </rect>
       </property>
@@ -499,7 +525,7 @@
        <rect>
         <x>10</x>
         <y>30</y>
-        <width>71</width>
+        <width>81</width>
         <height>16</height>
        </rect>
       </property>
@@ -511,7 +537,7 @@
     <widget class="QPushButton" name="pushButtonSETCONFIG">
      <property name="geometry">
       <rect>
-       <x>384</x>
+       <x>400</x>
        <y>27</y>
        <width>80</width>
        <height>23</height>
@@ -527,7 +553,7 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>300</x>
+       <x>310</x>
        <y>27</y>
        <width>80</width>
        <height>23</height>
@@ -542,7 +568,7 @@
       <rect>
        <x>10</x>
        <y>170</y>
-       <width>311</width>
+       <width>321</width>
        <height>61</height>
       </rect>
      </property>
@@ -552,10 +578,10 @@
      <widget class="QLabel" name="label_6">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>6</x>
         <y>30</y>
         <width>41</width>
-        <height>16</height>
+        <height>20</height>
        </rect>
       </property>
       <property name="font">
@@ -570,7 +596,7 @@
      <widget class="QSpinBox" name="spinBoxOffsetVoltage">
       <property name="geometry">
        <rect>
-        <x>45</x>
+        <x>47</x>
         <y>30</y>
         <width>61</width>
         <height>22</height>
@@ -579,11 +605,14 @@
       <property name="maximum">
        <number>4095</number>
       </property>
+      <property name="value">
+       <number>2100</number>
+      </property>
      </widget>
      <widget class="QLabel" name="label_7">
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>114</x>
         <y>30</y>
         <width>21</width>
         <height>16</height>
@@ -601,7 +630,7 @@
      <widget class="QPushButton" name="pushButtonApplyChannelOffset">
       <property name="geometry">
        <rect>
-        <x>254</x>
+        <x>260</x>
         <y>30</y>
         <width>51</width>
         <height>23</height>
@@ -614,7 +643,7 @@
      <widget class="QCheckBox" name="checkBoxAllAFEChannelOffset">
       <property name="geometry">
        <rect>
-        <x>133</x>
+        <x>140</x>
         <y>24</y>
         <width>61</width>
         <height>17</height>
@@ -627,9 +656,9 @@
      <widget class="QCheckBox" name="checkBoxAllAFEChannelOffsetGAIN">
       <property name="geometry">
        <rect>
-        <x>198</x>
+        <x>210</x>
         <y>31</y>
-        <width>61</width>
+        <width>51</width>
         <height>17</height>
        </rect>
       </property>
@@ -640,7 +669,7 @@
      <widget class="QCheckBox" name="checkBoxAllCHOffset">
       <property name="geometry">
        <rect>
-        <x>133</x>
+        <x>140</x>
         <y>42</y>
         <width>61</width>
         <height>17</height>
@@ -656,7 +685,7 @@
       <rect>
        <x>10</x>
        <y>230</y>
-       <width>281</width>
+       <width>291</width>
        <height>61</height>
       </rect>
      </property>
@@ -684,7 +713,7 @@
      <widget class="QPushButton" name="pushButtonApplyVGAIN">
       <property name="geometry">
        <rect>
-        <x>190</x>
+        <x>210</x>
         <y>30</y>
         <width>75</width>
         <height>23</height>
@@ -697,7 +726,7 @@
      <widget class="QLabel" name="label_8">
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>120</x>
         <y>30</y>
         <width>21</width>
         <height>16</height>
@@ -715,7 +744,7 @@
      <widget class="QCheckBox" name="checkBoxAllAFEVgain">
       <property name="geometry">
        <rect>
-        <x>123</x>
+        <x>140</x>
         <y>33</y>
         <width>61</width>
         <height>17</height>
@@ -728,7 +757,7 @@
      <widget class="QDoubleSpinBox" name="spinBoxVGainValues">
       <property name="geometry">
        <rect>
-        <x>46</x>
+        <x>50</x>
         <y>25</y>
         <width>60</width>
         <height>29</height>
@@ -740,14 +769,17 @@
       <property name="singleStep">
        <double>0.010000000000000</double>
       </property>
+      <property name="value">
+       <double>0.890000000000000</double>
+      </property>
      </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_8">
      <property name="geometry">
       <rect>
-       <x>330</x>
+       <x>340</x>
        <y>150</y>
-       <width>221</width>
+       <width>231</width>
        <height>81</height>
       </rect>
      </property>
@@ -850,9 +882,9 @@
     <widget class="QGroupBox" name="groupBoxPGAClamp">
      <property name="geometry">
       <rect>
-       <x>430</x>
+       <x>440</x>
        <y>230</y>
-       <width>121</width>
+       <width>131</width>
        <height>61</height>
       </rect>
      </property>
@@ -877,7 +909,7 @@
        <rect>
         <x>50</x>
         <y>30</y>
-        <width>61</width>
+        <width>71</width>
         <height>22</height>
        </rect>
       </property>
@@ -891,7 +923,7 @@
       <rect>
        <x>10</x>
        <y>290</y>
-       <width>441</width>
+       <width>451</width>
        <height>61</height>
       </rect>
      </property>
@@ -1003,7 +1035,7 @@
     <widget class="QGroupBox" name="groupBoxLNAClamp">
      <property name="geometry">
       <rect>
-       <x>300</x>
+       <x>310</x>
        <y>230</y>
        <width>121</width>
        <height>61</height>
@@ -1039,9 +1071,9 @@
     <widget class="QGroupBox" name="groupBoxEthernet">
      <property name="geometry">
       <rect>
-       <x>460</x>
+       <x>470</x>
        <y>290</y>
-       <width>91</width>
+       <width>101</width>
        <height>61</height>
       </rect>
      </property>
@@ -1222,7 +1254,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>809</width>
+     <width>831</width>
      <height>20</height>
     </rect>
    </property>
@@ -1241,6 +1273,7 @@
     <addaction name="actionAcquisition"/>
     <addaction name="actionAFE"/>
     <addaction name="actionTrigger"/>
+    <addaction name="actionBias"/>
    </widget>
    <addaction name="menuTools"/>
    <addaction name="menuConfiguration"/>
@@ -1274,6 +1307,11 @@
   <action name="actionTrigger">
    <property name="text">
     <string>Trigger</string>
+   </property>
+  </action>
+  <action name="actionBias">
+   <property name="text">
+    <string>Bias</string>
    </property>
   </action>
  </widget>
