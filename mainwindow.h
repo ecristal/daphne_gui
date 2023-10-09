@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_03_03"
+#define GUI_VERSION "V2_03_03::1"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -144,6 +144,7 @@ public:
     QString getSerialString();
     int getAFENumberFromChannelNumber(const int &channelNumber);
     const QCheckBox *getEthernetCheckboxPointer();
+    QVector<double> getBIASOffsetValues();
 private slots:
     void pushButtonConnectPressed();
     void pushButtonDisconnectPressed();

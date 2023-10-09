@@ -1508,3 +1508,7 @@ const QCheckBox *MainWindow::getEthernetCheckboxPointer(){
     return ui->checkBoxEnableEthernet;
 }
 
+QVector<double> MainWindow::getBIASOffsetValues(){
+    return this->biasOFFSETValue;
+}
+

@@ -25,7 +25,7 @@ DialogIVcurve::~DialogIVcurve()
 void DialogIVcurve::initializeWindow(){
   this->setWindowTitle("I-V Curve");
   ui->widgetIVgraph->addGraph();
-  ui->widgetIVgraph->xAxis->setLabel("Bias Voltage [DAC]");
+  ui->widgetIVgraph->xAxis->setLabel("Bias Voltage [Volts]");
   ui->widgetIVgraph->yAxis->setLabel("Measure");
   ui->pushButtonPause->setEnabled(false);
   ui->pushButtonStop->setEnabled(false);
@@ -115,7 +115,8 @@ void DialogIVcurve::pushButtonStartPressed(){
     int afe_number = mymainwindow->getAFENumberFromChannelNumber(ui->spinBoxChannelNumber->value());
     command = command + QString::number(afe_number);
     command = command + " BIASSET V ";
-    command = command + QString::number((int)(1000*ui->spinBoxUpperBiasVoltage->value()/39.314));
+    double biasVoltageValue = ui->spinBoxUpperBiasVoltage->value() + mymainwindow->getBIASOffsetValues().at(afe_number);
+    command = command + QString::number((int)(1000*biasVoltageValue/39.314));
     command = command + "\r\n";
     mymainwindow->sendCommand(command);
 
