@@ -91,14 +91,15 @@ void DialogIVcurve::pushButtonStartPressed(){
     this->xValues.clear();
     this->yValues.clear();
     for(int i = 0; i < points; i++){
-      this->xValues.append(biasStepValues*i + biasLowValue);
+      //this->xValues.append(biasStepValues*i + biasLowValue);
+      this->xValues.append(biasUpperValue - biasStepValues*i);
     }
-    if(this->xValues.last() != biasUpperValue){
-      this->xValues.append(biasUpperValue);
+    if(this->xValues.last() != biasLowValue){
+      this->xValues.append(biasLowValue);
     }
   }
 
-  ui->widgetIVgraph->xAxis->setRange(this->xValues.front(),this->xValues.last());
+  ui->widgetIVgraph->xAxis->setRange(this->xValues.last(),this->xValues.front());
   MainWindow *mymainwindow = reinterpret_cast<MainWindow*>(this->parent());
 
   try{
@@ -107,8 +108,17 @@ void DialogIVcurve::pushButtonStartPressed(){
     ui->spinBoxChannelNumber->setEnabled(false);
     ui->pushButtonSaveData->setEnabled(false);
 
-    QString command = "WR VBIASCTRL V 1100\r\n";
+    //QString command = "WR VBIASCTRL V 1100\r\n";
+    //mymainwindow->sendCommand(command);
+
+    QString command = "WR AFE ";
+    int afe_number = mymainwindow->getAFENumberFromChannelNumber(ui->spinBoxChannelNumber->value());
+    command = command + QString::number(afe_number);
+    command = command + " BIASSET V ";
+    command = command + QString::number((int)(1000*ui->spinBoxUpperBiasVoltage->value()/39.314));
+    command = command + "\r\n";
     mymainwindow->sendCommand(command);
+
     for(int i=this->initialPoistion; i<this->xValues.length();i++){
       if(this->pausePressedFLAG){
         ui->pushButtonStop->setEnabled(true);
@@ -120,14 +130,21 @@ void DialogIVcurve::pushButtonStartPressed(){
       }
 
       // comunication code here
-      command = "WR AFE ";
-      int afe_number = mymainwindow->getAFENumberFromChannelNumber(ui->spinBoxChannelNumber->value());
-      command = command + QString::number(afe_number);
-      command = command + " BIASSET V ";
+      command = "WR TRIM CH ";
+      command = command + ui->spinBoxChannelNumber->value();
+      command = command + " V ";
       command = command + QString::number(this->xValues.at(i));
       command = command + "\r\n";
-      mymainwindow->sendCommand(command);
       qDebug() << command;
+
+//      command = "WR AFE ";
+//      int afe_number = mymainwindow->getAFENumberFromChannelNumber(ui->spinBoxChannelNumber->value());
+//      command = command + QString::number(afe_number);
+//      command = command + " BIASSET V ";
+//      command = command + QString::number(this->xValues.at(i));
+//      command = command + "\r\n";
+//      mymainwindow->sendCommand(command);
+//      qDebug() << command;
 
       command = "RD CM CH ";
       command = command + QString::number(ui->spinBoxChannelNumber->value());
@@ -157,7 +174,7 @@ void DialogIVcurve::pushButtonStartPressed(){
           double lim = 0.1*std::abs(y_max - y_min);
 
           ui->widgetIVgraph->yAxis->setRange(y_min - 0.1*lim, y_max + 0.1*lim);
-          x_graph.append(this->xValues.at(i));
+          x_graph.append((1000*ui->spinBoxUpperBiasVoltage->value()/39.314) - this->xValues.at(i));
           ui->widgetIVgraph->graph(0)->setData(x_graph,this->yValues);
           qDebug() << this->xValues.at(i) << "::" << this->yValues.at(i);
           qDebug() << x_graph.length() << "::" << this->yValues.length();
@@ -170,6 +187,13 @@ void DialogIVcurve::pushButtonStartPressed(){
       ui->pushButtonStart->setEnabled(true);
       ui->pushButtonPause->setEnabled(false);
       ui->pushButtonStop->setEnabled(false);
+
+      QString command = "WR TRIM CH ";
+      command = command + ui->spinBoxChannelNumber->value();
+      command = command + " V ";
+      command = command + QString::number(0);
+      command = command + "\r\n";
+      qDebug() << command;
 
       command = "WR AFE ";
       int afe_number = mymainwindow->getAFENumberFromChannelNumber(ui->spinBoxChannelNumber->value());
@@ -213,14 +237,21 @@ void DialogIVcurve::pushButtonStopPressed(){
 
   MainWindow *mymainwindow = reinterpret_cast<MainWindow*>(this->parent());
   try{
-    QString command = "WR AFE ";
-    int afe_number = mymainwindow->getAFENumberFromChannelNumber(ui->spinBoxChannelNumber->value());
-    command = command + QString::number(afe_number);
-    command = command + " BIASSET V ";
-    command = command + QString::number(0);
-    command = command + "\r\n";
-    mymainwindow->sendCommand(command);
-    qDebug() << command;
+      QString command = "WR TRIM CH ";
+      command = command + ui->spinBoxChannelNumber->value();
+      command = command + " V ";
+      command = command + QString::number(0);
+      command = command + "\r\n";
+      qDebug() << command;
+
+      command = "WR AFE ";
+      int afe_number = mymainwindow->getAFENumberFromChannelNumber(ui->spinBoxChannelNumber->value());
+      command = command + QString::number(afe_number);
+      command = command + " BIASSET V ";
+      command = command + QString::number(0);
+      command = command + "\r\n";
+      mymainwindow->sendCommand(command);
+      qDebug() << command;
   }catch(serialException &e){
       e.handleException(mymainwindow);
   }

@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="maximum">
-     <number>1528</number>
+     <number>4094</number>
     </property>
    </widget>
    <widget class="QSpinBox" name="spinBoxBiasStep">
@@ -77,7 +77,7 @@
      <number>2</number>
     </property>
     <property name="maximum">
-     <number>1530</number>
+     <number>4096</number>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -195,6 +195,29 @@
     </property>
     <property name="maximum">
      <number>39</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>75</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Upper VBIAS:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="spinBoxUpperBiasVoltage">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>70</y>
+      <width>71</width>
+      <height>29</height>
+     </rect>
     </property>
    </widget>
   </widget>
