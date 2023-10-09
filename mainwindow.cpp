@@ -351,6 +351,7 @@ int MainWindow::calculateVGainReferenceValue(){
 int MainWindow::calculateBIASReferenceValue(){
 
     double bias_value = ui->spinBoxBiasVoltage->value();
+    bias_value = bias_value + this->biasOFFSETValue.at(this->currentAFE);
     bias_value = 1000*bias_value/39.314;
     return (int)(bias_value);
 }
@@ -1296,10 +1297,12 @@ void MainWindow::menuAcquisitionConfigurationPressed(){
 void MainWindow::menuBiasPressed(){
   DialogBiasConfiguration biasConfig(this);
   biasConfig.setBiasControlValue(this->biasControlValue);
+  biasConfig.setBiasOffsetValues(this->biasOFFSETValue);
   int exec_code = biasConfig.exec();
   if(exec_code){
     //... accepted config
     this->biasControlValue = biasConfig.getBiasControlValue();
+    this->biasOFFSETValue = biasConfig.getBiasOffsetValues();
     // calculation of biascontrol voltage
     uint16_t biasControltoSet = (uint16_t)(this->calculateBIAS_CTRLReferenceValue());
     qDebug() << "bias control value " << this->biasControlValue << "V :: Value to set " << biasControltoSet;

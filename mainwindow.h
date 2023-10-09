@@ -251,6 +251,7 @@ private:
 
     //Bias configuration menu
     double biasControlValue = 0;
+    QVector<double> biasOFFSETValue = {0.0,0.0,0.0,0.0,0.0};
     QVector<double> biasSetValue = {0.0,0.0,0.0,0.0,0.0};
     QVector<uint16_t> trimSetValue = {0,0,0,0,0,0,0,0,0,0,
                                       0,0,0,0,0,0,0,0,0,0,
