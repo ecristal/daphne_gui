@@ -2,6 +2,7 @@
 #define DIALOGBIASCONFIGURATION_H
 
 #include <QDialog>
+#include <QVector>
 
 namespace Ui {
 class DialogBiasConfiguration;
@@ -17,6 +18,8 @@ public:
 
     double getBiasControlValue();
     void setBiasControlValue(double biasControlValue);
+    void setBiasOffsetValues(QVector<double> biasOFFSETvalues);
+    QVector<double> getBiasOffsetValues();
 private:
     Ui::DialogBiasConfiguration *ui;
 };
