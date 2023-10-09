@@ -175,7 +175,7 @@ void DialogIVcurve::pushButtonStartPressed(){
           double lim = 0.1*std::abs(y_max - y_min);
 
           ui->widgetIVgraph->yAxis->setRange(y_min - 0.1*lim, y_max + 0.1*lim);
-          x_graph.append((1000*ui->spinBoxUpperBiasVoltage->value()/39.314) - this->xValues.at(i));
+          x_graph.append((1000*biasVoltageValue/39.314) - this->xValues.at(i));
           ui->widgetIVgraph->graph(0)->setData(x_graph,this->yValues);
           qDebug() << this->xValues.at(i) << "::" << this->yValues.at(i);
           qDebug() << x_graph.length() << "::" << this->yValues.length();
