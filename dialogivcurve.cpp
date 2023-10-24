@@ -61,7 +61,7 @@ void DialogIVcurve::pushButtonSaveDataPressed(){
     f.open( QIODevice::WriteOnly );
     QTextStream writeToFile(&f);
     for(int i = 0; i < this->yValues.length(); i++){
-      writeToFile << QString::number(this->xValues.at(i)) << "\t" << QString::number(this->yValues.at(i)) << "\n";
+      writeToFile << QString::number(ui->spinBoxUpperBiasVoltage->value() - this->xValues.at(i)/1000.0) << "\t" << QString::number(this->yValues.at(i)) << "\n";
     }
     f.close();
   }catch(int number){
@@ -99,7 +99,7 @@ void DialogIVcurve::pushButtonStartPressed(){
     }
   }
 
-  ui->widgetIVgraph->xAxis->setRange(this->xValues.last(),this->xValues.front());
+  ui->widgetIVgraph->xAxis->setRange(ui->spinBoxUpperBiasVoltage->value() - ui->spinBoxBiasUpper->value()/1000.0,ui->spinBoxUpperBiasVoltage->value());
   MainWindow *mymainwindow = reinterpret_cast<MainWindow*>(this->parent());
 
   try{
@@ -119,6 +119,7 @@ void DialogIVcurve::pushButtonStartPressed(){
     command = command + QString::number((int)(1000*biasVoltageValue/39.314));
     command = command + "\r\n";
     mymainwindow->sendCommand(command);
+    qDebug() << command;
 
     for(int i=this->initialPoistion; i<this->xValues.length();i++){
       if(this->pausePressedFLAG){
@@ -132,10 +133,11 @@ void DialogIVcurve::pushButtonStartPressed(){
 
       // comunication code here
       command = "WR TRIM CH ";
-      command = command + ui->spinBoxChannelNumber->value();
+      command = command + QString::number(ui->spinBoxChannelNumber->value());
       command = command + " V ";
       command = command + QString::number(this->xValues.at(i));
       command = command + "\r\n";
+      mymainwindow->sendCommand(command);
       qDebug() << command;
 
 //      command = "WR AFE ";
@@ -175,7 +177,7 @@ void DialogIVcurve::pushButtonStartPressed(){
           double lim = 0.1*std::abs(y_max - y_min);
 
           ui->widgetIVgraph->yAxis->setRange(y_min - 0.1*lim, y_max + 0.1*lim);
-          x_graph.append((1000*biasVoltageValue/39.314) - this->xValues.at(i));
+          x_graph.append(ui->spinBoxUpperBiasVoltage->value() - this->xValues.at(i)/1000.0);
           ui->widgetIVgraph->graph(0)->setData(x_graph,this->yValues);
           qDebug() << this->xValues.at(i) << "::" << this->yValues.at(i);
           qDebug() << x_graph.length() << "::" << this->yValues.length();
@@ -190,7 +192,7 @@ void DialogIVcurve::pushButtonStartPressed(){
       ui->pushButtonStop->setEnabled(false);
 
       QString command = "WR TRIM CH ";
-      command = command + ui->spinBoxChannelNumber->value();
+      command = command + QString::number(ui->spinBoxChannelNumber->value());
       command = command + " V ";
       command = command + QString::number(0);
       command = command + "\r\n";
@@ -239,7 +241,7 @@ void DialogIVcurve::pushButtonStopPressed(){
   MainWindow *mymainwindow = reinterpret_cast<MainWindow*>(this->parent());
   try{
       QString command = "WR TRIM CH ";
-      command = command + ui->spinBoxChannelNumber->value();
+      command = command + QString::number(ui->spinBoxChannelNumber->value());
       command = command + " V ";
       command = command + QString::number(0);
       command = command + "\r\n";
