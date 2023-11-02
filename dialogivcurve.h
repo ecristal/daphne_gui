@@ -9,8 +9,15 @@
 #include <QTextStream>
 #include <QString>
 #include <qmath.h>
+#include <Eigen/Dense>
+#include <unsupported/Eigen/MatrixFunctions>
+#include <Eigen/QR>
+#include <fstream>
+#include <iostream>
+#include <math.h>
 
 #include "mainwindow.h"
+#include "biasvoltageexception.h"
 
 namespace Ui {
 class DialogIVcurve;
@@ -24,6 +31,7 @@ public:
   explicit DialogIVcurve(QWidget *parent = 0);
   ~DialogIVcurve();
 
+    void setWorkingFolder(QString workingFolder);
 private slots:
   void spinBoxBiasLowValueChanged();
   void spinBoxBiasUpperValueChanged();
@@ -31,6 +39,8 @@ private slots:
   void pushButtonStartPressed();
   void pushButtonPausePressed();
   void pushButtonStopPressed();
+  void openIVCurveFile();
+  void plotSignalsAndCalculateBreakdown();
 private:
   Ui::DialogIVcurve *ui;
   void initializeWindow();
@@ -43,9 +53,20 @@ private:
   QVector<double> xValues;
   QVector<double> yValues;
 
+  QString IVcurveFileName;
+  QString multiple_waveforms_folder_address;
+
   QRandomGenerator64 rg;
 
   void closeEvent(QCloseEvent *event);
+
+
+  Eigen::MatrixXd F;
+  Eigen::MatrixXd G;
+  Eigen::MatrixXd H;
+  Eigen::MatrixXd D;
+
+  QVector<double> calculateFilteredSignal(QVector<double> &inputData);
 };
 
 #endif // DIALOGIVCURVE_H

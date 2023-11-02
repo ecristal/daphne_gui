@@ -36,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionTrigger,SIGNAL(triggered(bool)),this,SLOT(menuTriggerPressed()));
     connect(ui->actionBias,SIGNAL(triggered(bool)),this,SLOT(menuBiasPressed()));
     connect(ui->checkBoxSaveWaveforms,SIGNAL(clicked(bool)),this,SLOT(checkBoxSaveWaveformsClicked()));
-
     connect(ui->comboBoxChannel,SIGNAL(currentTextChanged(QString)),this,SLOT(comboBoxChannelTextChanged()));
 }
 
@@ -857,32 +856,61 @@ void MainWindow::sendFPGAReset(){
 void MainWindow::pushButtonApplyBiasVoltages(){
   try{
     if(ui->checkBoxOnlyTrim->isChecked()){
-      QString command = "WR TRIM CH ";
-      command = command + ui->comboBoxChannel->currentText();
-      command = command + " V ";
-      command = command + QString::number(ui->spinBoxTrim->value());
-      command = command + "\r\n";
-      this->sendCommand(command);
-      this->trimSetValue[this->currentChannel] = (uint16_t)ui->spinBoxTrim->value();
+      if((ui->spinBoxTrim->value()/1000.0) > ui->spinBoxBiasVoltage->value()){
+          throw biasVoltageException(1);
+      }else{
+          QString command = "WR TRIM CH ";
+          command = command + ui->comboBoxChannel->currentText();
+          command = command + " V ";
+          command = command + QString::number(ui->spinBoxTrim->value());
+          command = command + "\r\n";
+          this->sendCommand(command);
+          this->trimSetValue[this->currentChannel] = (uint16_t)ui->spinBoxTrim->value();
+      }
     }else{
       //QString command = "WR VBIASCTRL V 1100\r\n";
       //this->sendCommand(command);
-      QString command = "WR AFE ";
-      command = command + ui->comboBoxAFE->currentText();
-      command = command + " BIASSET V ";
-      command = command + QString::number(this->calculateBIASReferenceValue());
-      command = command + "\r\n";
-      this->sendCommand(command);
-      this->biasSetValue[this->currentAFE] = ui->spinBoxBiasVoltage->value();
-      command = "WR TRIM CH ";
-      command = command + ui->comboBoxChannel->currentText();
-      command = command + " V ";
-      command = command + QString::number(ui->spinBoxTrim->value());
-      command = command + "\r\n";
-      this->sendCommand(command);
-      this->trimSetValue[this->currentChannel] = (uint16_t)ui->spinBoxTrim->value();
+      if((ui->spinBoxTrim->value()/1000.0) > ui->spinBoxBiasVoltage->value()){
+          throw biasVoltageException(1);
+      }else if(ui->spinBoxBiasVoltage->value() > this->biasControlValue){
+          throw biasVoltageException(2);
+      }else{
+          if(ui->spinBoxBiasVoltage->value() == 0.0){
+              QString command = "WR TRIM CH ";
+              command = command + ui->comboBoxChannel->currentText();
+              command = command + " V ";
+              command = command + QString::number(ui->spinBoxTrim->value());
+              command = command + "\r\n";
+              this->sendCommand(command);
+              this->trimSetValue[this->currentChannel] = (uint16_t)ui->spinBoxTrim->value();
+              command = "WR AFE ";
+              command = command + ui->comboBoxAFE->currentText();
+              command = command + " BIASSET V ";
+              command = command + QString::number(0);
+              command = command + "\r\n";
+              this->sendCommand(command);
+              this->biasSetValue[this->currentAFE] = ui->spinBoxBiasVoltage->value();
+          }else{
+              QString command = "WR AFE ";
+              command = command + ui->comboBoxAFE->currentText();
+              command = command + " BIASSET V ";
+              command = command + QString::number(this->calculateBIASReferenceValue());
+              command = command + "\r\n";
+              this->sendCommand(command);
+              this->biasSetValue[this->currentAFE] = ui->spinBoxBiasVoltage->value();
+              command = "WR TRIM CH ";
+              command = command + ui->comboBoxChannel->currentText();
+              command = command + " V ";
+              command = command + QString::number(ui->spinBoxTrim->value());
+              command = command + "\r\n";
+              this->sendCommand(command);
+              this->trimSetValue[this->currentChannel] = (uint16_t)ui->spinBoxTrim->value();
+          }
+      }
     }
   }catch(serialException &e){
+    e.handleException(this);
+  }catch(biasVoltageException &e){
     e.handleException(this);
   }
 }
@@ -1412,6 +1440,7 @@ QString MainWindow::getSerialString(){
 
 void MainWindow::menuIVCurvePressed(){
   DialogIVcurve IVcurve(this);
+  IVcurve.setWorkingFolder(this->multiple_waveforms_folder_address);
   IVcurve.exec();
 }
 
@@ -1512,3 +1541,6 @@ QVector<double> MainWindow::getBIASOffsetValues(){
     return this->biasOFFSETValue;
 }
 
+double MainWindow::getBiasControlValue(){
+    return this->biasControlValue;
+}

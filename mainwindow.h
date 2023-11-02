@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_03_04"
+#define GUI_VERSION "V2_03_06"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -119,6 +119,7 @@
 #include "triggermenudialog.h"
 #include "savedatathread.h"
 #include "dialogbiasconfiguration.h"
+#include "biasvoltageexception.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -145,6 +146,7 @@ public:
     int getAFENumberFromChannelNumber(const int &channelNumber);
     const QCheckBox *getEthernetCheckboxPointer();
     QVector<double> getBIASOffsetValues();
+    double getBiasControlValue();
 private slots:
     void pushButtonConnectPressed();
     void pushButtonDisconnectPressed();
