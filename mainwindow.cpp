@@ -1609,32 +1609,64 @@ void MainWindow::saveConfigurationString(){
     }
 
     this->configurationString = this->configurationString + "\n***OFFSET settings***\n";
-    i = 0;
-    for(uint16_t offset_value : this->OFFSETSetValue){
-        this->configurationString = this->configurationString + "CH" + QString::number(i) + ": " + QString::number(offset_value) + ", ";
-        i++;
-        if(i%8 == 0){
-            this->configurationString = this->configurationString + "\n";
-        }
-    }
+    this->configurationString = this->configurationString + this->printVectorItems("OFFSET Values: ", this->OFFSETSetValue, 8);
 
     this->configurationString = this->configurationString + "\n***TRIGGER settings***\n";
-    this->configurationString = this->configurationString + "Trigger source: [" + QString::number((int)this->triggerSource.at(0)) + ", "
-            + QString::number((int)this->triggerSource.at(1)) + ", " + QString::number((int)this->triggerSource.at(2)) + "] (internal, external, software)\n";
-    i = 0;
-    this->configurationString = this->configurationString + "Trigger levels: \n";
-    for(int triggerlevel_value : this->triggerLevel){
-        this->configurationString = this->configurationString + "CH" + QString::number(i) + ": " + QString::number(triggerlevel_value) + ", ";
-        i++;
-        if(i%8 == 0){
-            this->configurationString = this->configurationString + "\n";
-        }
-    }
-    this->configurationString = this->configurationString + "Pre-trigger multiplier: " + QString::number(this->preTriggerMultiplier);
+    this->configurationString = this->configurationString + this->printVectorItems("Trigger Source (internal, external, software): ", this->triggerSource, 8);
+    this->configurationString = this->configurationString + this->printVectorItems("Trigger levels : ", this->triggerLevel, 8);
+    this->configurationString = this->configurationString + "Pre-trigger multiplier: " + QString::number(this->preTriggerMultiplier) + "\n";
 
     this->configurationString = this->configurationString + "\n***AFE settings***\n";
+    this->configurationString = this->configurationString + this->printComboBoxConfigurationItems("LNA GAIN: ", this->AFE_LNA_gain, ui->comboBoxLNAGain);
+    this->configurationString = this->configurationString + this->printComboBoxConfigurationItems("PGA GAIN: ", this->AFE_PGA_gain, ui->comboBoxPGAGain);
+    this->configurationString = this->configurationString + this->printVectorItems("AFE Active Termination", this->AFE_active_termination_enabled, 8);
+    this->configurationString = this->configurationString + this->printComboBoxConfigurationItems("AFE Active Termination Value: ", this->AFE_active_termination_value, ui->comboBoxImpedance);
+    this->configurationString = this->configurationString + this->printVectorItems("LNA Integrators Enabled: ", this->AFE_LNA_integrator_enabled, 8);
+    this->configurationString = this->configurationString + this->printVectorItems("PGA Integrators Enabled: ", this->AFE_PGA_integrator_enabled, 8);
+    this->configurationString = this->configurationString + this->printComboBoxConfigurationItems("AFE LPF: ",this->AFE_LPF, ui->comboBoxLPF);
+    this->configurationString = this->configurationString + this->printComboBoxConfigurationItems("AFE LNA Clamp Level: ", this->AFE_LNA_clamp, ui->comboBoxLNAClampLevel);
+    this->configurationString = this->configurationString + this->printComboBoxConfigurationItems("AFE PGA Clamp Level: ", this->AFE_PGA_clamp, ui->comboBoxPGAClampLevel);
+    this->configurationString = this->configurationString + "Low Noise Suppresion Enabled: " + QString::number(this->lowNoiseSupressionEnabled) + "\n";
+    this->configurationString = this->configurationString + "FPGA Filter Enabled: " + QString::number(this->FPGAFilterEnabled) + "\n";
+    this->configurationString = this->configurationString + "FPGA Filter Output Selector: " + QString::number(this->digitalFilterOutputSelector) + "\n";
+    this->configurationString = this->configurationString + "Digital HPF Enabled: " + QString::number(this->digitalHPFEnabled) + "\n";
+    this->configurationString = this->configurationString + "Digital HPF Value: " + QString::number(this->digitalHPFKValue) + "\n";
+    this->configurationString = this->configurationString + "Digital HPF LNA Level: " + QString::number(this->HPFLNAlevel) + "\n";
+
+    this->configurationString = this->configurationString + "\n***BIAS settings***\n";
+    this->configurationString = this->configurationString + "Bias Control Value: " + QString::number(this->biasControlValue) + "\n";
+    this->configurationString = this->configurationString + this->printVectorItems("Bias OFFSETS: ", this->biasOFFSETValue, 8);
+    this->configurationString = this->configurationString + this->printVectorItems("Trim Values", this->trimSetValue, 8);
 
 }
 
+template <class T> QString MainWindow::printComboBoxConfigurationItems(const QString &title, const QVector<T> &vec, QComboBox* comboBox){
+    QString str = "";
+    str = str + title;
+    str = str + "[";
+    for(T vec_index : vec){
+        str = str + comboBox->itemText(vec_index) + ", ";
+    }
+    str.remove(str.length()-2,2);
+    str = str + "]\n";
+    return str;
+}
+
+template <class T> QString MainWindow::printVectorItems(const QString &title, const QVector<T> &vec, const int &items_per_line){
+    QString str = "";
+    str = str + title;
+    str = str + "[";
+    int i = 0;
+    for(T vec_index : vec){
+        str = str + QString::number(vec_index) + ", ";
+        i++;
+        if(i == items_per_line){
+            str = str + "\n";
+        }
+    }
+    str.remove(str.length()-2,2);
+    str = str + "]\n";
+    return str;
+}
 
 

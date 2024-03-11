@@ -107,6 +107,7 @@
 #include <chrono>
 #include <QQueue>
 #include <QMutex>
+#include <QComboBox>
 
 #include "dialogreadoutchannel.h"
 #include "daphnesocket.h"
@@ -327,5 +328,9 @@ private:
     void enabledFunctionsDuringDatataking(const bool &enable);
     int calculateBIASReferenceValue();
     int calculateBIAS_CTRLReferenceValue();
+    template<class T>
+    QString printComboBoxConfigurationItems(const QString &title, const QVector<T> &vec, QComboBox* comboBox);
+    template<class T>
+    QString printVectorItems(const QString &title, const QVector<T> &vec, const int &items_per_line);
 };
 #endif // MAINWINDOW_H
