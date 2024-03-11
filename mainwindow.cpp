@@ -854,6 +854,7 @@ void MainWindow::pushButtonRDFPGAPressed(){
                                                QMessageBox::No);
                 switch (ret) {
                 case QMessageBox::Yes:
+                    this->saveConfigurationString();
                     this->mainWaveformsAcquisition();
                     this->dialogReadoutChannelWindow->show();
                     break;
@@ -862,6 +863,7 @@ void MainWindow::pushButtonRDFPGAPressed(){
                     break;
                 }
             }else{
+                this->saveConfigurationString();
                 this->mainWaveformsAcquisition();
                 this->dialogReadoutChannelWindow->show();
             }
@@ -1636,8 +1638,13 @@ void MainWindow::saveConfigurationString(){
     this->configurationString = this->configurationString + "\n***BIAS settings***\n";
     this->configurationString = this->configurationString + "Bias Control Value: " + QString::number(this->biasControlValue) + "\n";
     this->configurationString = this->configurationString + this->printVectorItems("Bias OFFSETS: ", this->biasOFFSETValue, 8);
-    this->configurationString = this->configurationString + this->printVectorItems("Trim Values", this->trimSetValue, 8);
+    this->configurationString = this->configurationString + this->printVectorItems("Trim Values: ", this->trimSetValue, 8);
 
+    QFile file(this->multiple_waveforms_folder_address + "/config.txt");
+    file.open(QIODevice::Append);
+    QTextStream writeToFile_txt(&file);
+    writeToFile_txt << this->configurationString;
+    file.close();
 }
 
 template <class T> QString MainWindow::printComboBoxConfigurationItems(const QString &title, const QVector<T> &vec, QComboBox* comboBox){
@@ -1660,11 +1667,11 @@ template <class T> QString MainWindow::printVectorItems(const QString &title, co
     for(T vec_index : vec){
         str = str + QString::number(vec_index) + ", ";
         i++;
-        if(i == items_per_line){
-            str = str + "\n";
+        if(i % items_per_line == 0){
+            str = str + "\n\t\t";
         }
     }
-    str.remove(str.length()-2,2);
+    str.remove(str.length()-5,5);
     str = str + "]\n";
     return str;
 }
