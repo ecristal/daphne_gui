@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_03_08"
+#define GUI_VERSION "V2_04_00"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -178,6 +178,7 @@ private slots:
     void checkBoxSaveWaveformsClicked();
     void comboBoxChannelTextChanged();
     void menuBiasPressed();
+    void saveConfigurationString();
 private:
     Ui::MainWindow *ui;
 
@@ -188,6 +189,7 @@ private:
     QByteArray serialData;
 
     QString serial_data_string, serial_data_string_success;
+    QString configurationString;
 
     uint16_t reg_1_value = 0;
     uint16_t reg_21_value = 0;
@@ -251,6 +253,15 @@ private:
     bool digitalHPFEnabled = false;
     uint8_t digitalFilterOutputSelector = 0;
     uint8_t HPFLNAlevel = 0;
+    QVector<uint8_t> AFE_LNA_gain = {0,0,0,0,0};
+    QVector<uint8_t> AFE_PGA_gain = {0,0,0,0,0};
+    QVector<bool>  AFE_active_termination_enabled = {false,false,false,false,false};
+    QVector<uint8_t> AFE_active_termination_value = {0,0,0,0,0};
+    QVector<bool>  AFE_LNA_integrator_enabled = {false,false,false,false,false};
+    QVector<bool>  AFE_PGA_integrator_enabled = {false,false,false,false,false};
+    QVector<uint8_t> AFE_LPF = {0,0,0,0,0};
+    QVector<uint8_t> AFE_LNA_clamp = {0,0,0,0,0};
+    QVector<uint8_t> AFE_PGA_clamp = {0,0,0,0,0};
 
     //Bias configuration menu
     double biasControlValue = 0;
@@ -285,6 +296,7 @@ private:
     uint16_t getADCFormatMask();
     void populateComboBoxVGainValues();
     int calculateVGainReferenceValue();
+    int calculateVGainReferenceValue(const double vgain_volts);
     void populateComboBoxPGAClampLevel();
     uint16_t getPGAClampLevelMask();
     void readAndPlotDataSerial();

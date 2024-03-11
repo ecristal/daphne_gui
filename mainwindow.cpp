@@ -183,9 +183,28 @@ void MainWindow::setConfig(){
       if(ui->checkBoxAllAFEConfigs->isChecked()){
         for(int i=0; i<5; i++){
           this->setAFEConfiguration(QString::number(i));
+          this->AFE_LNA_gain[i] = ui->comboBoxLNAGain->currentIndex();
+          this->AFE_PGA_gain[i] = ui->comboBoxPGAGain->currentIndex();
+          this->AFE_LNA_integrator_enabled[i] = ui->checkBoxLNAIntegrator->isChecked();
+          this->AFE_PGA_integrator_enabled[i] = ui->checkBoxPGAIntegrator->isChecked();
+          this->AFE_active_termination_enabled[i] = ui->checkBoxActiveTerminationEnable->isChecked();
+          this->AFE_active_termination_value[i] = ui->comboBoxImpedance->currentIndex();
+          this->AFE_LPF[i] = ui->comboBoxLPF->currentIndex();
+          this->AFE_LNA_clamp[i] = ui->comboBoxLNAClampLevel->currentIndex();
+          this->AFE_PGA_clamp[i] = ui->comboBoxPGAClampLevel->currentIndex();
         }
       }else{
+        int i = ui->comboBoxAFE->currentText().toInt();
         this->setAFEConfiguration(ui->comboBoxAFE->currentText());
+        this->AFE_LNA_gain[i] = ui->comboBoxLNAGain->currentIndex();
+        this->AFE_PGA_gain[i] = ui->comboBoxPGAGain->currentIndex();
+        this->AFE_LNA_integrator_enabled[i] = ui->checkBoxLNAIntegrator->isChecked();
+        this->AFE_PGA_integrator_enabled[i] = ui->checkBoxPGAIntegrator->isChecked();
+        this->AFE_active_termination_enabled[i] = ui->checkBoxActiveTerminationEnable->isChecked();
+        this->AFE_active_termination_value[i] = ui->comboBoxImpedance->currentIndex();
+        this->AFE_LPF[i] = ui->comboBoxLPF->currentIndex();
+        this->AFE_LNA_clamp[i] = ui->comboBoxLNAClampLevel->currentIndex();
+        this->AFE_PGA_clamp[i] = ui->comboBoxPGAClampLevel->currentIndex();
       }
     }catch(serialException &serial_exception){
       serial_exception.handleException(this);
@@ -344,6 +363,12 @@ int MainWindow::calculateVGainReferenceValue(){
 
     double vGain_value = ui->spinBoxVGainValues->value();
     vGain_value = ((2.49 + 1.5)/1.5)*vGain_value;
+    return (int)(vGain_value*1000.0);
+}
+
+int MainWindow::calculateVGainReferenceValue(const double vgain_volts){
+
+    double vGain_value = ((2.49 + 1.5)/1.5)*vgain_volts;
     return (int)(vGain_value*1000.0);
 }
 
@@ -929,6 +954,17 @@ void MainWindow::serialTimeoutTimerTriggered(){
 void MainWindow::populateComboBoxChannel(){
     ui->comboBoxChannel->clear();
     int afe = ui->comboBoxAFE->currentText().toInt();
+
+    ui->comboBoxLNAGain->setCurrentIndex(this->AFE_LNA_gain[afe]);
+    ui->comboBoxPGAGain->setCurrentIndex(this->AFE_PGA_gain[afe]);
+    ui->checkBoxLNAIntegrator->setChecked(this->AFE_LNA_integrator_enabled[afe]);
+    ui->checkBoxPGAIntegrator->setChecked(this->AFE_PGA_integrator_enabled[afe]);
+    ui->checkBoxActiveTerminationEnable->setChecked(this->AFE_active_termination_enabled[afe]);
+    ui->comboBoxImpedance->setCurrentIndex(this->AFE_active_termination_value[afe]);
+    ui->comboBoxLPF->setCurrentIndex(this->AFE_LPF[afe]);
+    ui->comboBoxLNAClampLevel->setCurrentIndex(this->AFE_LNA_clamp[afe]);
+    ui->comboBoxPGAClampLevel->setCurrentIndex(this->AFE_PGA_clamp[afe]);
+
     switch(afe){
       case 0:
         for(int i=0;i<8;i++){
@@ -1544,3 +1580,61 @@ QVector<double> MainWindow::getBIASOffsetValues(){
 double MainWindow::getBiasControlValue(){
     return this->biasControlValue;
 }
+
+void MainWindow::saveConfigurationString(){
+    this->configurationString = "******Configuration******\n";
+    this->configurationString = this->configurationString + "\n***AFE registers values***\n";
+    this->configurationString = this->configurationString + "reg_1_value: " + QString::number(this->reg_1_value) + "\n";
+    this->configurationString = this->configurationString + "reg_21_value: " + QString::number(this->reg_21_value) + "\n";
+    this->configurationString = this->configurationString + "reg_33_value: " + QString::number(this->reg_33_value) + "\n";
+    this->configurationString = this->configurationString + "reg_4_value: " + QString::number(this->reg_4_value) + "\n";
+    this->configurationString = this->configurationString + "reg_51_value: " + QString::number(this->reg_51_value) + "\n";
+    this->configurationString = this->configurationString + "reg_52_value: " + QString::number(this->reg_52_value) + "\n";
+    this->configurationString = this->configurationString + "reg_59_value: " + QString::number(this->reg_59_value) + "\n";
+
+    this->configurationString = this->configurationString + "\n***WAVEFORMS settings***\n";
+    this->configurationString = this->configurationString + "Number of waveforms: " + QString::number(ui->spinBoxMultipleWaveforms->value()) + "\n";
+    this->configurationString = this->configurationString + "Samples per waveform: " + QString::number(this->recordLength) + "\n";
+    if(this->saveToBinaryState)
+        this->configurationString = this->configurationString + "Dataformat : uint16 IEEE little endian\n";
+    if(this->saveToTxtState)
+        this->configurationString = this->configurationString + "Dataformat : textfile \n Delimiter: Carriage Return\n";
+
+    this->configurationString = this->configurationString + "\n***VGAIN settings***\n";
+    int i = 0;
+    for(double vgain_setting : this->VGAINSetValue){
+        this->configurationString = this->configurationString + "AFE" + QString::number(i) + ": " + QString::number(vgain_setting) +
+                "(" + QString::number(this->calculateVGainReferenceValue(vgain_setting)) + ")\n";
+        i++;
+    }
+
+    this->configurationString = this->configurationString + "\n***OFFSET settings***\n";
+    i = 0;
+    for(uint16_t offset_value : this->OFFSETSetValue){
+        this->configurationString = this->configurationString + "CH" + QString::number(i) + ": " + QString::number(offset_value) + ", ";
+        i++;
+        if(i%8 == 0){
+            this->configurationString = this->configurationString + "\n";
+        }
+    }
+
+    this->configurationString = this->configurationString + "\n***TRIGGER settings***\n";
+    this->configurationString = this->configurationString + "Trigger source: [" + QString::number((int)this->triggerSource.at(0)) + ", "
+            + QString::number((int)this->triggerSource.at(1)) + ", " + QString::number((int)this->triggerSource.at(2)) + "] (internal, external, software)\n";
+    i = 0;
+    this->configurationString = this->configurationString + "Trigger levels: \n";
+    for(int triggerlevel_value : this->triggerLevel){
+        this->configurationString = this->configurationString + "CH" + QString::number(i) + ": " + QString::number(triggerlevel_value) + ", ";
+        i++;
+        if(i%8 == 0){
+            this->configurationString = this->configurationString + "\n";
+        }
+    }
+    this->configurationString = this->configurationString + "Pre-trigger multiplier: " + QString::number(this->preTriggerMultiplier);
+
+    this->configurationString = this->configurationString + "\n***AFE settings***\n";
+
+}
+
+
+
