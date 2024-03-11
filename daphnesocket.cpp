@@ -271,6 +271,7 @@ QString DaphneSocket::alignAFEsV2A(const int &retry, QVector<bool> &isAfeAligned
 
 QString DaphneSocket::alignAFEsV1(const int &retry, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr){
 
+   this->startUdpThread();
    int MINWIDTH = 13;
    qDebug() << "Resetting IDELAY y ISERCES...";
    QString output = "Resetting IDELAY y ISERCES...\n";
@@ -290,9 +291,10 @@ QString DaphneSocket::alignAFEsV1(const int &retry, QVector<bool> &isAfeAligned,
                this->read((0x40000000+(0x100000*afe)+(0x80000)),5);
                //this->waitForReadyRead();
                //this->delayMilli(5);
-               this->processDatagram(1);
+               while(this->receivedDataLength() < 1){
+
+               }
                QByteArray rec_data = this->getReceivedData()->at(0);
-               this->flushReceivedData();
                uint64_t *data_ = reinterpret_cast<uint64_t*>(rec_data.begin()+2);
                x[dv] = data_[1];
                this->flushReceivedData();
@@ -329,6 +331,7 @@ QString DaphneSocket::alignAFEsV1(const int &retry, QVector<bool> &isAfeAligned,
            }
        }
    }
+   this->stopUdpThread();
    return output;
 }
 
