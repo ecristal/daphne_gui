@@ -1637,6 +1637,7 @@ void MainWindow::saveConfigurationString(){
 
     this->configurationString = this->configurationString + "\n***BIAS settings***\n";
     this->configurationString = this->configurationString + "Bias Control Value: " + QString::number(this->biasControlValue) + "\n";
+    this->configurationString = this->configurationString + this->printVectorItems("Bias Voltages: ", this->biasSetValue, 8);
     this->configurationString = this->configurationString + this->printVectorItems("Bias OFFSETS: ", this->biasOFFSETValue, 8);
     this->configurationString = this->configurationString + this->printVectorItems("Trim Values: ", this->trimSetValue, 8);
 
