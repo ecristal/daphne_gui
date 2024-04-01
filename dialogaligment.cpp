@@ -70,8 +70,8 @@ void DialogAligment::checkBoxVersion1Clicked(){
 
 void DialogAligment::alignAFEs(DaphneSocket *socket, QVector<bool> &isAfeAligned, QVector<QString> &isAfeAlignedStr){
   if(ui->checkBoxVersion2A->isChecked()){
-    socket->alignAFEsV2A(100,isAfeAligned,isAfeAlignedStr);
+    socket->alignAFEsV2A(ui->spinBoxRetries->value(),isAfeAligned,isAfeAlignedStr);
   }else if(ui->checkBoxVersion1->isChecked()){
-    socket->alignAFEsV1(100,isAfeAligned,isAfeAlignedStr);
+    socket->alignAFEsV1(ui->spinBoxRetries->value(),isAfeAligned,isAfeAlignedStr);
   }
 }
