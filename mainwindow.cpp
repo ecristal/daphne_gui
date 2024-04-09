@@ -1665,14 +1665,21 @@ template <class T> QString MainWindow::printVectorItems(const QString &title, co
     str = str + title;
     str = str + "[";
     int i = 0;
+    int case_sel = 1;
     for(T vec_index : vec){
+        case_sel = 0;
         str = str + QString::number(vec_index) + ", ";
         i++;
         if(i % items_per_line == 0){
             str = str + "\n\t\t";
+            case_sel = 1;
         }
     }
-    str.remove(str.length()-5,5);
+    if(case_sel == 1){
+        str.remove(str.length()-5,5);
+    }else{
+        str.remove(str.length()-2,2);
+    }
     str = str + "]\n";
     return str;
 }
