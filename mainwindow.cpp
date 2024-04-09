@@ -863,7 +863,9 @@ void MainWindow::pushButtonRDFPGAPressed(){
                     break;
                 }
             }else{
-                this->saveConfigurationString();
+                if(ui->checkBoxSaveWaveforms->isChecked()){
+                    this->saveConfigurationString();
+                }
                 this->mainWaveformsAcquisition();
                 this->dialogReadoutChannelWindow->show();
             }
