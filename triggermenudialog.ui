@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>419</width>
-    <height>261</height>
+    <width>1097</width>
+    <height>422</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>220</x>
-     <y>220</y>
+     <y>230</y>
      <width>181</width>
      <height>32</height>
     </rect>
@@ -145,7 +145,7 @@
       <x>10</x>
       <y>60</y>
       <width>90</width>
-      <height>26</height>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
@@ -205,7 +205,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>220</y>
+     <y>230</y>
      <width>181</width>
      <height>28</height>
     </rect>
@@ -255,7 +255,7 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>130</x>
       <y>30</y>
       <width>151</width>
       <height>16</height>
@@ -263,6 +263,649 @@
     </property>
     <property name="text">
      <string>* Length = 16*Multiplier</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBoxEnabledChannels">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>50</y>
+     <width>661</width>
+     <height>351</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Enabled Channels</string>
+   </property>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>63</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxAFE0">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>120</width>
+      <height>271</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>AFE 0</string>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
+    <widget class="QCheckBox" name="checkBoxChannel0">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>90</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 0</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>90</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 1</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>90</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 2</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>90</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 3</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel4">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>90</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 4</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>180</y>
+       <width>90</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 5</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel6">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>210</y>
+       <width>90</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 6</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel7">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>240</y>
+       <width>90</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 7</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxAFE1">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>30</y>
+      <width>120</width>
+      <height>271</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>AFE 1</string>
+    </property>
+    <widget class="QCheckBox" name="checkBoxChannel8">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>90</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 8</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel9">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>90</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 9</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel10">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 10</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel11">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 11</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel12">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 12</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel13">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>180</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 13</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel14">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>210</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 14</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel15">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>240</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 15</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxAFE2">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>30</y>
+      <width>120</width>
+      <height>271</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>AFE 2</string>
+    </property>
+    <widget class="QCheckBox" name="checkBoxChannel16">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 16</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel17">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 17</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel18">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 18</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel19">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 19</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel20">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 20</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel21">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>180</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 21</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel22">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>210</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 22</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel23">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>240</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 23</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxAFE3">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>30</y>
+      <width>120</width>
+      <height>271</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>AFE 3</string>
+    </property>
+    <widget class="QCheckBox" name="checkBoxChannel24">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 24</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel25">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 25</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel26">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 26</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel27">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 27</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel28">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 28</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel29">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>180</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 29</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel30">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>210</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 30</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel31">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>240</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 31</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxAFE4">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>30</y>
+      <width>120</width>
+      <height>271</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>AFE 4</string>
+    </property>
+    <widget class="QCheckBox" name="checkBoxChannel32">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 32</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel33">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 33</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel34">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 34</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel35">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 35</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel36">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 36</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel37">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>180</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 37</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel38">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>210</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 38</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxChannel39">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>240</y>
+       <width>101</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Channel 39</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSelectAll">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>310</y>
+      <width>84</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select All</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonUnselect">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>310</y>
+      <width>84</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Unselect</string>
     </property>
    </widget>
   </widget>

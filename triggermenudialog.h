@@ -28,6 +28,9 @@ public:
   void setTriggerEnableChannel(QVector<bool> &triggerEnabled);
   void setMultiplierValue(uint16_t &multiplier);
   uint16_t getMultiplierValue();
+  void setCheckBoxStates(const QVector<bool> &states);
+  QVector<bool> getCheckBoxStates();
+  uint64_t getTriggerEnabledConfig();
 private slots:
   void sourceInternalPressed();
   void sourceExternalPressed();
@@ -35,13 +38,17 @@ private slots:
   void buttonSetThresholdPressed();
   void spinBoxChannelValueChanged();
   void spinBoxLevelValueChanged();
+  void pushButtonUnselectAllPressed();
+  void pushButtonSelectAllPressed();
 private:
   Ui::TriggerMenuDialog *ui;
   QVector<int> triggerLevel;
   QVector<bool> triggerEnabled;
+  QVector<QCheckBox*> ptr_ch_enabled;
   void configTresholdSingleChannel(const uint32_t &channel, DaphneSocket *socket);
   void configTresholdAllChannels(DaphneSocket *socket);
   void configTriggerEnable(DaphneSocket *socket);
+  void configureCheckboxPointers();
 };
 
 #endif // TRIGGERMENUDIALOG_H

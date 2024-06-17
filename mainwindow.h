@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_04_04"
+#define GUI_VERSION "V2_04_05"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -231,6 +231,7 @@ private:
     // TriggerMenu
     QVector<bool> triggerSource = {false, true, false};
     int triggerChannel = 0;
+    QVector<bool> triggersEnabledState;
     QVector<int> triggerLevel = {99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999,
                                  99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999,
                                  99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999, 99999,

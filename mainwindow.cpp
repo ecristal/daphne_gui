@@ -97,6 +97,7 @@ void MainWindow::populateComboBoxAvailableSerialPorts(){
 void MainWindow::configureEnabledChannels(){
   for(int i = 0; i < 40; i++){
     this->channelsEnabledState.append(true);
+    this->triggersEnabledState.append(false);
   }
 }
 
@@ -1487,6 +1488,7 @@ void MainWindow::menuIVCurvePressed(){
 void MainWindow::menuTriggerPressed(){
   TriggerMenuDialog triggerDialog(this);
   triggerDialog.setTriggerSource(this->triggerSource);
+  triggerDialog.setCheckBoxStates(this->triggersEnabledState);
   triggerDialog.setTriggerLevel(this->triggerLevel);
   triggerDialog.setTriggerChannel(this->triggerChannel);
   triggerDialog.setTriggerEnableChannel(this->channelsEnabledState);
@@ -1495,11 +1497,13 @@ void MainWindow::menuTriggerPressed(){
   if(exec_code){
     //... accepted config
     this->triggerSource = triggerDialog.getTriggerSource();
+    this->triggersEnabledState = triggerDialog.getCheckBoxStates();
     this->triggerChannel = triggerDialog.getTriggerChannel();
     this->triggerLevel = triggerDialog.getTriggerLevel();
     this->preTriggerMultiplier = triggerDialog.getMultiplierValue();
   }else{
     //... rejected config
+    triggerDialog.getTriggerEnabledConfig();
   }
 }
 

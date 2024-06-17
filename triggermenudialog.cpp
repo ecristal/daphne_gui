@@ -10,13 +10,69 @@ TriggerMenuDialog::TriggerMenuDialog(QWidget *parent) :
   connect(ui->checkBoxSourceExternal,SIGNAL(clicked(bool)),this,SLOT(sourceExternalPressed()));
   connect(ui->checkBoxSourceSoftware,SIGNAL(clicked(bool)),this,SLOT(sourceSoftwarePressed()));
   connect(ui->pushButtonSetThreshold,SIGNAL(clicked(bool)),this,SLOT(buttonSetThresholdPressed()));
+  connect(ui->pushButtonSelectAll,SIGNAL(clicked(bool)),this,SLOT(pushButtonSelectAllPressed()));
+  connect(ui->pushButtonUnselect,SIGNAL(clicked(bool)),this,SLOT(pushButtonUnselectAllPressed()));
   connect(ui->spinBoxChannel,SIGNAL(valueChanged(int)),this,SLOT(spinBoxChannelValueChanged()));
   connect(ui->spinBoxLevel,SIGNAL(valueChanged(int)),this,SLOT(spinBoxLevelValueChanged()));
+  configureCheckboxPointers();
 }
 
 TriggerMenuDialog::~TriggerMenuDialog()
 {
   delete ui;
+}
+
+void TriggerMenuDialog::configureCheckboxPointers(){
+
+    for(QObject *obj : ui->groupBoxAFE0->children()){
+      QCheckBox *checkbox = reinterpret_cast<QCheckBox*>(obj);
+      this->ptr_ch_enabled.append(checkbox);
+    }
+    for(QObject *obj : ui->groupBoxAFE1->children()){
+      QCheckBox *checkbox = reinterpret_cast<QCheckBox*>(obj);
+      this->ptr_ch_enabled.append(checkbox);
+    }
+    for(QObject *obj : ui->groupBoxAFE2->children()){
+      QCheckBox *checkbox = reinterpret_cast<QCheckBox*>(obj);
+      this->ptr_ch_enabled.append(checkbox);
+    }
+    for(QObject *obj : ui->groupBoxAFE3->children()){
+      QCheckBox *checkbox = reinterpret_cast<QCheckBox*>(obj);
+      this->ptr_ch_enabled.append(checkbox);
+    }
+    for(QObject *obj : ui->groupBoxAFE4->children()){
+      QCheckBox *checkbox = reinterpret_cast<QCheckBox*>(obj);
+      this->ptr_ch_enabled.append(checkbox);
+    }
+}
+
+QVector<bool> TriggerMenuDialog::getCheckBoxStates(){
+  QVector<bool> checkboxStates;
+  for(QCheckBox *chk : this->ptr_ch_enabled){
+    bool state = chk->isChecked();
+    checkboxStates.append(state);
+  }
+  return checkboxStates;
+}
+
+void TriggerMenuDialog::setCheckBoxStates(const QVector<bool> &states){
+  int i = 0;
+  for(QCheckBox *chk : this->ptr_ch_enabled){
+    chk->setChecked(states.at(i));
+    i++;
+  }
+}
+
+void TriggerMenuDialog::pushButtonSelectAllPressed(){
+  for(QCheckBox *chk : this->ptr_ch_enabled){
+    chk->setChecked(true);
+  }
+}
+
+void TriggerMenuDialog::pushButtonUnselectAllPressed(){
+  for(QCheckBox *chk : this->ptr_ch_enabled){
+    chk->setChecked(false);
+  }
 }
 
 void TriggerMenuDialog::sourceInternalPressed(){
@@ -113,6 +169,17 @@ void TriggerMenuDialog::buttonSetThresholdPressed(){
   }
 }
 
+uint64_t TriggerMenuDialog::getTriggerEnabledConfig(){
+    QVector<bool> enableStates = this->getCheckBoxStates();
+    int lengthStates = enableStates.length();
+    uint64_t enabledStatesValues = 0;
+    for(int i = 0; i<lengthStates; i++){
+        enabledStatesValues = enabledStatesValues | ((uint64_t)enableStates[i] << i);
+    }
+    qDebug()<< " :: sended :: "  << QString::number(enabledStatesValues,2);
+    return enabledStatesValues;
+}
+
 void TriggerMenuDialog::configTresholdSingleChannel(const uint32_t &channel, DaphneSocket *socket){
   int threshold_level = ui->spinBoxLevel->value();
   int multiplier = ui->spinBoxMultiplier->value();
@@ -124,6 +191,7 @@ void TriggerMenuDialog::configTresholdSingleChannel(const uint32_t &channel, Dap
   concat_value = concat_value | ((uint64_t)channel << 32);
   concat_value = concat_value | threshold_level;
   socket->sendSingleCommand(0x2021,concat_value);
+  socket->sendSingleCommand(0x6001,this->getTriggerEnabledConfig());
 
   socket->read(0x2021,1);
   socket->delayMilli(10);
