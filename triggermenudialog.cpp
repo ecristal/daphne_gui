@@ -189,11 +189,16 @@ void TriggerMenuDialog::configTresholdSingleChannel(const uint32_t &channel, Dap
   uint64_t concat_value = 0;
   concat_value = concat_value | ((uint64_t)multiplier << 40);
   concat_value = concat_value | ((uint64_t)channel << 32);
-  concat_value = concat_value | threshold_level;
+  concat_value = concat_value | (uint64_t)threshold_level;
+  //GUI firmware
   socket->sendSingleCommand(0x2021,concat_value);
+  //oficial firmware
+  concat_value = 0;
+  concat_value = concat_value | (uint64_t)threshold_level;
+  socket->sendSingleCommand(0x6000,concat_value);
   socket->sendSingleCommand(0x6001,this->getTriggerEnabledConfig());
 
-  socket->read(0x2021,1);
+  socket->read(0x6001,1);
   socket->delayMilli(10);
 
   QVector<QByteArray>* receivedData = socket->getReceivedData();
