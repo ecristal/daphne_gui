@@ -142,6 +142,7 @@ public:
     void sendCommand(const QString &command);
     void delayMilli(const int &delay_milli);
     void delayMicro(const int &delay_micro);
+    void delayNano(const int &delay_nano);
 
     QString getSerialString();
     int getAFENumberFromChannelNumber(const int &channelNumber);
@@ -226,7 +227,7 @@ private:
     int daphnePortNumber = 2001;
     int computerPortNumber = 58789;
     int received_datagrams, expected_datagrams;
-    int udpWaitforDatagram = 5;
+    int udpWaitforDatagram = 500;
 
     // TriggerMenu
     QVector<bool> triggerSource = {false, true, false};

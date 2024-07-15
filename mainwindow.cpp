@@ -635,6 +635,14 @@ void MainWindow::delayMicro(const int &delay_micro){
     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
+void MainWindow::delayNano(const int &delay_nano){
+  std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+  auto duration = now.time_since_epoch();
+  auto dieTime = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count() + delay_nano;
+  while(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() < dieTime)
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
 void MainWindow::readDataFromSerial(){
     QByteArray serial_data_ = this->serialPort_->readAll();
     this->serialData.append(serial_data_);
@@ -759,7 +767,7 @@ void MainWindow::mainWaveformsAcquisition(){
             if(i%this->dialogReadoutChannelWindow->getSpinBoxPlotEveryWaveformsValue() == 0){
                 this->dialogReadoutChannelWindow->setWaveNumberPointer(&i);
                 this->dialogReadoutChannelWindow->plotDataMultichannel();
-                this->delayMicro(this->udpWaitforDatagram);
+                this->delayNano(this->udpWaitforDatagram);
             }
         lost_datagram_counter = 0;
         #ifdef QT_DEBUG
@@ -1164,11 +1172,9 @@ int MainWindow::requestDataFromChannel(const int &channel,const int &length, int
       if(i == numberOfRequest - 1 && lastRequestSize != 0){
         this->socket->read(spyBuffer + i*minimunDatagramSize, lastRequestSize);
         requested_data++;
-        //this->delayMicro(this->udpWaitforDatagram);
       }else{
         this->socket->read(spyBuffer + i*minimunDatagramSize,minimunDatagramSize);
         requested_data++;
-        //this->delayMicro(this->udpWaitforDatagram);
       }
 
       if(requested_data%3 == 0 || requested_data%numberOfRequest == 0){

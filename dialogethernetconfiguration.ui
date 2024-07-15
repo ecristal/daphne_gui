@@ -206,7 +206,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>us</string>
+     <string>ns</string>
     </property>
    </widget>
   </widget>
