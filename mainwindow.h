@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_04_06"
+#define GUI_VERSION "V2_04_07"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -142,6 +142,7 @@ public:
     void sendCommand(const QString &command);
     void delayMilli(const int &delay_milli);
     void delayMicro(const int &delay_micro);
+    void delayNano(const int &delay_nano);
 
     QString getSerialString();
     int getAFENumberFromChannelNumber(const int &channelNumber);
@@ -333,5 +334,6 @@ private:
     QString printComboBoxConfigurationItems(const QString &title, const QVector<T> &vec, QComboBox* comboBox);
     template<class T>
     QString printVectorItems(const QString &title, const QVector<T> &vec, const int &items_per_line);
+
 };
 #endif // MAINWINDOW_H

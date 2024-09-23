@@ -635,6 +635,14 @@ void MainWindow::delayMicro(const int &delay_micro){
     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
+void MainWindow::delayNano(const int &delay_nano){
+  std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+  auto duration = now.time_since_epoch();
+  auto dieTime = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count() + delay_nano;
+  while(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() < dieTime)
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
 void MainWindow::readDataFromSerial(){
     QByteArray serial_data_ = this->serialPort_->readAll();
     this->serialData.append(serial_data_);
@@ -1218,18 +1226,18 @@ void MainWindow::readMultichannelEthernet_vector(const QVector<bool> &enabledCha
     timing_start = std::chrono::high_resolution_clock::now();
 #endif
 
-  QVector<uint16_t> ethernetData_aux(this->recordLength);
+  //QVector<uint16_t> ethernetData_aux(this->recordLength);
 
   int k = 0;
   for(int ch = 0; ch < enabledChannels.length(); ch++){
     if(enabledChannels.at(ch)){
       for(int i = 0; i < this->recordLength; i++){
         if(k < this->ethernetData.length()){
-          ethernetData_aux[i] = this->ethernetData.at(k);
+          this->channelsData[ch][i] = this->ethernetData.at(k);
         }
         k++;
       }
-      this->channelsData[ch] = ethernetData_aux;
+      //this->channelsData[ch] = ethernetData_aux;
     }
   }
 #ifdef QT_DEBUG
