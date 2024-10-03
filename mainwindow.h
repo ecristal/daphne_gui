@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define GUI_VERSION "V2_04_07"
+#define GUI_VERSION "V2_04_08"
 
 #define MASK_LOW_FREQ_NOISE_SUPR_REG_1 0x800
 
@@ -320,6 +320,7 @@ private:
     QString parseSerialDataStringSuccess();
     bool isSerialCommandSuccesful();
     void sendSoftwareTriggerDeadTime();
+    void sendSoftwareTriggerDeadTime(bool enable);
     void sendSoftwareTrigger();
     int getNumberOfExpectedDatagrams();
     void initializeChannelsData();
@@ -334,6 +335,5 @@ private:
     QString printComboBoxConfigurationItems(const QString &title, const QVector<T> &vec, QComboBox* comboBox);
     template<class T>
     QString printVectorItems(const QString &title, const QVector<T> &vec, const int &items_per_line);
-
 };
 #endif // MAINWINDOW_H

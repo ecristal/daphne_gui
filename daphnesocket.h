@@ -39,6 +39,7 @@ public:
     QString getBindedToStr(){return this->bindedToAddr;}
     void sendSoftwareTrigger();
     void sendSoftwareTriggerDeadTime();
+    void sendSoftwareTriggerDeadTime(bool enable);
     int getExpectedDatagrams();
     int setExpectedDatagrams(const int &value);
     void reserveDatagramSize(const int &value);

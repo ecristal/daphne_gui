@@ -351,6 +351,14 @@ void DaphneSocket::sendSoftwareTriggerDeadTime(){
     this->sendSingleCommand(0x2020,0x1234);
 }
 
+void DaphneSocket::sendSoftwareTriggerDeadTime(bool enable){
+    if(enable){
+        this->sendSingleCommand(0x2021,0x1234);
+    }else{
+        this->sendSingleCommand(0x2020,0x1234);
+    }
+}
+
 int DaphneSocket::sendData(const uint64_t &addr, const QVector<uint64_t> &data){
     uint8_t number_data_to_send = data.length();
     uint8_t* data_ = new uint8_t[number_data_to_send*sizeof(uint64_t)];

@@ -1145,9 +1145,9 @@ void MainWindow::acquireWaveform(){
     if(ui->checkBoxEnableEthernet->isChecked()){
         int channel = ui->comboBoxChannel->currentText().toInt();
         this->sendSoftwareTrigger();
-        this->sendSoftwareTriggerDeadTime();
+        this->sendSoftwareTriggerDeadTime(true);
         this->readAndPlotDataEthernet(channel);
-        this->sendSoftwareTriggerDeadTime();
+        this->sendSoftwareTriggerDeadTime(false);
     }else{
         this->readAndPlotDataSerial();
     }
@@ -1155,9 +1155,9 @@ void MainWindow::acquireWaveform(){
 
 void MainWindow::acquireWaveformEnabled(){
   this->sendSoftwareTrigger();
-  this->sendSoftwareTriggerDeadTime();
+  this->sendSoftwareTriggerDeadTime(true);
   this->readMultichannelEthernet_vector(this->channelsEnabledState);
-  this->sendSoftwareTriggerDeadTime();
+  this->sendSoftwareTriggerDeadTime(false);
 }
 
 int MainWindow::requestDataFromChannel(const int &channel,const int &length, int &requested_data){
@@ -1523,6 +1523,10 @@ void MainWindow::sendSoftwareTrigger(){
 
 void MainWindow::sendSoftwareTriggerDeadTime(){
     this->socket->sendSoftwareTriggerDeadTime();
+}
+
+void MainWindow::sendSoftwareTriggerDeadTime(bool enable){
+    this->socket->sendSoftwareTriggerDeadTime(enable);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
